@@ -1,0 +1,56 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+applicationSuite: WooCommerce
+categories:
+  - payment-gateway
+description:
+  it:
+    features:
+      - Gateway di pagamento PagoPA
+    genericName: Payment gateway
+    longDescription: |2
+       Il progetto prevede la realizzazione di un plugin WordPress (gateway) che consenta di integrare il [portale dei pagamenti PagoPA Cineca](https://sns.pagoatenei.cineca.it/) con il sistema di e-commerce di ateneo ([edizioni.sns.it](https://edizioni.sns.it/)) basato su WooCommerce. 
+
+      Il sistema di e-commerce di ateneo (Centro Edizioni) prevederà la
+      possibilità di effettuare il pagamento degli acquisti tramite la
+      piattaforma nazionale PagoPA integrandosi con il portale pagamenti
+      disponibile in ateneo.
+    shortDescription: |-
+      Plugin WooCommerce per l'integrazione con portale di pagamenti PagoPA
+      Cineca
+developmentStatus: concept
+it:
+  conforme:
+    gdpr: false
+    lineeGuidaDesign: false
+    misureMinimeSicurezza: false
+    modelloInteroperabilita: false
+  countryExtensionVersion: '0.2'
+  piattaforme:
+    anpr: false
+    cie: false
+    pagopa: true
+    spid: false
+  riuso:
+    codiceIPA: sns_pi
+legal:
+  license: GPL-3.0-only
+localisation:
+  availableLanguages:
+    - it
+    - en
+  localisationReady: true
+maintenance:
+  contacts:
+    - email: servizi.informativi@sns.it
+      name: Servizio sistemi informativi
+  type: community
+name: wp-pagopa-gateway-cineca
+platforms:
+  - web
+releaseDate: '2021-11-22'
+softwareType: addon
+url: 'https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca'
