@@ -1,5 +1,12 @@
 <?php
 /**
+ * PagoPa Gateway.
+ *
+ * @package     wp-pagopa-gateway-cineca.php
+ * @author      ICT Scuola Normale Superiore
+ * @copyright   © 2021-2022, SNS
+ * @license     GNU General Public License v3.0
+ *
  * Plugin Name: PagoPa Gateway
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPa payment portal
@@ -13,25 +20,24 @@
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-
 /**
  *  This action hook registers our PHP class as a WooCommerce payment gateway
  */
 add_filter( 'woocommerce_payment_gateways', 'wp_gateway_pagopa_add' );
 /**
- * Add PagoPa gateway
+ * Add PagoPa gateway.
+ *
+ * @param array $gateways .
+ * @return array  $gateways .
  */
 function wp_gateway_pagopa_add( $gateways ) {
-	error_log( '@@@@@@@@@@ wp_gateway_pagopa_add  @@@@@@@@@@' );
 	$gateways[] = 'WP_Gateway_PagoPa';
 	return $gateways;
 }
 
 add_action( 'plugins_loaded', 'wp_gateway_pagopa_init' );
 /**
- * Init PagoPa class
- *
- * @return void
+ * Init PagoPa class.
  */
 function wp_gateway_pagopa_init() {
 
@@ -53,7 +59,6 @@ function wp_gateway_pagopa_init() {
 		 * Define the fields of the plugin.
 		 */
 		public function __construct() {
-			error_log( '@@@@@@@@@@ __construct @@@@@@@@@@' );
 			$this->id                 = 'pagopa_gateway_cineca';
 			$this->icon               = '';
 			$this->has_fields         = true;
@@ -82,14 +87,11 @@ function wp_gateway_pagopa_init() {
 			// This action hook saves the settings.
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-			// We need custom JavaScript to obtain a token.
-			add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
-
 			// You can also register a webhook here.
 		}
 
 		/**
-		 * Add the fields of the plugin configuration page.
+		 * Add the fields to the plugin configuration page.
 		 *
 		 * @return void
 		 */
@@ -200,7 +202,7 @@ function wp_gateway_pagopa_init() {
 					'type'        => 'text',
 					'description' => __( 'Username of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
 				),
-				'password_test'         => array(
+				'password_test'          => array(
 					'title'       => __( 'API password', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
@@ -208,5 +210,56 @@ function wp_gateway_pagopa_init() {
 			);
 
 		}
+
+		/**
+		 * Validate the fields of the payment form.
+		 *
+		 * @return boolean
+		 */
+		public function validate_fields() {
+			/* Checkout fields should be validate earlier. That is in the checkout phase. */
+			return true;
+		}
+
+		/**
+		 * Process the payment.
+		 *
+		 * @param int $order_id 'The ID of the order'.
+		 * @return array 'Redirect page'.
+		 */
+		public function process_payment( $order_id ) {
+			global $woocommerce;
+
+			// Retrieve the order details.
+			$order = new WC_Order( $order_id );
+
+			// During the transaction the order is "on-hold".
+			// $order->update_status( 'on-hold', __( 'Payment in progress', 'wp_gateway_pagopa_init' ) ); .
+
+			// BEGIN payment procedure.
+			sleep( 5 );  // Wait 5 seconds to simulate the call to the web service.
+			$payment_error = false;
+			if ( $payment_error ) {
+				// Payment OK.
+				wc_add_notice( __( 'Payment error', 'wp_gateway_pagopa_init' ), 'error' );
+				return;
+			} else {
+				// Payment KO.
+				$order->payment_complete();
+				// Notes for the customer.
+				$order->add_order_note( __( 'The payment procedure was completed successfully', 'wp_gateway_pagopa_init' ) );
+			}
+			// END payment procedure.
+
+			// Remove the cart.
+			$woocommerce->cart->empty_cart();
+
+			// Return the thankyou page.
+			return array(
+				'result'   => 'success',
+				'redirect' => $this->get_return_url( $order ),
+			);
+		}
+
 	}
 }
