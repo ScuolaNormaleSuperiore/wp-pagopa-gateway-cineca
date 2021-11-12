@@ -67,7 +67,6 @@ function wp_gateway_pagopa_init() {
 			$this->has_fields         = true;
 			$this->method_title       = 'PagoPA Gateway';
 			$this->method_description = 'Pay using the Cineca PagoPa Gateway';
-			error_log( '@@@ CONSTRUCT @@@' );
 
 			// The gateway supports simple payments.
 			$this->supports = array(
@@ -83,10 +82,10 @@ function wp_gateway_pagopa_init() {
 			$this->init_settings();
 
 			// Load the settings into variables.
-			$this->title       = $this->get_option( 'title' );
-			$this->description = $this->get_option( 'description' );
-			$this->enabled     = $this->get_option( 'enabled' );
-			$this->testmode    = $this->get_option( 'testmode' );
+			$this->title            = $this->get_option( 'title' );
+			$this->description      = $this->get_option( 'description' );
+			$this->enabled          = 'yes' === $this->get_option( 'enabled' );
+			$this->testmode         = 'yes' === $this->get_option( 'testmode' );
 
 			// This action hook saves the settings.
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -169,27 +168,10 @@ function wp_gateway_pagopa_init() {
 					'type'        => 'text',
 					'description' => __( 'ID of payment model related to the e-commerce defined on the Cineca backoffice', 'wp-pagopa-gateway-cineca' ),
 				),
-				'cert_abs_path'          => array(
-					'title'       => __( 'Certificate path', 'wp-pagopa-gateway-cineca' ),
-					'type'        => 'text',
-					'description' => __( 'Absolute path of the .pem certificate', 'wp-pagopa-gateway-cineca' ),
-					'default'     => '/var/www/ecommerce/wp-content/plugins/wp-pagopa-gateway-cineca/mycert.pem',
-				),
-				'cert_passphrase'        => array(
-					'title'       => __( 'Certificate passphrase', 'wp-pagopa-gateway-cineca' ),
-					'type'        => 'text',
-					'description' => __( 'Passphrase of the certificate', 'wp-pagopa-gateway-cineca' ),
-				),
 				// Production credentials.
 				'production_credentials' => array(
 					'title' => __( 'Production credentials', 'wp-pagopa-gateway-cineca' ),
 					'type'  => 'title',
-				),
-				'base_fronted_url_prod'  => array(
-					'title'       => __( 'Front-end base url', 'wp-pagopa-gateway-cineca' ),
-					'type'        => 'text',
-					'description' => __( 'Base url of the Cineca Front-end', 'wp-pagopa-gateway-cineca' ),
-					'default'     => 'https://xxx.pagoatenei.cineca.it',
 				),
 				'base_url_prod'          => array(
 					'title'       => __( 'API base url', 'wp-pagopa-gateway-cineca' ),
@@ -211,12 +193,6 @@ function wp_gateway_pagopa_init() {
 				'test_credentials'       => array(
 					'title' => __( 'Test credentials', 'wp-pagopa-gateway-cineca' ),
 					'type'  => 'title',
-				),
-				'base_fronted_url_test'  => array(
-					'title'       => __( 'Front-end base url', 'wp-pagopa-gateway-cineca' ),
-					'type'        => 'text',
-					'description' => __( 'Base url of the Cineca Front-end', 'wp-pagopa-gateway-cineca' ),
-					'default'     => 'https://xxx.pagoatenei.cineca.it',
 				),
 				'base_url_test'          => array(
 					'title'       => __( 'API base url', 'wp-pagopa-gateway-cineca' ),
@@ -276,9 +252,12 @@ function wp_gateway_pagopa_init() {
 			}
 
 			// Redirect the customer to the gateway to pay the payment position just created.
-			$redirect_url = $this->gateway_controller->get_payment_url( $payment_position['iuv'] );
-			error_log( '### REDIRECT URL:' . $redirect_url );
-
+			$customer_code = 'SNS-ECOMM';
+			$order_code    = $order->get_id();
+			$order_hook    = 'https://edizioni.sns.it?id=' . $order_code . '&iuv=' . $payment_position['iuv'];
+			$ws_url        = 'https://sns.pp.pagoatenei.cineca.it';
+			$redirect_url  = "$ws_url/portalepagamenti.server.frontend/#/ext?cod_vers_ente=$order_code&cod_app=$customer_code&retUrl=$order_hook";
+			error_log( $redirect_url );
 			return array(
 				'result'   => 'success',
 				'redirect' => $redirect_url,
