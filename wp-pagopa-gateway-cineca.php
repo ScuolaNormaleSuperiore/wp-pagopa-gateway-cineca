@@ -23,6 +23,8 @@
 
 require_once 'inc/class-gateway-controller.php';
 
+define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
+
 /**
  *  This action hook registers our PHP class as a WooCommerce payment gateway
  */
@@ -92,6 +94,8 @@ function wp_gateway_pagopa_init() {
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
 			// You can also register a webhook here.
+			add_action( 'woocommerce_api_' . HOOK_PAYMENT_COMPLETE, array( $this, 'webhook_payment_complete' ) );
+			error_log( '@@@ DEFINE HOOK @@@' );
 		}
 
 		/**
@@ -276,7 +280,7 @@ function wp_gateway_pagopa_init() {
 			}
 
 			// Redirect the customer to the gateway to pay the payment position just created.
-			$redirect_url = $this->gateway_controller->get_payment_url( $payment_position['iuv'] );
+			$redirect_url = $this->gateway_controller->get_payment_url( $payment_position['iuv'], HOOK_PAYMENT_COMPLETE );
 			error_log( '### REDIRECT URL:' . $redirect_url );
 
 			return array(
@@ -285,5 +289,37 @@ function wp_gateway_pagopa_init() {
 			);
 		}
 
+		/**
+		 * Hook called by the Gateway after the customer has paid.
+		 *
+		 * @param array $args - Arguments of the function.
+		 * @return void - Redirect to the thankyou page.
+		 */
+		public function webhook_payment_complete( $args ) {
+			error_log( '************ pagopa_payment_complete ************' );
+
+			$order_id   = ( ! empty( $_GET['id'] ) ? sanitize_text_field( wp_unslash( $_GET['id'] ) ) : '' );
+			$iuv        = ( ! empty( $_GET['iuv'] ) ? sanitize_text_field( wp_unslash( $_GET['iuv'] ) ) : '' );
+			$id_session = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
+			$outcome    = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
+
+			if ( ( 'OK' !== $outcome ) || ( '' === $iuv ) || ( '' === $order_id ) || ( '' === $id_session ) ) {
+				// An error occurred during the payment phase or the payment has been cancelled by the customer.
+				wc_add_notice( __( 'Payment cancelled', 'wp_gateway_pagopa_init' ), 'error' );
+				return;
+			}
+
+			// @TODO: Try except sull'ordine.
+			$order = wc_get_order( $order_id );
+
+			// @TODO: Verifica dello stato dell'ordine.
+
+			/ /@TODO: gpChiediStatoVersamento .
+
+			$order->payment_complete();
+
+			$redirect_url = $this->get_return_url( $order );
+			wp_safe_redirect( $redirect_url );
+		}
 	}
 }

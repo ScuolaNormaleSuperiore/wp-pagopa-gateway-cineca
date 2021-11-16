@@ -176,12 +176,13 @@ class Gateway_Controller {
 	 * Return the Gateway URL where the customer will pay the order.
 	 *
 	 * @param string $iuv - The IUV of the payment.
+	 * @param string $hook - The fuction that is called from the gateway.
 	 * @return string - The redirect url.
 	 */
-	public function get_payment_url( $iuv ) {
+	public function get_payment_url( $iuv, $hook ) {
 		$customer_code = $this->plugin->settings['application_code'];
 		$order_code    = $this->order->get_order_number();
-		$order_hook    = get_site_url() . '?id=' . $order_code . '&iuv=' . $iuv;
+		$order_hook    = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?id=' . $order_code . '&iuv=' . $iuv;
 		$encoded_hook  = rawurlencode( $order_hook );
 		$ws_base_url   = $this->ws_data['ws_soap_base_url'];
 		$redirect_url  = $this->ws_data['frontend_base_url'] . PATH_FRONT_END_CINECA . '?cod_vers_ente=' . $order_code . '&cod_app=' . $customer_code . '&retUrl=' . $encoded_hook;
@@ -194,7 +195,7 @@ class Gateway_Controller {
 	 * @param string $iuv - Identificatore Universale Pagamento .
 	 * @return void
 	 */
-	public function check_payment_position( $iuv ) {
+	public function check_payment_status( $iuv ) {
 
 	}
 
