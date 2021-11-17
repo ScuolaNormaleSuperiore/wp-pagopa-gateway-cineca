@@ -1,14 +1,14 @@
 <?php
 
 /**
- * PagoPa Gateway.
+ * PagoPa Gateway Cineca
  *
- * @package     wp-pagopa-gateway-cineca.php
+ * @package     PagoPa Gateway Cineca
  * @author      ICT Scuola Normale Superiore
  * @copyright   © 2021-2022, SNS
  * @license     GNU General Public License v3.0
  *
- * Plugin Name: PagoPa Gateway
+ * Plugin Name: PagoPa Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPa payment portal
  * Version: 0.0.1
@@ -21,9 +21,44 @@
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-require_once 'inc/class-gateway-controller.php';
+/**
+ * Security check .
+ */
+if ( ! function_exists( 'add_action' ) ) {
+	echo "Hi there, I'm just a plugin.";
+	exit;
+}
 
+require_once 'inc/class-gateway-controller.php';
+require_once 'inc/class-log-manager.php';
+
+// Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
+
+// Register the hooks to install and uninstall the plugin.
+register_activation_hook( __FILE__, 'install_pagopa_plugin' );
+register_deactivation_hook( __FILE__, 'uninstall_pagopa_plugin' );
+
+/**
+ * Create or update the plugin log table
+ *
+ * @return void
+ */
+function install_pagopa_plugin() {
+	// Create or update the log table.
+	Log_Manager::init_table();
+}
+
+/**
+ * Uninstall the plugin log table
+ *
+ * @return void
+ */
+function uninstall_pagopa_plugin() {
+
+	// Removed the plugin tables.
+	Log_Manager::drop_table();
+}
 
 /**
  *  This action hook registers our PHP class as a WooCommerce payment gateway
@@ -69,7 +104,7 @@ function wp_gateway_pagopa_init() {
 			$this->has_fields         = true;
 			$this->method_title       = 'PagoPA Gateway';
 			$this->method_description = 'Pay using the Cineca PagoPa Gateway';
-			error_log( '@@@ CONSTRUCT @@@' );
+			error_log( '@@@ CONSTRUCT PLUGIN @@@' );
 
 			// The gateway supports simple payments.
 			$this->supports = array(
@@ -95,7 +130,6 @@ function wp_gateway_pagopa_init() {
 
 			// You can also register a webhook here.
 			add_action( 'woocommerce_api_' . HOOK_PAYMENT_COMPLETE, array( $this, 'webhook_payment_complete' ) );
-			error_log( '@@@ DEFINE HOOK @@@' );
 		}
 
 		/**
@@ -263,10 +297,12 @@ function wp_gateway_pagopa_init() {
 			global $woocommerce;
 
 			// Retrieve the order details.
-			$order = new WC_Order( $order_id );
+			$order       = new WC_Order( $order_id );
+			$log_manager = new Log_Manager( $order );
 
 			// During the transaction the order is "on-hold".
 			$order->update_status( 'on-hold', __( 'Payment in progress', 'wp_gateway_pagopa_init' ) );
+			$log_manager->log( STATUS_PAYMENT_SUBMITTED );
 
 			// Create the payment position on the Cineca gateway.
 			$this->gateway_controller = new Gateway_Controller( $this );
@@ -275,13 +311,16 @@ function wp_gateway_pagopa_init() {
 
 			// Check if the payment postion was created successfully.
 			if ( 'OK' !== $payment_position['code'] ) {
-				wc_add_notice( __( 'Payment error', 'wp_gateway_pagopa_init' ) . '-' . $payment_position['msg'], 'error' );
-				return;
+				$error_msg = __( 'Payment error reported by the gateway', 'wp_gateway_pagopa_init' );
+				wc_add_notice( $error_msg . '-' . $payment_position['msg'], 'error' );
+				$log_manager->log( STATUS_PAYMENT_NOT_CREATED );
+				return new WP_Error( 'error', sprintf( $error_msg, $order_id ) );
 			}
 
+			// Payment saved.
+			$log_manager->log( STATUS_PAYMENT_CREATED, $payment_position['iuv'] );
 			// Redirect the customer to the gateway to pay the payment position just created.
 			$redirect_url = $this->gateway_controller->get_payment_url( $payment_position['iuv'], HOOK_PAYMENT_COMPLETE );
-			error_log( '### REDIRECT URL:' . $redirect_url );
 
 			return array(
 				'result'   => 'success',
@@ -302,21 +341,30 @@ function wp_gateway_pagopa_init() {
 			$iuv        = ( ! empty( $_GET['iuv'] ) ? sanitize_text_field( wp_unslash( $_GET['iuv'] ) ) : '' );
 			$id_session = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
 			$outcome    = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
+			error_log( '@@@ ID SESSION: ' . $id_session );
 
 			if ( ( 'OK' !== $outcome ) || ( '' === $iuv ) || ( '' === $order_id ) || ( '' === $id_session ) ) {
 				// An error occurred during the payment phase or the payment has been cancelled by the customer.
-				wc_add_notice( __( 'Payment cancelled', 'wp_gateway_pagopa_init' ), 'error' );
+				$error_msg = __( 'Payment cancelled by the customer', 'wp_gateway_pagopa_init' );
+				// $log_manager->log( STATUS_PAYMENT_NOT_CREATED );
+				wc_add_notice( $error_msg, 'error' );
+				$redirect_url = wc_get_checkout_url();
+				wp_safe_redirect( $redirect_url );
 				return;
 			}
 
 			// @TODO: Try except sull'ordine.
-			$order = wc_get_order( $order_id );
+			$order       = new WC_Order( $order_id );
+			$log_manager = new Log_Manager( $order );
 
 			// @TODO: Verifica dello stato dell'ordine.
+			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
-			/ /@TODO: gpChiediStatoVersamento .
+			// @TODO: gpChiediStatoVersamento (Verifica).
 
+			// Payment completed.
 			$order->payment_complete();
+			$log_manager->log( STATUS_PAYMENT_COMPLETED, $iuv );
 
 			$redirect_url = $this->get_return_url( $order );
 			wp_safe_redirect( $redirect_url );
