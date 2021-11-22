@@ -290,8 +290,8 @@ function wp_gateway_pagopa_init() {
 		/**
 		 * Process the payment.
 		 *
-		 * @param int $order_id 'The ID of the order'.
-		 * @return array 'Redirect page'.
+		 * @param int $order_id - 'The ID of the order'.
+		 * @return array - 'Redirect page'.
 		 */
 		public function process_payment( $order_id ) {
 			global $woocommerce;
@@ -312,13 +312,19 @@ function wp_gateway_pagopa_init() {
 
 			// Check if the payment postion was created successfully.
 			if ( 'OK' !== $payment_position['code'] ) {
-				$error_msg = __( 'Payment error reported by the gateway', 'wp-pagopa-gateway-cineca' );
+				// An error occurred creating the payment on the gateway.
+				$error_msg  = __( 'Payment error reported by the gateway', 'wp-pagopa-gateway-cineca' );
 				$error_desc = $error_msg . '-' . $payment_position['msg'];
 				$log_manager->log( STATUS_PAYMENT_NOT_CREATED, null, $error_desc );
-				$this->error_redirect( $error_msg );
-				return;
+				wc_add_notice( $error_msg, 'error' );
+				$redirect_url = wc_get_checkout_url();
+				return array(
+					'result'   => 'failed',
+					'redirect' => $redirect_url,
+				);
 			}
 
+			// Payment position created successfully
 			// Change the status of the order
 			$order->update_status( 'on-hold', __( 'Payment in progress', 'wp-pagopa-gateway-cineca' ) );
 			// Payment saved.
@@ -374,7 +380,7 @@ function wp_gateway_pagopa_init() {
 
 			if ( 'OK' !== $payment_status['code'] || 'ESEGUITO' !== $payment_status['msg']) {
 				// Payment not confirmed.
-				$error_msg = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:' . $order_id, 'wp-pagopa-gateway-cineca' );
+				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is: ' . $order_id, 'wp-pagopa-gateway-cineca' );
 				$error_desc = $error_msg . ' - ' . $payment_status['msg'];
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
 				return $this->error_redirect( $error_msg );
