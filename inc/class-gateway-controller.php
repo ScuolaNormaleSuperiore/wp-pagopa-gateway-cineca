@@ -13,6 +13,7 @@
 
 define( 'PATH_WSDL_CINECA', '/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl' );
 define( 'PATH_FRONT_END_CINECA', '/portalepagamenti.server.frontend/#/ext' );
+define( 'PAR_SPLITTER', '||' );
 
 /**
  * Gateway_Controller class
@@ -97,9 +98,7 @@ class Gateway_Controller {
 	 */
 	public function load_payment_position() {
 		$expiration_date = gmdate( 'Y-m-d\TH:i:s', strtotime( '3 hour' ) );
-		error_log( $expiration_date );
-		// $this->order->get_meta($key='_billing_ita_sdi') .
-		$bodyrichiesta = array(
+		$bodyrichiesta   = array(
 			'generaIuv'        => true,
 			'aggiornaSeEsiste' => true,
 			'versamento'       => array(
@@ -114,7 +113,10 @@ class Gateway_Controller {
 						$this->order->get_billing_address_1(),
 					'localita'       => $this->order->get_billing_city(),
 					'provincia'      => $this->order->get_billing_state(),
+					'cap'            => $this->order->get_billing_postcode(),
+					'telefono'       => $this->order->get_billing_phone(),
 					'email'          => $this->order->get_billing_email(),
+					'nazione'        => $this->order->get_billing_country(),
 				),
 				'importoTotale'      => $this->order->get_total(),
 				'dataScadenza'       => $expiration_date,
@@ -125,7 +127,7 @@ class Gateway_Controller {
 					'tributo'                  => array(
 						'ibanAccredito'   => $this->plugin->settings['iban'],
 						'tipoContabilita' => $this->plugin->settings['accounting_type'],
-						'codContabilita'  => $this->plugin->settings['accounting_code'],
+						'codContabilita'  => $this->plugin->settings['accounting_code'] . '/',
 					),
 				),
 				'idModelloPagamento' => $this->plugin->settings['id_payment_model'],
@@ -146,7 +148,7 @@ class Gateway_Controller {
 					error_log( '@@@ COD-OPERAZIONE' .  $esito);
 				} else {
 					// Payment creation failed: Error in the Cineca response.
-					$esito = $result ? $result->codOperazione : 'Error in the Cineca response';
+					$esito = $result ? $result->codOperazione . '-' . $result->descrizioneEsitoOperazione : 'Error in the Cineca response';
 				}
 			} else {
 				// Payment creation failed: Error raised by the gateway.
@@ -165,6 +167,47 @@ class Gateway_Controller {
 	}
 
 	/**
+	 * Execute the SOAP call to check the status of the payment on the gateway.
+	 *
+	 * @return array
+	 */
+	public function get_payment_status() {
+		$today         = gmdate( 'Y-m-d' );
+		$bodyrichiesta = array(
+			'codApplicazione'   => $this->plugin->settings['application_code'],
+			'codVersamentoEnte' => $this->order->get_order_number(),
+		);
+
+		$result_code = 'KO';
+		$esito       = '';
+		$iuv         = '';
+		try {
+			$result = $this->soap_client->gpChiediStatoVersamento( $bodyrichiesta );
+			if ( ! is_soap_fault( $result ) ) {
+				if ( $result && ( 'OK' === $result->codEsitoOperazione ) ) {
+					// Payment status retrieved.
+					$result_code = $result->codEsitoOperazione;
+					$esito       = $result->stato;
+				} else {
+					// Payment status not retrieved.
+					$esito = $result ? $result->codOperazione : 'Error in the Cineca response';
+				}
+			} else {
+				// Payment status retrieval failed: Error raised by the gateway.
+				$esito = "SOAP Fault: (faultcode: {$result->faultcode}, faultstring: {$result->faultstring})";
+			}
+		} catch ( Exception $e ) {
+			// Error retrieving the status of a payment: Error contacting the gateway.
+			$esito = $e->getMessage();
+		}
+
+		return array(
+			'code' => $result_code,
+			'msg'  => $esito,
+		);
+	}
+
+	/**
 	 * Return the Gateway URL where the customer will pay the order.
 	 *
 	 * @param string $iuv - The IUV of the payment.
@@ -174,12 +217,39 @@ class Gateway_Controller {
 	public function get_payment_url( $iuv, $hook ) {
 		$customer_code = $this->plugin->settings['application_code'];
 		$order_code    = $this->order->get_order_number();
-		$order_hook    = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?id=' . $order_code . '&iuv=' . $iuv;
+		$token         = $this->create_token( $order_code, $iuv);
+		// $order_hook    = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?id=' . $order_code . '&iuv=' . $iuv;
+		$order_hook    = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?token=' . $token;
 		$encoded_hook  = rawurlencode( $order_hook );
-		$ws_base_url   = $this->ws_data['ws_soap_base_url'];
+		// $ws_base_url   = $this->ws_data['ws_soap_base_url'];
 		$redirect_url  = $this->ws_data['frontend_base_url'] . PATH_FRONT_END_CINECA . '?cod_vers_ente=' . $order_code . '&cod_app=' . $customer_code . '&retUrl=' . $encoded_hook;
 		return $redirect_url;
 	}
+
+	/**
+	 * Creates the token to retrive order and Iuv.
+	 *
+	 * @param string $order_id - The id of the order.
+	 * @param string $iuv - The Iuv of the payment.
+	 * @return string - The token containing the session parameters.
+	 */
+	public static function create_token( $order_id, $iuv ) {
+		$str_token = $order_id . PAR_SPLITTER . $iuv;
+		return base64_encode( $str_token );
+	}
+
+	/**
+	 * Decode the token to get the parameters.
+	 *
+	 * @param string $token - The token with the parameters.
+	 * @return array - The array containing the parameters.
+	 */
+	public static function extract_token_parameters( $token ) {
+		$decoded = base64_decode( $token );
+		return explode( PAR_SPLITTER, $decoded );
+	}
+
+
 
 	/**
 	 * Execute the SOAP call to get the status of a payment position on the gateway.
