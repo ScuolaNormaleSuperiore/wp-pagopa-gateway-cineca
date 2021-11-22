@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PagoPa Gateway Cineca
  *
@@ -324,8 +323,8 @@ function wp_gateway_pagopa_init() {
 				);
 			}
 
-			// Payment position created successfully
-			// Change the status of the order
+			// Payment position created successfully.
+			// Change the status of the order.
 			$order->update_status( 'on-hold', __( 'Payment in progress', 'wp-pagopa-gateway-cineca' ) );
 			// Payment saved.
 			$log_manager->log( STATUS_PAYMENT_CREATED, $payment_position['iuv'] );
@@ -351,24 +350,57 @@ function wp_gateway_pagopa_init() {
 			$id_session = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
 			$outcome    = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
 			$par_array  = Gateway_Controller::extract_token_parameters( $token );
-			$order_id   = $par_array[0];
-			$iuv        = $par_array[1];
-			error_log( '@@@ ID SESSION: ' . $id_session );
-			error_log( '@@@ ORDER ID: ' . $order_id );
-			error_log( '@@@ IUV: ' . $iuv );
-
-			// @TODO: Try except sull'ordine.
-			$order       = new WC_Order( $order_id );
-			$log_manager = new Log_Manager( $order );
-
-			if ( ( 'OK' !== $outcome ) || ( '' === $iuv ) || ( '' === $order_id ) || ( '' === $id_session ) ) {
-				// An error occurred during the payment phase or the payment has been cancelled by the customer.
-				$error_msg = __( 'Payment cancelled by the customer', 'wp-pagopa-gateway-cineca' );
-				$log_manager->log( STATUS_PAYMENT_NOT_CREATED );
-				return $this->error_redirect( $error_msg );
+			// Retrieve the parameters from the token.
+			try {
+				$order_id = $par_array[0];
+				$iuv      = $par_array[1];
+				if ( ( ! $order_id ) || ( ! $iuv ) ) {
+					throw new Exception( 'Invalid token' );
+				}
+				error_log( '@@@ ID SESSION: ' . $id_session . '@@@ ORDER ID: ' . $order_id . '@@@ IUV: ' . $iuv );
+			} catch ( Exception $e ) {
+				// Error retrieving the parameters from the token.
+				$error_msg = __( 'The gateway passed an invalid token for the order', 'wp-pagopa-gateway-cineca' );
+				$error_msg = $error_msg . ' n. ' . $order_id;
+				$this->error_redirect( $error_msg );
+				return;
 			}
 
-			// @TODO: Verifica dello stato dell'ordine: Verifica che esista un ordine
+			// Try to retrieve the order.
+			try {
+				$order = new WC_Order( $order_id );
+			} catch ( Exception $e ) {
+				// Error retrieving the order.
+				$error_msg = __( 'Error retrieving the order', 'wp-pagopa-gateway-cineca' );
+				$error_msg = $error_msg . 'n. ' . $order_id;
+				$this->error_redirect( $error_msg );
+				return;
+			}
+
+			$log_manager = new Log_Manager( $order );
+
+			// Check the consinstence of the parameters: order and iuv.
+			$payment_status = $log_manager->get_current_status( $order_id, $iuv );
+			if ( STATUS_PAYMENT_CREATED !== $payment_status ) {
+				// Error checking the parameters passed by the gateway.
+				$error_msg = __( 'The status of the payment is not consistent', 'wp-pagopa-gateway-cineca' );
+				$error_msg = $error_msg . 'n. ' . $order_id;
+				$this->error_redirect( $error_msg );
+				return;
+			}
+
+			// Check the outcome sent by the gateway.
+			if ( ( 'OK' !== $outcome ) || ( '' === $iuv ) || ( '' === $order_id ) || ( '' === $id_session ) ) {
+				// An error occurred during the payment phase or the payment has been cancelled by the customer.
+				$error_msg = __( 'You have canceled the payment. To confirm the order, make the payment and contact the staff.', 'wp-pagopa-gateway-cineca' );
+				$log_manager->log( STATUS_PAYMENT_NOT_CREATED );
+				$this->error_redirect( $error_msg );
+				return;
+			}
+
+			// We should check the status of the order ?
+			// if ($order->status == '') .
+
 			// con quello iuv nello stato previsto.
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
@@ -378,12 +410,14 @@ function wp_gateway_pagopa_init() {
 			$payment_status = $this->gateway_controller->get_payment_status();
 			error_log( print_r( $payment_status, true ) );
 
-			if ( 'OK' !== $payment_status['code'] || 'ESEGUITO' !== $payment_status['msg']) {
+			if ( 'OK' !== $payment_status['code'] || 'ESEGUITO' !== $payment_status['msg'] ) {
 				// Payment not confirmed.
-				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is: ' . $order_id, 'wp-pagopa-gateway-cineca' );
+				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
+				$error_msg  = $error_msg . ' ' . $order_id;
 				$error_desc = $error_msg . ' - ' . $payment_status['msg'];
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-				return $this->error_redirect( $error_msg );
+				$this->error_redirect( $error_msg );
+				return;
 			}
 			// Payment confirmed.
 			$order->payment_complete();

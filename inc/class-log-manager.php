@@ -39,7 +39,7 @@ class Log_Manager {
 	}
 
 	/**
-	 * Undocumented function
+	 * Log the status of the payment.
 	 *
 	 * @param string $status - The status of the payment.
 	 * @param string $description -  A decription of the status or of the error occurred.
@@ -100,6 +100,23 @@ class Log_Manager {
 	}
 
 	/**
+	 * Undocumented function
+	 *
+	 * @param  string $order_id - The number of the order.
+	 * @param  string $iuv - The iuv of the payment.
+	 * @return string - The status of the payment.
+	 */
+	public function get_current_status( $order_id, $iuv ) {
+		global $wpdb;
+		$table_name = $wpdb->prefix . LOG_TABLE_NAME;
+
+		$sql    = $wpdb->prepare( "SELECT status FROM {$table_name}  WHERE order_id=%s AND iuv=%s ORDER BY id DESC LIMIT 1", $order_id, $iuv);
+		$status = $wpdb->get_var( $sql );
+
+		return $status ? $status : '';
+	}
+
+	/**
 	 * Drop the log table
 	 *
 	 * @return void
@@ -113,4 +130,5 @@ class Log_Manager {
 		// Delete the version number of the table.
 		delete_option( LOG_TABLE_VERSION_OPTION );
 	}
+
 }

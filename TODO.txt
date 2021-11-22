@@ -1,19 +1,14 @@
 
 TODO LIST:
 
-01) *** Controllare lo stato del pagamento con la chiamata soap gpChiediStatoVersamento !!!!!
 02) *** Gestire eccezioni in questi casi:
 		- creazione soap client
 		- recupero di un ordine
-		- 
 03) Validazione dei parametri di configurazione del plugin.
 04) Controllo della presenza di WooCommerce su Wordpress.
 05) Aggiungere directory con script per testare chiamate SOAP.
 06) Verificare la licenza di rilascio del software e modificare i file.
-07) *** Aggiungere meccanismo di log delle chiamate soap in tabella.
-08) Chiedere se è possibile rimuovere il bottone per stampare la ricevuta.
-09) Valutare la possibilità di passare token codificato piuttosto che id e iuv.
-10) Verifica prerequisiti: Ci sono campi personalizzati nell'ecommerce?
+10) Verifica prerequisiti: Ci sono campi personalizzati nell'e-commerce?
 11) DOCUMENTAZIONE:
 		- Istruzioni per convertire certificato da pk12 a pem.
 		- Aggiornare README con documentazione per installare e configurare plugin.
@@ -25,14 +20,9 @@ TODO LIST:
 		- Spiegare configurazione ambiente di sviluppo.
 12) *** Rifattorizzazioni:
 		- Tirare fuori configurazione da init_form_fields
-		- 
 13) Verificare utilizzo e funzionamento dei certificati.
 14) *** BUG:
-		- Il carrello si svuota se il pagamento non va a buon fine. 
 		- Togliere error_log nel codice
-		- Gestione redirect di errore in caso di pagamento errato:
-			- $error = new WP_Error( 'not_found', 'Page Not Found', 'Page Data' )
-			- wp_redirect( add_query_arg( 'cancelled', 'true', wc_get_checkout_url() ) );exit;
 15) Verifica gestione Nonces e parametri di ingresso in webhook_payment_complete.
 16) *** Differenziare azienda da utente.
 17) *** GRAFICA / USABILITA:

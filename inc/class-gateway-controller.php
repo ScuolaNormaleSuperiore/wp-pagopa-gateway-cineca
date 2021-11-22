@@ -217,7 +217,7 @@ class Gateway_Controller {
 	public function get_payment_url( $iuv, $hook ) {
 		$customer_code = $this->plugin->settings['application_code'];
 		$order_code    = $this->order->get_order_number();
-		$token         = $this->create_token( $order_code, $iuv);
+		$token         = $this->create_token( $order_code, $iuv );
 		$order_hook    = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?token=' . $token;
 		$encoded_hook  = rawurlencode( $order_hook );
 		$redirect_url  = $this->ws_data['frontend_base_url'] . PATH_FRONT_END_CINECA . '?cod_vers_ente=' . $order_code . '&cod_app=' . $customer_code . '&retUrl=' . $encoded_hook;
