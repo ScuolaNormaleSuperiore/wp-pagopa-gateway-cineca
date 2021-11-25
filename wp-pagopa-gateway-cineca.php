@@ -99,7 +99,7 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function __construct() {
 			$this->id                 = 'pagopa_gateway_cineca';
-			$this->icon               = '';
+			$this->icon               = plugins_url( 'assets/img/LogoPagoPaSmall2.png', __FILE__ );
 			$this->has_fields         = true;
 			$this->method_title       = 'PagoPA Gateway';
 			$this->method_description = 'Pay using the Cineca PagoPa Gateway';
