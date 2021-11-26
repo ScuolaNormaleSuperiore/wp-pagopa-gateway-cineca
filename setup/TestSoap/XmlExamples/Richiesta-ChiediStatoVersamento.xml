@@ -1,0 +1,9 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gpap="http://www.govpay.it/servizi/gpApp/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <gpap:gpChiediStatoVersamento>
+         <codApplicazione>COD-ECOMM</codApplicazione>
+         <codVersamentoEnte>73</codVersamentoEnte>
+      </gpap:gpChiediStatoVersamento>
+   </soapenv:Body>
+</soapenv:Envelope>

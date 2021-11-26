@@ -1,0 +1,11 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns2:gpChiediStatoVersamentoResponse xmlns:ns2="http://www.govpay.it/servizi/gpApp/" xmlns:ns3="http://www.govpay.it/servizi/gpRnd/">
+         <codOperazione>ae2eb255-6b09-4333-8a55-15r1dc170a95</codOperazione>
+         <codEsitoOperazione>OK</codEsitoOperazione>
+         <codApplicazione>COD-ECOMM</codApplicazione>
+         <codVersamentoEnte>73</codVersamentoEnte>
+         <stato>NON_ESEGUITO</stato>
+      </ns2:gpChiediStatoVersamentoResponse>
+   </soap:Body>
+</soap:Envelope>

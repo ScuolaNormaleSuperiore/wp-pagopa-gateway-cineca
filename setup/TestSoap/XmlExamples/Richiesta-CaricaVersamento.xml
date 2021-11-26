@@ -1,0 +1,36 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gpap="http://www.govpay.it/servizi/gpApp/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <gpap:gpCaricaVersamento>
+         <generaIuv>true</generaIuv>
+         <aggiornaSeEsiste>true</aggiornaSeEsiste>
+         <versamento>
+            <codApplicazione>COD-ECOMM</codApplicazione>
+            <codVersamentoEnte>73</codVersamentoEnte>
+            <codDominio>610059770587</codDominio>
+             <debitore>
+               <codUnivoco>MRTANT82D16L418W</codUnivoco>
+               <ragioneSociale>Mariotti Spa</ragioneSociale>
+               <indirizzo>Via Garibaldi</indirizzo>
+               <localita>Pisa</localita>
+               <provincia>PI</provincia>
+               <nazione>IT</nazione>
+               <email>antonio.mariotti@xxx.xx</email>
+            </debitore>
+            <importoTotale>11</importoTotale>
+            <dataScadenza>2021-11-26T23:59:59</dataScadenza>
+            <causale>Acquisto libro da e-commerce</causale>
+            <singoloVersamento>
+               <codSingoloVersamentoEnte>73</codSingoloVersamentoEnte>
+               <importo>11</importo>
+               <tributo>
+                  <ibanAccredito>IT11A1111111111000000111111</ibanAccredito>
+                  <tipoContabilita>ALTRO</tipoContabilita>
+                  <codContabilita>0601120SP</codContabilita>
+               </tributo>
+            </singoloVersamento>
+            <idModelloPagamento>184</idModelloPagamento>
+         </versamento>
+      </gpap:gpCaricaVersamento>
+   </soapenv:Body>
+</soapenv:Envelope>

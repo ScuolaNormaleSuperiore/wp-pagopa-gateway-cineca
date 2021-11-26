@@ -1,0 +1,16 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns2:gpCaricaVersamentoResponse xmlns:ns2="http://www.govpay.it/servizi/gpApp/" xmlns:ns3="http://www.govpay.it/servizi/gpRnd/">
+         <codOperazione>8aa0144d-6619-41a1-bdnh-9753baa76b1d</codOperazione>
+         <codEsitoOperazione>OK</codEsitoOperazione>
+         <iuvGenerato>
+            <codApplicazione>COD-ECOMM</codApplicazione>
+            <codVersamentoEnte>72</codVersamentoEnte>
+            <codDominio>610059770587</codDominio>
+            <iuv>980000000001234</iuv>
+            <qrCode>ffffffBBfDAwMnwwMDE2MjAwMDAwMDAwMDcxAAAAAAwMDUwNTA1MDd8MTEwMA==</qrCode>
+            <barCode>ffffffA4ODg4ODk0MjE1NzgwMjAwMDE2MjAwMDAwMDAAAAAAADAzOTAyMTEwMA==</barCode>
+         </iuvGenerato>
+      </ns2:gpCaricaVersamentoResponse>
+   </soap:Body>
+</soap:Envelope>
