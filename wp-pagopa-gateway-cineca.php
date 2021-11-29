@@ -154,7 +154,7 @@ function wp_gateway_pagopa_init() {
 				'title'                  => array(
 					'title'       => __( 'Title', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Title of PagoPa Gateway', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'The title of the plugin', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'PagoPA',
 					'desc_tip'    => true,
 				),
@@ -162,8 +162,8 @@ function wp_gateway_pagopa_init() {
 				'description'            => array(
 					'title'       => __( 'Description', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Description of PagoPa Gateway', 'wp-pagopa-gateway-cineca' ),
-					'default'     => __( 'Pay using the PagoPa gateway', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'The description of the plugin', 'wp-pagopa-gateway-cineca' ),
+					'default'     => __( 'Pay using the Cineca Gateway for PagoPa', 'wp-pagopa-gateway-cineca' ),
 				),
 				// Place the payment gateway in test mode using test API credentials.
 				'testmode'               => array(
@@ -177,7 +177,7 @@ function wp_gateway_pagopa_init() {
 				'application_code'       => array(
 					'title'       => __( 'Application code', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'The code of the application as defined in the Cineca backoffice', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'The code of the application as defined in the Cineca back office', 'wp-pagopa-gateway-cineca' ),
 				),
 				'domain_code'            => array(
 					'title'       => __( 'Domain code', 'wp-pagopa-gateway-cineca' ),
@@ -192,7 +192,7 @@ function wp_gateway_pagopa_init() {
 				'accounting_type'        => array(
 					'title'       => __( 'Accounting type', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Acccounting type', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Accounting type', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'ALTRO',
 				),
 				'accounting_code'        => array(
@@ -204,7 +204,7 @@ function wp_gateway_pagopa_init() {
 				'id_payment_model'       => array(
 					'title'       => __( 'Payment model ID', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'ID of payment model related to the e-commerce defined on the Cineca backoffice', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'ID of payment model related to the e-commerce defined on the Cineca back office', 'wp-pagopa-gateway-cineca' ),
 				),
 				'cert_abs_path'          => array(
 					'title'       => __( 'Certificate path', 'wp-pagopa-gateway-cineca' ),
@@ -223,9 +223,9 @@ function wp_gateway_pagopa_init() {
 					'type'  => 'title',
 				),
 				'base_fronted_url_prod'  => array(
-					'title'       => __( 'Front-end base url', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'Front end base url', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Base url of the Cineca Front-end', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Base url of the Cineca front end', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'https://xxx.pagoatenei.cineca.it',
 				),
 				'base_url_prod'          => array(
@@ -250,9 +250,9 @@ function wp_gateway_pagopa_init() {
 					'type'  => 'title',
 				),
 				'base_fronted_url_test'  => array(
-					'title'       => __( 'Front-end base url', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'Front end base url', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Base url of the Cineca Front-end', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Base url of the Cineca front end', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'https://xxx.pagoatenei.cineca.it',
 				),
 				'base_url_test'          => array(
