@@ -42,12 +42,13 @@ class Log_Manager {
 	 * Log the status of the payment.
 	 *
 	 * @param string $status - The status of the payment.
+	 * @param string $iuv - The iuv of the payment.
 	 * @param string $description -  A decription of the status or of the error occurred.
 	 * @return void
 	 */
 	public function log( $status, $iuv = '', $description = '' ) {
 		global $wpdb;
-		$table_name = $wpdb->prefix . LOG_TABLE_NAME;
+		$table_name     = $wpdb->prefix . LOG_TABLE_NAME;
 		$logged_user_id = get_current_user_id();
 		$order_id       = $this->order->get_order_number();
 		$wpdb->insert(
@@ -110,7 +111,7 @@ class Log_Manager {
 		global $wpdb;
 		$table_name = $wpdb->prefix . LOG_TABLE_NAME;
 
-		$sql    = $wpdb->prepare( "SELECT status FROM {$table_name}  WHERE order_id=%s AND iuv=%s ORDER BY id DESC LIMIT 1", $order_id, $iuv);
+		$sql    = $wpdb->prepare( "SELECT status FROM {$table_name}  WHERE order_id=%s AND iuv=%s ORDER BY id DESC LIMIT 1", $order_id, $iuv );
 		$status = $wpdb->get_var( $sql );
 
 		return $status ? $status : '';

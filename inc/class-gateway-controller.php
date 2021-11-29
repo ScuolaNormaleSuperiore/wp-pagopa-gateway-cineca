@@ -106,17 +106,17 @@ class Gateway_Controller {
 				'codVersamentoEnte'  => $this->order->get_order_number(),
 				'codDominio'         => $this->plugin->settings['domain_code'],
 				'debitore'           => array(
-					'codUnivoco'     => $this->order->get_meta( '_billing_ita_cf' ),
-					'ragioneSociale' => $this->order->get_billing_company(),
+					'codUnivoco'     => $this->formatString( $this->order->get_meta( '_billing_ita_cf' ) ),
+					'ragioneSociale' => $this->formatString( $this->order->get_billing_company() ),
 					'indirizzo'      => $this->order->get_billing_address_2() ?
 						$this->order->get_billing_address_1() . ' - ' . $this->order->get_billing_address_2() :
 						$this->order->get_billing_address_1(),
-					'localita'       => $this->order->get_billing_city(),
-					'provincia'      => $this->order->get_billing_state(),
-					'cap'            => $this->order->get_billing_postcode(),
-					'telefono'       => $this->order->get_billing_phone(),
-					'email'          => $this->order->get_billing_email(),
-					'nazione'        => $this->order->get_billing_country(),
+					'localita'       => $this->formatString( $this->order->get_billing_city() ),
+					'provincia'      => $this->formatString( $this->order->get_billing_state() ),
+					'cap'            => $this->formatString( $this->order->get_billing_postcode() ),
+					'telefono'       => $this->formatString( $this->order->get_billing_phone() ),
+					'email'          => $this->formatString( $this->order->get_billing_email() ),
+					'nazione'        => $this->formatString( $this->order->get_billing_country() ),
 				),
 				'importoTotale'      => $this->order->get_total(),
 				'dataScadenza'       => $expiration_date,
@@ -145,7 +145,7 @@ class Gateway_Controller {
 					$result_code = $result->codEsitoOperazione;
 					$esito       = $result->codOperazione;
 					$iuv         = $result->iuvGenerato->iuv;
-					// error_log( '@@@ COD-OPERAZIONE' .  $esito);
+					// error_log( '@@@ COD-OPERAZIONE' .  $esito); .
 				} else {
 					// Payment creation failed: Error in the Cineca response.
 					$esito = $result ? $result->codOperazione . '-' . $result->descrizioneEsitoOperazione : 'Error in the Cineca response';
@@ -164,6 +164,20 @@ class Gateway_Controller {
 			'iuv'  => $iuv,
 			'msg'  => $esito,
 		);
+	}
+
+	/**
+	 * Checks if the string is valid, if not returns an empty.
+	 *
+	 * @param string $text - The text to be formatted.
+	 * @return string
+	 */
+	private function formatString ( $text ) {
+		if ( $text ) {
+			return $text;
+		} else {
+			return '';
+		}
 	}
 
 	/**
