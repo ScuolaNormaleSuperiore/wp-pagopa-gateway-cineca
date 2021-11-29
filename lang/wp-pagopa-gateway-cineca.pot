@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PagoPa Gateway Cineca\n"
+"Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -21,8 +21,8 @@ msgid "Absolute path of the .pem certificate"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:114
-msgid "Pay using the Cineca PagoPa Gateway"
-msgstr "Paga usando il gateway PagoPa di Cineca"
+msgid "Pay using the Cineca PagoPA Gateway"
+msgstr "Paga usando il gateway PagoPA di Cineca"
 
 #: wp-pagopa-gateway-cineca.php:199
 msgid "Accounting code"
@@ -30,7 +30,7 @@ msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:201
 msgid ""
-"Accounting code as defined in the PagoPa taxonomy (https://www.pagopa.gov."
+"Accounting code as defined in the PagoPA taxonomy (https://www.pagopa.gov."
 "it/it/pubbliche-amministrazioni/documentazione/#n3)"
 msgstr ""
 
@@ -75,7 +75,7 @@ msgid "Description"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:165
-msgid "Description of PagoPa Gateway"
+msgid "Description of PagoPA Gateway"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:183
@@ -125,7 +125,7 @@ msgid ""
 msgstr ""
 
 #. Name of the plugin
-msgid "PagoPa Gateway Cineca"
+msgid "PagoPA Gateway Cineca"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:218
@@ -137,7 +137,7 @@ msgid "Password of the account enabled to the use of the API"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:157
-msgid "Pay with the Cineca PagoPa Gateway"
+msgid "Pay with the Cineca PagoPA Gateway"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:315
@@ -171,7 +171,7 @@ msgid "Place the payment gateway in test mode using test API credentials"
 msgstr ""
 
 #. Description of the plugin
-msgid "Plugin to integrate WooCommerce with Cineca PagoPa payment portal"
+msgid "Plugin to integrate WooCommerce with Cineca PagoPA payment portal"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:222

@@ -1,15 +1,15 @@
 <?php
 /**
- * PagoPa Gateway Cineca
+ * PagoPA Gateway Cineca
  *
- * @package     PagoPa Gateway Cineca
+ * @package     PagoP Gateway Cineca
  * @author      ICT Scuola Normale Superiore
  * @copyright   © 2021-2022, SNS
  * @license     GNU General Public License v3.0
  *
- * Plugin Name: PagoPa Gateway Cineca
+ * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
- * Description: Plugin to integrate WooCommerce with Cineca PagoPa payment portal
+ * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
  * Version: 0.0.1
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
@@ -64,7 +64,7 @@ function uninstall_pagopa_plugin() {
  */
 add_filter( 'woocommerce_payment_gateways', 'wp_gateway_pagopa_add' );
 /**
- * Add PagoPa gateway.
+ * Add PagoPA gateway.
  *
  * @param  array $gateways .
  * @return array $gateways .
@@ -76,7 +76,7 @@ function wp_gateway_pagopa_add( $gateways ) {
 
 add_action( 'plugins_loaded', 'wp_gateway_pagopa_init' );
 /**
- * Init PagoPa class.
+ * Init PagoPA class.
  */
 function wp_gateway_pagopa_init() {
 
@@ -111,7 +111,7 @@ function wp_gateway_pagopa_init() {
 			);
 
 			$this->load_plugin_textdomain();
-			$this->method_description = __( 'Pay with the Cineca PagoPa Gateway', 'wp-pagopa-gateway-cineca' );
+			$this->method_description = __( 'Pay with the Cineca PagoPA Gateway', 'wp-pagopa-gateway-cineca' );
 
 			// Method with all the options fields.
 			$this->init_form_fields();
@@ -164,7 +164,7 @@ function wp_gateway_pagopa_init() {
 					'title'       => __( 'Description', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'The description of the plugin', 'wp-pagopa-gateway-cineca' ),
-					'default'     => __( 'Pay using the Cineca Gateway for PagoPa', 'wp-pagopa-gateway-cineca' ),
+					'default'     => __( 'Pay using the Cineca Gateway for PagoPA', 'wp-pagopa-gateway-cineca' ),
 				),
 				// Place the payment gateway in test mode using test API credentials.
 				'testmode'               => array(
@@ -199,7 +199,7 @@ function wp_gateway_pagopa_init() {
 				'accounting_code'        => array(
 					'title'       => __( 'Accounting code', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Accounting code as defined in the PagoPa taxonomy (https://www.pagopa.gov.it/it/pubbliche-amministrazioni/documentazione/#n3)', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Accounting code as defined in the PagoPA taxonomy (https://www.pagopa.gov.it/it/pubbliche-amministrazioni/documentazione/#n3)', 'wp-pagopa-gateway-cineca' ),
 					'default'     => '0601120SP',
 				),
 				'id_payment_model'       => array(
