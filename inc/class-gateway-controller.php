@@ -145,7 +145,7 @@ class Gateway_Controller {
 					$result_code = $result->codEsitoOperazione;
 					$esito       = $result->codOperazione;
 					$iuv         = $result->iuvGenerato->iuv;
-					error_log( '@@@ COD-OPERAZIONE' .  $esito);
+					// error_log( '@@@ COD-OPERAZIONE' .  $esito);
 				} else {
 					// Payment creation failed: Error in the Cineca response.
 					$esito = $result ? $result->codOperazione . '-' . $result->descrizioneEsitoOperazione : 'Error in the Cineca response';

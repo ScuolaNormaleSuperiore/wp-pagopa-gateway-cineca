@@ -103,7 +103,7 @@ function wp_gateway_pagopa_init() {
 			$this->has_fields         = true;
 			$this->method_title       = 'PagoPA Gateway';
 			$this->method_description = 'Pay using the Cineca PagoPa Gateway';
-			error_log( '@@@ CONSTRUCT PLUGIN @@@' );
+			// error_log( '@@@ CONSTRUCT PLUGIN @@@' );
 
 			// The gateway supports simple payments.
 			$this->supports = array(
@@ -282,7 +282,7 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function validate_fields() {
 			/* Checkout fields should be validate earlier. That is in the checkout phase. */
-			error_log( '@@@ validate fields @@@' );
+			// error_log( '@@@ validate fields @@@' );
 			return true;
 		}
 
@@ -298,7 +298,7 @@ function wp_gateway_pagopa_init() {
 			// Retrieve the order details.
 			$order       = new WC_Order( $order_id );
 			$log_manager = new Log_Manager( $order );
-			error_log( '@@@ORDER ID: ' . $order_id );
+			// error_log( '@@@ORDER ID: ' . $order_id );
 
 			// During the transaction the order is "on-hold".
 			$log_manager->log( STATUS_PAYMENT_SUBMITTED );
@@ -307,7 +307,7 @@ function wp_gateway_pagopa_init() {
 			$this->gateway_controller = new Gateway_Controller( $this );
 			$this->gateway_controller->init( $order );
 			$payment_position = $this->gateway_controller->load_payment_position();
-			error_log( print_r( $payment_position, true ) );
+			// error_log( print_r( $payment_position, true ) );
 
 			// Check if the payment postion was created successfully.
 			if ( 'OK' !== $payment_position['code'] ) {
@@ -344,7 +344,7 @@ function wp_gateway_pagopa_init() {
 		 * @return void - Redirect to the thankyou page.
 		 */
 		public function webhook_payment_complete( $args ) {
-			error_log( '************ pagopa_payment_complete ************' );
+			// error_log( '************ pagopa_payment_complete ************' );
 
 			$token      = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
 			$id_session = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
@@ -357,7 +357,7 @@ function wp_gateway_pagopa_init() {
 				if ( ( ! $order_id ) || ( ! $iuv ) ) {
 					throw new Exception( 'Invalid token' );
 				}
-				error_log( '@@@ ID SESSION: ' . $id_session . '@@@ ORDER ID: ' . $order_id . '@@@ IUV: ' . $iuv );
+				// error_log( '@@@ ID SESSION: ' . $id_session . '@@@ ORDER ID: ' . $order_id . '@@@ IUV: ' . $iuv );
 			} catch ( Exception $e ) {
 				// Error retrieving the parameters from the token.
 				$error_msg = __( 'The gateway passed an invalid token for the order', 'wp-pagopa-gateway-cineca' );
@@ -408,7 +408,7 @@ function wp_gateway_pagopa_init() {
 			$this->gateway_controller = new Gateway_Controller( $this );
 			$this->gateway_controller->init( $order );
 			$payment_status = $this->gateway_controller->get_payment_status();
-			error_log( print_r( $payment_status, true ) );
+			// error_log( print_r( $payment_status, true ) );
 
 			if ( 'OK' !== $payment_status['code'] || 'ESEGUITO' !== $payment_status['msg'] ) {
 				// Payment not confirmed.

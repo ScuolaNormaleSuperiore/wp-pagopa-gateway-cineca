@@ -1,12 +1,9 @@
 
 TODO LIST:
 
-02) *** Gestire eccezioni in questi casi:
-		- creazione soap client
-		- recupero di un ordine
 03) Validazione dei parametri di configurazione del plugin.
 04) Controllo della presenza di WooCommerce su Wordpress.
-05) Aggiungere directory con script per testare chiamate SOAP.
+
 06) Verificare la licenza di rilascio del software e modificare i file.
 10) Verifica prerequisiti: Ci sono campi personalizzati nell'e-commerce?
 11) DOCUMENTAZIONE:
@@ -21,8 +18,6 @@ TODO LIST:
 12) *** Rifattorizzazioni:
 		- Tirare fuori configurazione da init_form_fields
 13) Verificare utilizzo e funzionamento dei certificati.
-14) *** BUG:
-		- Togliere error_log nel codice
 15) Verifica gestione Nonces e parametri di ingresso in webhook_payment_complete.
 16) *** Differenziare azienda da utente.
 17) *** GRAFICA / USABILITA:
