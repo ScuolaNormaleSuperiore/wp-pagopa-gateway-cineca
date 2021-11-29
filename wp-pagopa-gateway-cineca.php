@@ -102,7 +102,7 @@ function wp_gateway_pagopa_init() {
 			$this->icon               = plugins_url( 'assets/img/LogoPagoPaSmall2.png', __FILE__ );
 			$this->has_fields         = true;
 			$this->method_title       = 'PagoPA Gateway';
-			$this->method_description = 'Pay using the Cineca PagoPa Gateway';
+
 			// error_log( '@@@ CONSTRUCT PLUGIN @@@' ); .
 
 			// The gateway supports simple payments.
@@ -111,6 +111,7 @@ function wp_gateway_pagopa_init() {
 			);
 
 			$this->load_plugin_textdomain();
+			$this->method_description = __( 'Pay with the Cineca PagoPa Gateway', 'wp-pagopa-gateway-cineca' );
 
 			// Method with all the options fields.
 			$this->init_form_fields();

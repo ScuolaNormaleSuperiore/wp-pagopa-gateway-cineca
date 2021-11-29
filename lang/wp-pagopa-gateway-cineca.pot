@@ -20,6 +20,10 @@ msgstr ""
 msgid "Absolute path of the .pem certificate"
 msgstr ""
 
+#: wp-pagopa-gateway-cineca.php:114
+msgid "Pay using the Cineca PagoPa Gateway"
+msgstr "Paga usando il gateway PagoPa di Cineca"
+
 #: wp-pagopa-gateway-cineca.php:199
 msgid "Accounting code"
 msgstr ""
@@ -130,10 +134,6 @@ msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:245 wp-pagopa-gateway-cineca.php:272
 msgid "Password of the account enabled to the use of the API"
-msgstr ""
-
-#: wp-pagopa-gateway-cineca.php:166
-msgid "Pay using the PagoPa gateway"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:157

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPa Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2021-11-29 08:47+0000\n"
+"PO-Revision-Date: 2021-11-29 10:14+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -97,8 +97,10 @@ msgid "Error retrieving the order"
 msgstr "Si è verificato un errore recuperando l'ordine"
 
 #: wp-pagopa-gateway-cineca.php:226 wp-pagopa-gateway-cineca.php:253
-msgid "front end base url"
-msgstr "Indirizzo base del font-end Cineca"
+#, fuzzy
+#| msgid "front end base url"
+msgid "Front end base url"
+msgstr "Indirizzo base del front end Cineca"
 
 #. Author URI of the plugin
 msgid "https://ict.sns.it"
@@ -118,8 +120,8 @@ msgstr "ICT Scuola Normale Superiore"
 
 #: wp-pagopa-gateway-cineca.php:207
 msgid ""
-"ID of payment model related to the e-commerce defined on the Cineca "
-"back office"
+"ID of payment model related to the e-commerce defined on the Cineca back "
+"office"
 msgstr ""
 "ID del modello di pagamento relativo all'e-commerce definito nel back office "
 "di Cineca"
@@ -136,13 +138,13 @@ msgstr "Password del certificato"
 msgid "Password of the account enabled to the use of the API"
 msgstr "Password dell'account abilitato all'uso delle API"
 
-#: wp-pagopa-gateway-cineca.php:166
-msgid "Pay using the PagoPa gateway"
-msgstr "Paga usando il gateway PagoPa"
+#: wp-pagopa-gateway-cineca.php:114
+msgid "Pay using the Cineca PagoPa Gateway"
+msgstr "Paga usando il gateway PagoPa di Cineca"
 
 #: wp-pagopa-gateway-cineca.php:157
 msgid "Pay with the Cineca PagoPa Gateway"
-msgstr "Paga con il gateway Cineca di PagaoPa"
+msgstr "Paga con il gateway Cineca di PagoPa"
 
 #: wp-pagopa-gateway-cineca.php:315
 msgid "Payment error reported by the gateway"
@@ -221,3 +223,11 @@ msgid ""
 msgstr ""
 "Hai annullato il pagamento dell'ordine online. Per confermarlo off-line, "
 "effettuare il pagamento e contattare lo staff."
+
+#: wp-pagopa-gateway-cineca.php
+msgid "The title of the plugin"
+msgstr "Il titolo del plugin"
+
+#: wp-pagopa-gateway-cineca.php
+msgid "The description of the plugin"
+msgstr "La descrizione del plugin"

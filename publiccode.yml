@@ -4,12 +4,13 @@
 
 publiccodeYmlVersion: '0.2'
 applicationSuite: WooCommerce
+softwareVersion: 0.0.1
+developmentStatus: beta
 categories:
   - payment-gateway
+logo: docs/Logo.png
 description:
   it:
-    features:
-      - Gateway di pagamento PagoPA
     genericName: Payment gateway
     longDescription: |2
        Il progetto prevede la realizzazione di un plugin WordPress (gateway) che consenta di integrare il [portale dei pagamenti PagoPA Cineca](https://sns.pagoatenei.cineca.it/) con il sistema di e-commerce di ateneo ([edizioni.sns.it](https://edizioni.sns.it/)) basato su WooCommerce. 
@@ -21,13 +22,19 @@ description:
     shortDescription: |-
       Plugin WooCommerce per l'integrazione con portale di pagamenti PagoPA
       Cineca
-developmentStatus: concept
+    screenshots:
+      - docs/screenshots/FrontEnd.png
+      - docs/screenshots/ConfigurePlugin_1.png
+    features:
+      - Pagamento tramite gateway di pagamento PagoPA
+      - Configurazione parametri di connessione al gateway
+      - Differenziazione modalità di test e di produzione
+      - Gestione del worflow di pagamento
 it:
   conforme:
     gdpr: false
     lineeGuidaDesign: false
     misureMinimeSicurezza: false
-    modelloInteroperabilita: false
   countryExtensionVersion: '0.2'
   piattaforme:
     anpr: false
@@ -43,6 +50,12 @@ localisation:
     - it
     - en
   localisationReady: true
+dependsOn:
+  open:
+    - name: WordPress
+      optional: false
+    - name: WooCommerce
+      optional: false
 maintenance:
   contacts:
     - email: servizi.informativi@sns.it
