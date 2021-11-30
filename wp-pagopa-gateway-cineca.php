@@ -33,6 +33,7 @@ require_once 'inc/class-log-manager.php';
 
 // Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
+define( 'DEBUG_MODE_ENABLED', 1 );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -80,6 +81,17 @@ add_action( 'plugins_loaded', 'wp_gateway_pagopa_init' );
  */
 function wp_gateway_pagopa_init() {
 
+	// Check if WooCommerce is installed.
+	if ( is_admin() && ! class_exists( 'WC_Payment_Gateways' ) ) {
+		echo '<div id="message" class="error"><p>ERROR: To use the plugin wp-pagopa-gateway-cineca WooCommerce must be installed!</p></div>';
+		return;
+	}
+	// Check if the soap library is installed and enabled.
+	if ( is_admin() && ! extension_loaded( 'soap' ) ) {
+		echo '<div id="message" class="error"><p>ERROR: To use this plugin wp-pagopa-gateway-cineca the PHP Soap library must be installed and enabled!</p></div>';
+		return;
+	}
+
 	/**
 	 * Add the gateway(s) to WooCommerce.
 	 */
@@ -98,12 +110,10 @@ function wp_gateway_pagopa_init() {
 		 * Define the fields of the plugin.
 		 */
 		public function __construct() {
-			$this->id                 = 'pagopa_gateway_cineca';
-			$this->icon               = plugins_url( 'assets/img/LogoPagoPaSmall2.png', __FILE__ );
-			$this->has_fields         = true;
-			$this->method_title       = 'PagoPA Gateway';
-
-			// error_log( '@@@ CONSTRUCT PLUGIN @@@' ); .
+			$this->id           = 'pagopa_gateway_cineca';
+			$this->icon         = plugins_url( 'assets/img/LogoPagoPaSmall2.png', __FILE__ );
+			$this->has_fields   = true;
+			$this->method_title = 'PagoPA Gateway';
 
 			// The gateway supports simple payments.
 			$this->supports = array(
@@ -282,7 +292,7 @@ function wp_gateway_pagopa_init() {
 		 * @return boolean
 		 */
 		public function validate_fields() {
-			/* Checkout fields should be validate earlier. That is in the checkout phase. */
+			// Checkout fields should be validate earlier. That is in the checkout phase.
 			// error_log( '@@@ validate fields @@@' );.
 			return true;
 		}
@@ -299,7 +309,9 @@ function wp_gateway_pagopa_init() {
 			// Retrieve the order details.
 			$order       = new WC_Order( $order_id );
 			$log_manager = new Log_Manager( $order );
-			// error_log( '@@@ORDER ID: ' . $order_id );
+			if ( DEBUG_MODE_ENABLED ) {
+				error_log( '@@@ Process the order ewith the id: ' . $order_id );
+			}
 
 			// During the transaction the order is "on-hold".
 			$log_manager->log( STATUS_PAYMENT_SUBMITTED );
@@ -308,7 +320,9 @@ function wp_gateway_pagopa_init() {
 			$this->gateway_controller = new Gateway_Controller( $this );
 			$this->gateway_controller->init( $order );
 			$payment_position = $this->gateway_controller->load_payment_position();
-			// error_log( print_r( $payment_position, true ) );.
+			if ( DEBUG_MODE_ENABLED ) {
+				error_log( print_r( $payment_position, true ) );
+			}
 
 			// Check if the payment postion was created successfully.
 			if ( 'OK' !== $payment_position['code'] ) {

@@ -98,7 +98,24 @@ class Gateway_Controller {
 	 */
 	public function load_payment_position() {
 		$expiration_date = gmdate( 'Y-m-d\TH:i:s', strtotime( '3 hour' ) );
-		$bodyrichiesta   = array(
+
+		// If the VAT field is specified then the customer is a company not a person.
+		$vat = $this->order->get_meta( '_billing_vat' );
+		if ( $vat ) {
+			// The customer is a company.
+			$persona_fisica  = false;
+			$codice_univoco  = $this->formatString( $vat );
+			$ragione_sociale = $this->formatString( $this->order->get_billing_company() );
+			// $sdi = $this->order->get_meta( '_billing_ita_sdi' ).
+		} else {
+			// The customer is a person.
+			$persona_fisica  = true;
+			$codice_univoco  = $this->formatString( $this->order->get_meta( '_billing_ita_cf' ) );
+			$ragione_sociale = $this->formatString( $this->order->get_billing_first_name() . ' ' . $this->order->get_billing_last_name() );
+			// $sdi = ''.
+		}
+
+		$bodyrichiesta = array(
 			'generaIuv'        => true,
 			'aggiornaSeEsiste' => true,
 			'versamento'       => array(
@@ -106,15 +123,16 @@ class Gateway_Controller {
 				'codVersamentoEnte'  => $this->order->get_order_number(),
 				'codDominio'         => $this->plugin->settings['domain_code'],
 				'debitore'           => array(
-					'codUnivoco'     => $this->formatString( $this->order->get_meta( '_billing_ita_cf' ) ),
-					'ragioneSociale' => $this->formatString( $this->order->get_billing_company() ),
+					'codUnivoco'     => $codice_univoco,
 					'indirizzo'      => $this->order->get_billing_address_2() ?
-						$this->order->get_billing_address_1() . ' - ' . $this->order->get_billing_address_2() :
-						$this->order->get_billing_address_1(),
+								$this->order->get_billing_address_1() . ' - ' . $this->order->get_billing_address_2() :
+								$this->order->get_billing_address_1(),
+					'ragioneSociale' => $ragione_sociale,
 					'localita'       => $this->formatString( $this->order->get_billing_city() ),
 					'provincia'      => $this->formatString( $this->order->get_billing_state() ),
 					'cap'            => $this->formatString( $this->order->get_billing_postcode() ),
 					'telefono'       => $this->formatString( $this->order->get_billing_phone() ),
+					'cellulare'      => $this->formatString( $this->order->get_billing_phone() ),
 					'email'          => $this->formatString( $this->order->get_billing_email() ),
 					'nazione'        => $this->formatString( $this->order->get_billing_country() ),
 				),
@@ -133,6 +151,10 @@ class Gateway_Controller {
 				'idModelloPagamento' => $this->plugin->settings['id_payment_model'],
 			),
 		);
+
+		if ( DEBUG_MODE_ENABLED ) {
+			error_log( print_r( $bodyrichiesta, true ) );
+		}
 
 		$result_code = 'KO';
 		$esito       = '';
@@ -176,7 +198,7 @@ class Gateway_Controller {
 		if ( $text ) {
 			return $text;
 		} else {
-			return '';
+			return ' ';
 		}
 	}
 
