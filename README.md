@@ -44,6 +44,7 @@ _**Image 1:** Enable the plugin_
 ![Home](docs/screenshots/ConfigurePlugin_1.png)
 _**Image 2:** Configure the plugin_
 
+
 ## Documentation
 - Check the docs folder of the plugin.
 - Check the setup/TestSoap for the SoapUI project to test the Soap api.

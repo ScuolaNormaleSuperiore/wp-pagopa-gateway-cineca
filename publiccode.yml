@@ -27,6 +27,10 @@ description:
       - docs/screenshots/FrontEnd.png
       - docs/screenshots/ConfigurePlugin_1.png
       - docs/screenshots/PaymentPhase_2.png
+      - docs/screenshots/01-ChoosePaymentMethod.png
+      - docs/screenshots/02-PaymentModel.png
+      - docs/screenshots/03-PaymentDSimulation-1.png
+      - docs/screenshots/05-OrderDetails.png
     features:
       - Pagamento tramite gateway di pagamento PagoPA
       - Configurazione parametri di connessione al gateway
