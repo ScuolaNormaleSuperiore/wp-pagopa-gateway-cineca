@@ -52,7 +52,8 @@ class Gateway_Controller {
 	 */
 	public function init( $order ) {
 		$this->order      = $order;
-		$this->local_cert = $this->plugin->settings['cert_abs_path'];
+		$this->local_cert = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . $this->plugin->settings['cert_abs_path'];
+		$this->local_cert = wp_normalize_path( $this->local_cert );
 		$this->passphrase = $this->plugin->settings['cert_passphrase'];
 
 		// set some SSL/TLS specific options .

@@ -66,7 +66,7 @@ msgstr "Password del certificato"
 
 #: wp-pagopa-gateway-cineca.php:210
 msgid "Certificate path"
-msgstr "Percorso locale del certificato"
+msgstr "Percorso relativo del certificato"
 
 #: wp-pagopa-gateway-cineca.php:163
 msgid "Description"

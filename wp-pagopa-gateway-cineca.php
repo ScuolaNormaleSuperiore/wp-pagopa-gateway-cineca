@@ -220,8 +220,8 @@ function wp_gateway_pagopa_init() {
 				'cert_abs_path'          => array(
 					'title'       => __( 'Certificate path', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Absolute path of the .pem certificate', 'wp-pagopa-gateway-cineca' ),
-					'default'     => '/var/www/ecommerce/wp-content/plugins/wp-pagopa-gateway-cineca/mycert.pem',
+					'description' => __( 'Relative path of the .pem certificate', 'wp-pagopa-gateway-cineca' ),
+					'default'     => 'cert/sns.it.pem',
 				),
 				'cert_passphrase'        => array(
 					'title'       => __( 'Certificate passphrase', 'wp-pagopa-gateway-cineca' ),
