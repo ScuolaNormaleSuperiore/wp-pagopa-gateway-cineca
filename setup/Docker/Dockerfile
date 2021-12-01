@@ -2,19 +2,22 @@
 ######			USEFUL DOCKER COMMANDS:
 ######
 ######		- docker build -t myshop-img -f Dockerfile .
-######		- docker run -p 80:80 -name=myshop -d myshop-img
+######		- docker run -p 80:80 -p 3306:3306 --name=myshop -d myshop-img
 ######		- docker run -p 9980:80 -p 3380:3306 --name=myshop -d myshop-img
 ######		- docker exec -it myshop /bin/bash
 ######
 ##############################################################################
 
-################# CONFIGURATIONS #############################################
-ARG WP_ARCHIVE='wordpress-5.8.2.tar.gz'
-ARG WC_ZIP_FILE='woocommerce.5.9.0.zip'
-##############################################################################
-
 ###### Start from an official Php release with Apache ######
 FROM php:7.4.3-apache
+
+
+################# CONFIGURATIONS (define ARG after FROM) #####################
+ARG WP_ARCHIVE=wordpress-5.8.2.tar.gz
+ARG WC_ZIP_FILE=woocommerce.5.9.0.zip
+ARG SF_THEME_FILE=storefront.3.9.1.zip
+##############################################################################
+
 
 
 # Update packages 
@@ -25,8 +28,7 @@ RUN apt-get install -y \
 	git \
 	bash-completion \
 	libxml2-dev \
-	unzip \
-	wget
+	unzip
 
 # Install and enable useful modules
 RUN docker-php-ext-install mysqli && \
@@ -34,11 +36,13 @@ RUN docker-php-ext-install mysqli && \
 	a2enmod rewrite
 
 # Copy the file of the database files.
-COPY createUserAndDatabase.sql /tmp/createUserAndDatabase.sql
-COPY myshopdb.sql /tmp/myshopdb.sql
-COPY configureWP.sql /tmp/configureWP.sql
-# Copy source code and scripts.
-COPY startServicesScript.sh /root/startServicesScript.sh
+COPY configure/createUserAndDatabase.sql /tmp/createUserAndDatabase.sql
+COPY src/myshopdb.sql /tmp/myshopdb.sql
+COPY configure/configureWP.sql /tmp/configureWP.sql
+# Copy source code and configure.
+COPY configure/startServicesScript.sh /root/startServicesScript.sh
+COPY src/uploads.zip /tmp/uploads.zip
+COPY configure/wp-config.php /tmp/wp-config.php
 
 # Install mariadb, create and init the database.
 RUN apt-get install -y mariadb-server  && \
@@ -47,24 +51,29 @@ RUN apt-get install -y mariadb-server  && \
 	mysql myshop < /tmp/myshopdb.sql && \
 	mysql myshop < /tmp/configureWP.sql
 
-RUN echo ${WP_ARCHIVE}
 
 # Install Wordpress, WooCommerce and the plugin
 # WORKDIR /tmp
-RUN curl -o /tmp/wordpress-5.8.2.tar.gz https://wordpress.org/wordpress-5.8.2.tar.gz && \
+RUN curl -o /tmp/${WP_ARCHIVE} https://wordpress.org/${WP_ARCHIVE} && \
 	rm -rf /var/www/html && \
-	tar -xvzf /tmp/wordpress-5.8.2.tar.gz --directory /var/www/ && \
+	tar -xvzf /tmp/${WP_ARCHIVE} --directory /var/www/ && \
 	mv /var/www/wordpress /var/www/html	&& \
-	curl -o /tmp/woocommerce.5.9.0.zip https://downloads.wordpress.org/plugin/woocommerce.5.9.0.zip && \
-	unzip /tmp/woocommerce.5.9.0.zip -d /var/www/html/wp-content/plugins 
+	curl -o /tmp/${WC_ZIP_FILE} https://downloads.wordpress.org/plugin/${WC_ZIP_FILE} && \
+	unzip /tmp/${WC_ZIP_FILE} -d /var/www/html/wp-content/plugins/ && \
+	curl -o /tmp/${SF_THEME_FILE} https://downloads.wordpress.org/theme/${SF_THEME_FILE} && \
+	unzip /tmp/${SF_THEME_FILE} -d /var/www/html/wp-content/themes/ && \
+	cd /var/www/html/wp-content/plugins && \
+	git clone https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca.git && \
+	cp -f /tmp/wp-config.php  /var/www/html/wp-config.php && \
+	unzip /tmp/uploads.zip -d /var/www/html/wp-content/uploads/ && \
+	chown -R www-data:www-data /var/www/html/*
 
-# Configure Wordpress
-COPY wp-config.php /var/www/html/
 
 # Remove the temp file.
-#RUN rm -rf /tmp/*
+RUN rm -rf /tmp/*
 
-EXPOSE 80
+EXPOSE 80 3306
+
 
 ######  Start Server Services with the bash shell ######
 ENTRYPOINT ["/bin/bash"]
