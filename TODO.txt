@@ -1,34 +1,36 @@
 
 TODO LIST:
 
-03) Validazione dei parametri di configurazione del plugin.
+1) Gestione parametrizzata dei campi aggiuntivi:
+	a) _billing_ita_sdi
+	b) _billing_ita_cf
+	c) _billing_vat)
 
-06) Verificare la licenza di rilascio del software e modificare i file.
-
-10) Verifica prerequisiti: Ci sono campi personalizzati nell'e-commerce? (controllare i campi _billing_ita_sdi, _billing_ita_cf e _billing_vat) !!!!!
-
-11) DOCUMENTAZIONE:
-		- Istruzioni per convertire certificato da pk12 a pem.
-		- Aggiornare README con documentazione per installare e configurare plugin.
-		- Aggiungere schema di funzionamento.
-
-12) *** Rifattorizzazioni:
-		- Tirare fuori configurazione da init_form_fields
-
-13) Verificare utilizzo e funzionamento dei certificati.
-
-15) Verifica gestione Nonces e parametri di ingresso in webhook_payment_complete.
-
-18) *** VERIFICHE:
+2) *** VERIFICHE:
 		- Controllare se le quantità in stock sono modificate correttamente.
 		- Verifica del workflow degli stati.
 
-19) webhook_payment_complete: Verifica dello stato dell'ordine (deve essere in attesa di pagamento e deve passare 'in lavorazione')
+3) Realizzare Docker per testare il plugin.
 
-20) Realizzazione versione di TEST su Rancher.
+4) webhook_payment_complete: Verifica dello stato dell'ordine (deve essere in attesa di pagamento e deve passare 'in lavorazione')
 
-21) Aggiornamento di WP e di tutti i plugin per vedere se il sistema funziona ancora.
+5) Validazione dei parametri di configurazione del plugin.
 
-22) disabilitare il modulo se soap o woocommerce non sonop più installatti.
+6) Verificare la licenza di rilascio del plugin e modificare i file.
 
-23) Realizzare Docker per testare il plugin.
+7) DOCUMENTAZIONE:
+		- Istruzioni per convertire certificato da pk12 a pem.
+		- Aggiornare README con documentazione per installare e configurare plugin.
+		- Descrivere schema di funzionamento.
+
+8) *** Rifattorizzazioni:
+		- Tirare fuori configurazione da init_form_fields
+
+9) Verificare utilizzo e funzionamento dei certificati.
+
+10) Verifica gestione Nonces e parametri di ingresso in webhook_payment_complete.
+
+11) Realizzazione versione di TEST su Rancher.
+
+12) disabilitare il modulo se soap o woocommerce non sonop più installatti.
+
