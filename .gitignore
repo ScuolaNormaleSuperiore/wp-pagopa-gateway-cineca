@@ -6,6 +6,8 @@
 .vscode
 .idea
 
+lang/wp-pagopa-gateway-cineca-it_IT-backup*
+
 # Empty folder for the certificates
 cert/*
 # exception to the rule

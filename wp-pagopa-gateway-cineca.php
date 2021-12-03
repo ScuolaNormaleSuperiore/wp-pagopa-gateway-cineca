@@ -218,16 +218,25 @@ function wp_gateway_pagopa_init() {
 					'description' => __( 'ID of payment model related to the e-commerce defined on the Cineca back office', 'wp-pagopa-gateway-cineca' ),
 				),
 				'cert_abs_path'          => array(
-					'title'       => __( 'Certificate path', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'Certificate file name', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Relative path of the .pem certificate', 'wp-pagopa-gateway-cineca' ),
-					'default'     => 'cert/sns.it.pem',
+					'description' => __( 'File name of the .pem certificate', 'wp-pagopa-gateway-cineca' ),
+					'default'     => 'xx.it.pem',
 				),
 				'cert_passphrase'        => array(
 					'title'       => __( 'Certificate passphrase', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Passphrase of the certificate', 'wp-pagopa-gateway-cineca' ),
 				),
+				// // Enable accounting fields.
+				// 'accounting_fields_enabled'               => array(
+				// 	'title'       => __( 'Enable accounting fields', 'wp-pagopa-gateway-cineca' ),
+				// 	'label'       => __( 'Enable accounting fields', 'wp-pagopa-gateway-cineca' ),
+				// 	'type'        => 'checkbox',
+				// 	'description' => __( 'Enable during the checkout phase the fields: vat, fiscal code, sdi', 'wp-pagopa-gateway-cineca' ),
+				// 	'default'     => 'false',
+				// 	'desc_tip'    => true,
+				// ),
 				// Production credentials.
 				'production_credentials' => array(
 					'title' => __( 'Production credentials', 'wp-pagopa-gateway-cineca' ),
@@ -428,7 +437,9 @@ function wp_gateway_pagopa_init() {
 			if ( 'OK' !== $payment_status['code'] || 'ESEGUITO' !== $payment_status['msg'] ) {
 				// Payment not confirmed.
 				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
-				$error_msg  = $error_msg . ' ' . $order_id;
+				$error_msg  = $error_msg . ' ' . $order_id . ' - Iuv: ' . $iuv;
+				// ATT!! Only for debug purposes
+				$error_msg  = $error_msg . '  <BR/> code:' . $payment_status['code'] . ' -msg: ' . $payment_status['msg'];
 				$error_desc = $error_msg . ' - ' . $payment_status['msg'];
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
 				$this->error_redirect( $error_msg );
