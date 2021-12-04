@@ -105,14 +105,14 @@ class Gateway_Controller {
 		if ( $vat ) {
 			// The customer is a company.
 			$persona_fisica  = false;
-			$codice_univoco  = $this->formatString( $vat );
-			$ragione_sociale = $this->formatString( $this->order->get_billing_company() );
+			$codice_univoco  = $this->format_string( $vat );
+			$ragione_sociale = $this->format_string( $this->order->get_billing_company() );
 			// $sdi = $this->order->get_meta( '_billing_ita_sdi' ).
 		} else {
 			// The customer is a person.
 			$persona_fisica  = true;
-			$codice_univoco  = $this->formatString( $this->order->get_meta( '_billing_ita_cf' ) );
-			$ragione_sociale = $this->formatString( $this->order->get_billing_first_name() . ' ' . $this->order->get_billing_last_name() );
+			$codice_univoco  = $this->format_string( $this->order->get_meta( '_billing_ita_cf' ) );
+			$ragione_sociale = $this->format_string( $this->order->get_billing_first_name() . ' ' . $this->order->get_billing_last_name() );
 			// $sdi = ''.
 		}
 
@@ -129,13 +129,13 @@ class Gateway_Controller {
 								$this->order->get_billing_address_1() . ' - ' . $this->order->get_billing_address_2() :
 								$this->order->get_billing_address_1(),
 					'ragioneSociale' => $ragione_sociale,
-					'localita'       => $this->formatString( $this->order->get_billing_city() ),
-					'provincia'      => $this->formatString( $this->order->get_billing_state() ),
-					'cap'            => $this->formatString( $this->order->get_billing_postcode() ),
-					'telefono'       => $this->formatString( $this->order->get_billing_phone() ),
-					'cellulare'      => $this->formatString( $this->order->get_billing_phone() ),
-					'email'          => $this->formatString( $this->order->get_billing_email() ),
-					'nazione'        => $this->formatString( $this->order->get_billing_country() ),
+					'localita'       => $this->format_string( $this->order->get_billing_city() ),
+					'provincia'      => $this->format_string( $this->order->get_billing_state() ),
+					'cap'            => $this->format_string( $this->order->get_billing_postcode() ),
+					'telefono'       => $this->format_string( $this->order->get_billing_phone() ),
+					'cellulare'      => $this->format_string( $this->order->get_billing_phone() ),
+					'email'          => $this->format_string( $this->order->get_billing_email() ),
+					'nazione'        => $this->format_string( $this->order->get_billing_country() ),
 				),
 				'importoTotale'      => $this->order->get_total(),
 				'dataScadenza'       => $expiration_date,
@@ -157,7 +157,7 @@ class Gateway_Controller {
 			error_log( print_r( $bodyrichiesta, true ) );
 		}
 
-		$result_code = 'KO';
+		$result_code = '';
 		$esito       = '';
 		$iuv         = '';
 		try {
@@ -165,21 +165,24 @@ class Gateway_Controller {
 			if ( ! is_soap_fault( $result ) ) {
 				if ( $result && ( 'OK' === $result->codEsitoOperazione ) ) {
 					// Payment creation OK.
-					$result_code = $result->codEsitoOperazione;
+					$result_code = 'OK';
 					$esito       = $result->codOperazione;
 					$iuv         = $result->iuvGenerato->iuv;
 					// error_log( '@@@ COD-OPERAZIONE' .  $esito); .
 				} else {
 					// Payment creation failed: Error in the Cineca response.
-					$esito = $result ? $result->codOperazione . '-' . $result->descrizioneEsitoOperazione : 'Error in the Cineca response';
+					$esito       = $this->get_error_message( $result );
+					$result_code = 'KO';
 				}
 			} else {
 				// Payment creation failed: Error raised by the gateway.
-				$esito = "SOAP Fault: (faultcode: {$result->faultcode}, faultstring: {$result->faultstring})";
+				$esito       = "SOAP Fault: (faultcode: {$result->faultcode}, faultstring: {$result->faultstring})";
+				$result_code = 'KO';
 			}
 		} catch ( Exception $e ) {
 			// Error creating a payment: Error contacting the gateway.
-			$esito = $e->getMessage();
+			$esito       = $e->getMessage();
+			$result_code = 'KO';
 		}
 
 		return array(
@@ -195,7 +198,7 @@ class Gateway_Controller {
 	 * @param string $text - The text to be formatted.
 	 * @return string
 	 */
-	private function formatString ( $text ) {
+	private function format_string( $text ) {
 		if ( $text ) {
 			return $text;
 		} else {
@@ -215,7 +218,7 @@ class Gateway_Controller {
 			'codVersamentoEnte' => $this->order->get_order_number(),
 		);
 
-		$result_code = 'KO';
+		$result_code = '';
 		$esito       = '';
 		$iuv         = '';
 		try {
@@ -223,25 +226,48 @@ class Gateway_Controller {
 			if ( ! is_soap_fault( $result ) ) {
 				if ( $result && ( 'OK' === $result->codEsitoOperazione ) ) {
 					// Payment status retrieved.
-					$result_code = $result->codEsitoOperazione;
+					$result_code = 'OK';
 					$esito       = $result->stato;
 				} else {
 					// Payment status not retrieved.
-					$esito = $result ? $result->codOperazione : 'Error in the Cineca response';
+					$esito       = $this->get_error_message( $result );
+					$result_code = 'KO';
 				}
 			} else {
 				// Payment status retrieval failed: Error raised by the gateway.
-				$esito = "SOAP Fault: (faultcode: {$result->faultcode}, faultstring: {$result->faultstring})";
+				$esito       = "SOAP Fault: (faultcode: {$result->faultcode}, faultstring: {$result->faultstring})";
+				$result_code = 'KO';
 			}
 		} catch ( Exception $e ) {
 			// Error retrieving the status of a payment: Error contacting the gateway.
-			$esito = $e->getMessage();
+			$esito       = $e->getMessage();
+			$result_code = 'KO';
 		}
 
 		return array(
 			'code' => $result_code,
 			'msg'  => $esito,
 		);
+	}
+
+	/**
+	 * Build the message of the error.
+	 *
+	 * @param object $result - The result of the soap call.
+	 * @return string
+	 */
+	private function get_error_message( $result ) {
+		$message_text = __( 'Error in the Cineca response', 'wp-pagopa-gateway-cineca' );
+		if ( $result->codOperazione ) {
+			$message_text = $message_text . ' - CodOperazione: ' . $result->codOperazione;
+		}
+		if ( $result->codEsitoOperazione ) {
+			$message_text = $message_text . ' - CodEsitoOperazione: ' . $result->codEsitoOperazione;
+		}
+		if ( $result->descrizioneEsitoOperazione ) {
+			$message_text = $message_text . ' - DescrizioneEsitoOperazione: ' . $result->descrizioneEsitoOperazione;
+		}
+		return $message_text;
 	}
 
 	/**

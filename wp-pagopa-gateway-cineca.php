@@ -417,7 +417,13 @@ function wp_gateway_pagopa_init() {
 			if ( ( 'OK' !== $outcome ) || ( '' === $iuv ) || ( '' === $order_id ) || ( '' === $id_session ) ) {
 				// An error occurred during the payment phase or the payment has been cancelled by the customer.
 				$error_msg = __( 'You have canceled the payment. To confirm the order, make the payment and contact the staff.', 'wp-pagopa-gateway-cineca' );
-				$log_manager->log( STATUS_PAYMENT_NOT_CREATED );
+				if ( $order_id ) {
+					$error_msg = $error_msg . ' - ' . __( 'Order id', 'wp-pagopa-gateway-cineca' ) . ': ' . $order_id;
+				}
+				if ( $iuv ) {
+					$error_msg = $error_msg . ' - ' . __( 'Iuv', 'wp-pagopa-gateway-cineca' ) . ': ' . $iuv;
+				}
+				$log_manager->log( STATUS_PAYMENT_NOT_CREATED, null, $error_msg );
 				$this->error_redirect( $error_msg );
 				return;
 			}
@@ -438,7 +444,7 @@ function wp_gateway_pagopa_init() {
 				// Payment not confirmed.
 				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
 				$error_msg  = $error_msg . ' ' . $order_id . ' - Iuv: ' . $iuv;
-				// ATT!! Only for debug purposes
+				// ATT!! Only for debug purposes (remove the following line of code asap).
 				$error_msg  = $error_msg . '  <BR/> code:' . $payment_status['code'] . ' -msg: ' . $payment_status['msg'];
 				$error_desc = $error_msg . ' - ' . $payment_status['msg'];
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
@@ -456,6 +462,7 @@ function wp_gateway_pagopa_init() {
 		 * Redirect on the checkout page when an error occurs.
 		 *
 		 * @param string $error_msg - The error message shown to the customer.
+		 * @param string $error_description - The error description.
 		 * @return void
 		 */
 		private function error_redirect( $error_msg, $error_description='' ) {

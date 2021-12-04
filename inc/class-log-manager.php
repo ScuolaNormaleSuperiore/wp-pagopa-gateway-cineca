@@ -46,7 +46,7 @@ class Log_Manager {
 	 * @param string $description -  A decription of the status or of the error occurred.
 	 * @return void
 	 */
-	public function log( $status, $iuv = '', $description = '' ) {
+	public function log( $status, $iuv = null, $description = null ) {
 		global $wpdb;
 		$table_name     = $wpdb->prefix . LOG_TABLE_NAME;
 		$logged_user_id = get_current_user_id();
