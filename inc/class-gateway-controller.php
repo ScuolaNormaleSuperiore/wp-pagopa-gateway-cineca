@@ -6,7 +6,7 @@
  * @author      ICT Scuola Normale Superiore
  * @category    Payment Module
  * @package     PagoPA Gateway Cineca
- * @version     1.0.0-b1
+ * @version     1.0.1-b1
  * @copyright   Copyright (c) 2021 SNS)
  * @license     GNU General Public License v3.0
  */
@@ -116,12 +116,14 @@ class Gateway_Controller {
 			// $sdi = ''.
 		}
 
+		$raw_order_number = $this->build_raw_order_number( $this->plugin->settings['order_prefix'], $this->order->get_order_number() );
+
 		$bodyrichiesta = array(
 			'generaIuv'        => true,
 			'aggiornaSeEsiste' => true,
 			'versamento'       => array(
 				'codApplicazione'    => $this->plugin->settings['application_code'],
-				'codVersamentoEnte'  => $this->order->get_order_number(),
+				'codVersamentoEnte'  => $raw_order_number,
 				'codDominio'         => $this->plugin->settings['domain_code'],
 				'debitore'           => array(
 					'codUnivoco'     => $codice_univoco,
@@ -185,12 +187,43 @@ class Gateway_Controller {
 			$result_code = 'KO';
 		}
 
+		if ( DEBUG_MODE_ENABLED ) {
+			error_log( print_r( $result, true ) );
+		}
+
 		return array(
 			'code' => $result_code,
 			'iuv'  => $iuv,
 			'msg'  => $esito,
 		);
 	}
+
+	/**
+	 * Build the order number given prefix and order number.
+	 *
+	 * @param string $order_prefix - The prefix that must be added to the order.
+	 * @param string $order_number - The number of the order.
+	 * @return string
+	 */
+	private function build_raw_order_number( $order_prefix, $order_number ) {
+		// Add the char "-" to the prefix, if present.
+		return trim( $order_prefix ) ? trim( $order_prefix ) . '-' . $order_number : $order_number;
+	}
+
+	/**
+	 * Extract the order number without order prefix.
+	 *
+	 * @param string $order_prefix - The prefix of the order.
+	 * @param string $raw_order_number - The raw order number.
+	 * @return string
+	 */
+	private function extract_order_number( $order_prefix, $raw_order_number ) {
+		if ( trim( $order_prefix ) ) {
+			return trim( str_replace( $order_prefix . '-', '', $raw_order_number ) );
+		}
+		return $raw_order_number;
+	}
+
 
 	/**
 	 * Checks if the string is valid, if not returns an empty.
@@ -213,14 +246,18 @@ class Gateway_Controller {
 	 */
 	public function get_payment_status() {
 		$today         = gmdate( 'Y-m-d' );
+		$raw_order_number = $this->build_raw_order_number( $this->plugin->settings['order_prefix'], $this->order->get_order_number() );
 		$bodyrichiesta = array(
 			'codApplicazione'   => $this->plugin->settings['application_code'],
-			'codVersamentoEnte' => $this->order->get_order_number(),
+			'codVersamentoEnte' => $raw_order_number,
 		);
+
+		if ( DEBUG_MODE_ENABLED ) {
+			error_log( print_r( $bodyrichiesta, true ) );
+		}
 
 		$result_code = '';
 		$esito       = '';
-		$iuv         = '';
 		try {
 			$result = $this->soap_client->gpChiediStatoVersamento( $bodyrichiesta );
 			if ( ! is_soap_fault( $result ) ) {
@@ -242,6 +279,10 @@ class Gateway_Controller {
 			// Error retrieving the status of a payment: Error contacting the gateway.
 			$esito       = $e->getMessage();
 			$result_code = 'KO';
+		}
+
+		if ( DEBUG_MODE_ENABLED ) {
+			error_log( print_r( $result, true ) );
 		}
 
 		return array(
@@ -278,12 +319,13 @@ class Gateway_Controller {
 	 * @return string - The redirect url.
 	 */
 	public function get_payment_url( $iuv, $hook ) {
-		$customer_code = $this->plugin->settings['application_code'];
-		$order_code    = $this->order->get_order_number();
-		$token         = $this->create_token( $order_code, $iuv );
-		$order_hook    = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?token=' . $token;
-		$encoded_hook  = rawurlencode( $order_hook );
-		$redirect_url  = $this->ws_data['frontend_base_url'] . PATH_FRONT_END_CINECA . '?cod_vers_ente=' . $order_code . '&cod_app=' . $customer_code . '&retUrl=' . $encoded_hook;
+		$customer_code    = $this->plugin->settings['application_code'];
+		$order_number     = $this->order->get_order_number();
+		$raw_order_number = $this->build_raw_order_number( $this->plugin->settings['order_prefix'], $order_number );
+		$token            = $this->create_token( $order_number, $iuv );
+		$order_hook       = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?token=' . $token;
+		$encoded_hook     = rawurlencode( $order_hook );
+		$redirect_url     = $this->ws_data['frontend_base_url'] . PATH_FRONT_END_CINECA . '?cod_vers_ente=' . $raw_order_number . '&cod_app=' . $customer_code . '&retUrl=' . $encoded_hook;
 		return $redirect_url;
 	}
 

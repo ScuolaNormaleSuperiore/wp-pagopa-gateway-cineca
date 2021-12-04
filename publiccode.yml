@@ -4,7 +4,7 @@
 
 publiccodeYmlVersion: '0.2'
 applicationSuite: WooCommerce
-softwareVersion: 1.0.0-b1
+softwareVersion: 1.0.1-b1
 developmentStatus: beta
 categories:
   - payment-gateway
@@ -27,6 +27,9 @@ description:
       - docs/screenshots/FrontEnd.png
       - docs/screenshots/ConfigurePlugin_1.png
       - docs/screenshots/PaymentPhase_2.png
+      - docs/screenshots/03-PaymentSimulation-1.png
+      - docs/screenshots/04-PaymentSimulation-2.png
+      - docs/screenshots/05-OrderDetails.png
     features:
       - Pagamento tramite gateway di pagamento PagoPA
       - Configurazione parametri di connessione al gateway
