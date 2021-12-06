@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.0.1-b2
+ * Version: 1.0.2-b1
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -34,6 +34,8 @@ require_once 'inc/class-log-manager.php';
 // Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
 define( 'DEBUG_MODE_ENABLED', 1 );
+define( 'WAIT_NUM_SECONDS', 5 );
+define( 'WAIT_NUM_ATTEMPTS', 6 );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -407,11 +409,11 @@ function wp_gateway_pagopa_init() {
 			$log_manager = new Log_Manager( $order );
 
 			// Check the consinstence of the parameters: order and iuv.
-			$payment_status = $log_manager->get_current_status( $order_id, $iuv );
-			if ( STATUS_PAYMENT_CREATED !== $payment_status ) {
+			$p_status = $log_manager->get_current_status( $order_id, $iuv );
+			if ( STATUS_PAYMENT_CREATED !== $p_status ) {
 				// Error checking the parameters passed by the gateway.
 				$error_msg = __( 'The status of the payment is not consistent', 'wp-pagopa-gateway-cineca' );
-				$error_msg = $error_msg . 'n. ' . $order_id;
+				$error_msg = $error_msg . ' n. ' . $order_id;
 				$this->error_redirect( $error_msg );
 				return;
 			}
@@ -431,34 +433,54 @@ function wp_gateway_pagopa_init() {
 				return;
 			}
 
-			/** Enable this check into a loop */
-			/*
 			// Payment executed.
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
 			// Ask the status of the payment to the gateway.
 			$this->gateway_controller = new Gateway_Controller( $this );
 			$this->gateway_controller->init( $order );
-			$payment_status = $this->gateway_controller->get_payment_status();
 
-			if ( 'OK' !== $payment_status['code'] || 'ESEGUITO' !== $payment_status['msg'] ) {
+			$executed     = false;
+			$num_attempts = 1;
+			for ( $num_attempts; $executed === false && $num_attempts <= WAIT_NUM_ATTEMPTS; $num_attempts++ ) {
+				$payment_status = $this->gateway_controller->get_payment_status();
+				if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
+					// Payment executed, exit from the loop.
+					$executed = true;
+					break;
+				} elseif ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'NON_ESEGUITO' === $payment_status['msg'] ) ) {
+					// Payment not yet executed wait and retry.
+					sleep( WAIT_NUM_SECONDS );
+					$executed = false;
+				} else {
+					// Error reported by the gateway, exit from the loop.
+					$executed = false;
+					break;
+				}
+			}
+
+			$num_attempts = $num_attempts <= WAIT_NUM_ATTEMPTS ? $num_attempts : $num_attempts - 1;
+
+			if ( ! ( $executed ) ) {
 				// Payment not confirmed.
 				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
 				$error_msg  = $error_msg . ' ' . $order_id . ' - Iuv: ' . $iuv;
 				// ATT!! Only for debug purposes (remove the following line of code asap).
-				$error_msg  = $error_msg . '  <BR/> code:' . $payment_status['code'] . ' -msg: ' . $payment_status['msg'];
-				$error_desc = $error_msg . ' - ' . $payment_status['msg'];
+				$error_desc = $error_msg . ' - Code:' . $payment_status['code'];
+				$error_desc = $error_desc . ' - Status: ' . $payment_status['msg'];
+				$error_desc = $error_desc . ' - Attempts: ' . $num_attempts;
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
 				$this->error_redirect( $error_msg );
 				return;
+			} else {
+				// Payment confirmed.
+				$order->payment_complete();
+				$log_desc = 'Attemps: ' . $num_attempts;
+				$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv, $log_desc );
+				$redirect_url = $this->get_return_url( $order );
+				wp_safe_redirect( $redirect_url );
 			}
-			*/
 
-			// Payment confirmed.
-			$order->payment_complete();
-			$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv );
-			$redirect_url = $this->get_return_url( $order );
-			wp_safe_redirect( $redirect_url );
 		}
 
 		/**
