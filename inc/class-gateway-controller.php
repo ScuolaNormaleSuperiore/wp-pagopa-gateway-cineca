@@ -6,7 +6,7 @@
  * @author      ICT Scuola Normale Superiore
  * @category    Payment Module
  * @package     PagoPA Gateway Cineca
- * @version     1.0.1-b1
+ * @version     1.0.1-b2
  * @copyright   Copyright (c) 2021 SNS)
  * @license     GNU General Public License v3.0
  */
@@ -120,7 +120,7 @@ class Gateway_Controller {
 
 		$bodyrichiesta = array(
 			'generaIuv'        => true,
-			'aggiornaSeEsiste' => true,
+			'aggiornaSeEsiste' => false,
 			'versamento'       => array(
 				'codApplicazione'    => $this->plugin->settings['application_code'],
 				'codVersamentoEnte'  => $raw_order_number,

@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.0.1-b1
+ * Version: 1.0.1-b2
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -431,17 +431,15 @@ function wp_gateway_pagopa_init() {
 				return;
 			}
 
-			// We should check the status of the order ?
-			// if ($order->status == '') .
-
-			// con quello iuv nello stato previsto.
+			/** Enable this check into a loop */
+			/*
+			// Payment executed.
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
 			// Ask the status of the payment to the gateway.
 			$this->gateway_controller = new Gateway_Controller( $this );
 			$this->gateway_controller->init( $order );
 			$payment_status = $this->gateway_controller->get_payment_status();
-			// error_log( print_r( $payment_status, true ) );.
 
 			if ( 'OK' !== $payment_status['code'] || 'ESEGUITO' !== $payment_status['msg'] ) {
 				// Payment not confirmed.
@@ -454,6 +452,8 @@ function wp_gateway_pagopa_init() {
 				$this->error_redirect( $error_msg );
 				return;
 			}
+			*/
+
 			// Payment confirmed.
 			$order->payment_complete();
 			$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv );
