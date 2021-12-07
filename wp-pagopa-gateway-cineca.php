@@ -230,15 +230,6 @@ function wp_gateway_pagopa_init() {
 					'type'        => 'text',
 					'description' => __( 'Passphrase of the certificate', 'wp-pagopa-gateway-cineca' ),
 				),
-				// // Enable accounting fields.
-				// 'accounting_fields_enabled'               => array(
-				// 	'title'       => __( 'Enable accounting fields', 'wp-pagopa-gateway-cineca' ),
-				// 	'label'       => __( 'Enable accounting fields', 'wp-pagopa-gateway-cineca' ),
-				// 	'type'        => 'checkbox',
-				// 	'description' => __( 'Enable during the checkout phase the fields: vat, fiscal code, sdi', 'wp-pagopa-gateway-cineca' ),
-				// 	'default'     => 'false',
-				// 	'desc_tip'    => true,
-				// ),
 				'order_prefix'          => array(
 					'title'       => __( 'Order prefix', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
@@ -321,7 +312,6 @@ function wp_gateway_pagopa_init() {
 		 * @return array - 'Redirect page'.
 		 */
 		public function process_payment( $order_id ) {
-			global $woocommerce;
 
 			// Retrieve the order details.
 			$order       = new WC_Order( $order_id );
@@ -369,6 +359,12 @@ function wp_gateway_pagopa_init() {
 			}
 
 			// Payment position created successfully.
+			// Add the Iuv as metadata to the order.
+			$order->update_meta_data( '_iuv', $payment_position['iuv'] );
+			// Add a note to the order with the Iuv code.
+			$note       = __( 'The Iuv of the order is:', 'wp-pagopa-gateway-cineca' );
+			$note       = $note . ' ' . $payment_position['iuv'];
+			$order->add_order_note( $note );
 			// Change the status of the order.
 			$order->update_status( 'on-hold', __( 'Payment in progress', 'wp-pagopa-gateway-cineca' ) );
 			// Payment saved.
