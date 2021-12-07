@@ -83,7 +83,7 @@ class Log_Manager {
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			order_id bigint(20) UNSIGNED NOT NULL,
 			customer_id bigint(20) UNSIGNED NOT NULL,
-			date_created datetime NOT NULL DEFAULT CURRENT_DATE,
+			date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			status varchar(20) NOT NULL,
 			iuv varchar(256),
 			description text, 

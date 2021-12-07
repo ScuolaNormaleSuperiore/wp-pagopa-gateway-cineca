@@ -335,9 +335,25 @@ function wp_gateway_pagopa_init() {
 
 			// Create the payment position on the Cineca gateway.
 			$this->gateway_controller = new Gateway_Controller( $this );
-			$this->gateway_controller->init( $order );
-			$payment_position = $this->gateway_controller->load_payment_position();
 
+			// Init the gateway.
+			$init_result = $this->gateway_controller->init( $order );
+			// Check if the gateway is connected.
+			if ( 'KO' === $init_result['code'] ) {
+				// Error initializing the gateway.
+				$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+				$error_desc = $error_msg . ' - ' . $init_result['msg'];
+				$log_manager->log( STATUS_PAYMENT_NOT_CREATED, null, $error_desc );
+				wc_add_notice( $error_msg, 'error' );
+				$redirect_url = wc_get_checkout_url();
+				return array(
+					'result'   => 'failed',
+					'redirect' => $redirect_url,
+				);
+			}
+
+			// Load the payment position.
+			$payment_position = $this->gateway_controller->load_payment_position();
 			// Check if the payment postion was created successfully.
 			if ( 'OK' !== $payment_position['code'] ) {
 				// An error occurred creating the payment on the gateway.
@@ -438,7 +454,18 @@ function wp_gateway_pagopa_init() {
 
 			// Ask the status of the payment to the gateway.
 			$this->gateway_controller = new Gateway_Controller( $this );
-			$this->gateway_controller->init( $order );
+
+			// Init the gateway.
+			$init_result = $this->gateway_controller->init( $order );
+			// Check if the gateway is connected.
+			if ( 'KO' === $init_result['code'] ) {
+				// Error initializing the gateway.
+				$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+				$error_desc = $error_msg . ' - ' . $init_result['msg'];
+				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
+				$this->error_redirect( $error_msg );
+				return;
+			}
 
 			$executed     = false;
 			$num_attempts = 1;

@@ -48,7 +48,7 @@ class Gateway_Controller {
 	 * Init the controller
 	 *
 	 * @param WC_Order $order - The e-commerce order.
-	 * @return void
+	 * @return array - The result of the initialization (code and msg).
 	 */
 	public function init( $order ) {
 		$this->order      = $order;
@@ -76,7 +76,6 @@ class Gateway_Controller {
 			'location'           => $this->wsdl_url,
 			'cache_wsdl'         => WSDL_CACHE_NONE,
 			'trace'              => true,
-			'exceptions'         => false,
 			'connection_timeout' => 30,
 			'local_cert'         => $this->local_cert,
 			'passphrase'         => $this->passphrase,
@@ -85,10 +84,24 @@ class Gateway_Controller {
 			'soap_version'       => SOAP_1_1,
 		);
 
-		$this->soap_client = new SoapClient(
-			$this->wsdl_url,
-			$soap_client_options,
+		$init_result = array(
+			'code' => '',
+			'msg'  => '',
 		);
+
+		try {
+			$init_result['code'] = 'OK';
+			$init_result['msg']  = 'created';
+			$this->soap_client   = new SoapClient(
+				$this->wsdl_url,
+				$soap_client_options,
+			);
+		} catch ( Exception $e ) {
+			// Error creating the Soap connection.
+			$init_result['code'] = 'KO';
+			$init_result['msg']  = $e->getMessage();
+		}
+		return $init_result;
 	}
 
 
