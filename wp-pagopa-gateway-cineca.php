@@ -482,6 +482,9 @@ function wp_gateway_pagopa_init() {
 			$num_attempts = 1;
 			for ( $num_attempts; $executed === false && $num_attempts <= WAIT_NUM_ATTEMPTS; $num_attempts++ ) {
 				$payment_status = $this->gateway_controller->get_payment_status();
+				if ( DEBUG_MODE_ENABLED ) {
+					$this->log_action( 'info', print_r( $payment_status, true ) );
+				}
 				if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
 					// Payment executed, exit from the loop.
 					$executed = true;
@@ -508,12 +511,15 @@ function wp_gateway_pagopa_init() {
 				$error_desc = $error_desc . ' - Status: ' . $payment_status['msg'];
 				$error_desc = $error_desc . ' - Attempts: ' . $num_attempts;
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-				$this->error_redirect( $error_msg );
+				$this->error_redirect( $error_desc );
 				return;
 			} else {
 				// Payment confirmed.
 				$order->payment_complete();
 				$log_desc = 'Attemps: ' . $num_attempts;
+				if ( DEBUG_MODE_ENABLED ) {
+					$this->log_action( 'info', $log_desc );
+				}
 				$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv, $log_desc );
 				$redirect_url = $this->get_return_url( $order );
 				wp_safe_redirect( $redirect_url );
@@ -525,14 +531,27 @@ function wp_gateway_pagopa_init() {
 		 * Redirect on the checkout page when an error occurs.
 		 *
 		 * @param string $error_msg - The error message shown to the customer.
-		 * @param string $error_description - The error description.
 		 * @return void
 		 */
-		private function error_redirect( $error_msg, $error_description='' ) {
+		private function error_redirect( $error_msg ) {
 			wc_add_notice( $error_msg, 'error' );
+			$this->log_action( 'error', $error_msg );
 			$redirect_url = wc_get_checkout_url();
 			wp_safe_redirect( $redirect_url );
 		}
 
-	} // end class
+		/**
+		 * Log actions.
+		 *
+		 * @param string $log_type -The message severity.
+		 * @param string $message - The message log.
+		 * @return void
+		 */
+		public function log_action( $log_type, $message ) {
+			$logger  = wc_get_logger();
+			$context = array( 'source' => 'wp-pagopa-gateway-cineca' );
+			$logger->log( $log_type, $message, $context );
+		}
+
+	} // end plugin class
 }
