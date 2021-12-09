@@ -349,9 +349,11 @@ class Gateway_Controller {
 	 * @param string $iuv - The Iuv of the payment.
 	 * @return string - The token containing the session parameters.
 	 */
-	public static function create_token( $order_id, $iuv ) {
-		$str_token = $order_id . PAR_SPLITTER . $iuv;
-		return base64_encode( $str_token );
+	public function create_token( $order_id, $iuv ) {
+		$plain_token     = $order_id . PAR_SPLITTER . $iuv;
+		$key             = $this->plugin->settings['encription_key'];
+		$encrypted_token = Encryption_Manager::encrypt_text( $plain_token, $key );
+		return base64_encode( $encrypted_token );
 	}
 
 	/**
@@ -360,8 +362,10 @@ class Gateway_Controller {
 	 * @param string $token - The token with the parameters.
 	 * @return array - The array containing the parameters.
 	 */
-	public static function extract_token_parameters( $token ) {
-		$decoded = base64_decode( $token );
+	public function extract_token_parameters( $token ) {
+		$key     = $this->plugin->settings['encription_key'];
+		$decoded = Encryption_Manager::decrypt_text( base64_decode( $token ), $key );
+		// $decoded = base64_decode( $token );
 		return explode( PAR_SPLITTER, $decoded );
 	}
 

@@ -30,6 +30,7 @@ if ( ! function_exists( 'add_action' ) ) {
 
 require_once 'inc/class-gateway-controller.php';
 require_once 'inc/class-log-manager.php';
+require_once 'inc/encryption-manager.php';
 
 // Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
@@ -236,6 +237,19 @@ function wp_gateway_pagopa_init() {
 					'description' => __( 'The prefix that the plugin will prepend to the order number.It can be an empty string.', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'TEST',
 				),
+				'encription_key'  => array(
+					'title'       => __( 'Encription key', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'The key used to encrypt the token.', 'wp-pagopa-gateway-cineca' ),
+				),
+				'checkpayment'    => array(
+					'title'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
+					'label'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'checkbox',
+					'description' => __( 'Check the payment passed by the callback.', 'wp-pagopa-gateway-cineca' ),
+					'default'     => 'yes',
+					'desc_tip'    => true,
+				),
 				// Production credentials.
 				'production_credentials' => array(
 					'title' => __( 'Production credentials', 'wp-pagopa-gateway-cineca' ),
@@ -387,10 +401,11 @@ function wp_gateway_pagopa_init() {
 		public function webhook_payment_complete( $args ) {
 			// error_log( '************ pagopa_payment_complete ************' );.
 
-			$token      = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
-			$id_session = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
-			$outcome    = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
-			$par_array  = Gateway_Controller::extract_token_parameters( $token );
+			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
+			$id_session         = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
+			$outcome            = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
+			$gateway_controller = new Gateway_Controller( $this );
+			$par_array          = $gateway_controller->extract_token_parameters( $token );
 			// Retrieve the parameters from the token.
 			try {
 				$order_id = $par_array[0];
@@ -398,7 +413,6 @@ function wp_gateway_pagopa_init() {
 				if ( ( ! $order_id ) || ( ! $iuv ) ) {
 					throw new Exception( 'Invalid token' );
 				}
-				// error_log( '@@@ ID SESSION: ' . $id_session . '@@@ ORDER ID: ' . $order_id . '@@@ IUV: ' . $iuv );.
 			} catch ( Exception $e ) {
 				// Error retrieving the parameters from the token.
 				$error_msg = __( 'The gateway passed an invalid token for the order', 'wp-pagopa-gateway-cineca' );
@@ -426,6 +440,7 @@ function wp_gateway_pagopa_init() {
 				// Error checking the parameters passed by the gateway.
 				$error_msg = __( 'The status of the payment is not consistent', 'wp-pagopa-gateway-cineca' );
 				$error_msg = $error_msg . ' n. ' . $order_id;
+				$log_manager->log( STATUS_PAYMENT_NOT_CREATED, null, $error_msg );
 				$this->error_redirect( $error_msg );
 				return;
 			}
