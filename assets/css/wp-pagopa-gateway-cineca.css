@@ -1,0 +1,21 @@
+
+#ppa_icon_list {
+	margin-bottom:10px;
+	width:auto;
+	display:inline-block;
+}
+
+.ppa_card_icon {
+	display:inline-block;
+	height:40px;
+	float:left;
+}
+
+.ppa_card_icon_img {
+	height:80% !important;
+	float:none !important;
+	position:unset !important;
+	display:block !important;
+}
+
+.payment_method_pagopa_gateway_cineca {}
