@@ -34,9 +34,11 @@ require_once 'inc/encryption-manager.php';
 
 // Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
+define( 'HOOK_SCHEDULED_ACTIONS', 'pagopa_execute_actions' );
 define( 'DEBUG_MODE_ENABLED', 1 );
 define( 'WAIT_NUM_SECONDS', 5 );
 define( 'WAIT_NUM_ATTEMPTS', 4 );
+define( 'NUM_DAYS_TO_CHECK', 7 );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -149,8 +151,11 @@ function wp_gateway_pagopa_init() {
 			// This action hook saves the settings.
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-			// You can also register a webhook here.
+			// Register the webhook to handle the gateway response.
 			add_action( 'woocommerce_api_' . HOOK_PAYMENT_COMPLETE, array( $this, 'webhook_payment_complete' ) );
+
+			// Register the webhook to start scheduled jobs.
+			add_action( 'woocommerce_api_' . HOOK_SCHEDULED_ACTIONS, array( $this, 'webhook_scheduled_actions' ) );
 
 			// Use a custom style.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -304,6 +309,11 @@ function wp_gateway_pagopa_init() {
 					'default'     => 'yes',
 					'desc_tip'    => true,
 				),
+				'api_token'        => array(
+					'title'       => __( 'API token', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'Token used by the REST API and the scheduled actions.', 'wp-pagopa-gateway-cineca' ),
+				),
 				// Production credentials.
 				'production_credentials' => array(
 					'title' => __( 'Production credentials', 'wp-pagopa-gateway-cineca' ),
@@ -453,11 +463,13 @@ function wp_gateway_pagopa_init() {
 		 * @return void - Redirect to the thankyou page.
 		 */
 		public function webhook_payment_complete( $args ) {
-			// error_log( '************ pagopa_payment_complete ************' );.
-
 			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
 			$id_session         = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
 			$outcome            = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
+			if ( '' === $token ) {
+				echo 'Invalid request';
+				exit;
+			}
 			$gateway_controller = new Gateway_Controller( $this );
 			$par_array          = $gateway_controller->extract_token_parameters( $token );
 			// Retrieve the parameters from the token.
@@ -580,6 +592,58 @@ function wp_gateway_pagopa_init() {
 				wp_safe_redirect( $redirect_url );
 			}
 
+		}
+
+		/**
+		 * Hook called to start scheduled actions.
+		 *
+		 * @param array $args - Arguments of the function.
+		 * @return string - Redirect to the thankyou page.
+		 */
+		public function webhook_scheduled_actions( $args ) {
+			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
+			// Check if the token is present.
+			if ( ! $token ) {
+				echo 'Invalid token';
+				exit;
+			}
+			// Check the API is enabled.
+			$options = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
+			if ( empty( $options['api_token'] ) || ( '' === $options['api_token'] ) ) {
+				echo 'API  disabled';
+				exit;
+			}
+			// Check the token validity.
+			if ( $options['api_token'] !== $token ) {
+				echo 'Invalid token';
+				exit;
+			}
+
+			// Action1: Update the status of the orders.
+			$result = self::update_orders_status();
+
+			// Actions2: Add here other actions...
+
+			echo 'OK';
+			exit();
+		}
+
+		/**
+		 * Check the status of 'on-hold' orders on the gateway and if they have been paid change the status of the order to 'processing'.
+		 *
+		 * @return void
+		 */
+		private static function update_orders_status() {
+			$gateway_controller = new Gateway_Controller( $this );
+			// Get all the on-hold orders of the last NUM_DAYS_TO_CHECK days in the 'on-hold' status.
+
+			// Looop all orders
+
+			// check if the order has been paid.
+
+			// Change the status of the paid order to 'processing'.
+
+			return 'OK';
 		}
 
 		/**
