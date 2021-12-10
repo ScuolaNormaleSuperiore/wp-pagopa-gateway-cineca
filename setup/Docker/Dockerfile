@@ -3,7 +3,6 @@
 ######
 ######		- docker build -t myshop-img -f Dockerfile .
 ######		- docker run -p 80:80 -p 3306:3306 --name=myshop -d myshop-img
-######		- docker run -p 9980:80 -p 3380:3306 --name=myshop -d myshop-img
 ######		- docker exec -it myshop /bin/bash
 ######
 ##############################################################################
@@ -28,7 +27,8 @@ RUN apt-get install -y \
 	git \
 	bash-completion \
 	libxml2-dev \
-	unzip
+	unzip \
+	wget
 
 # Install and enable useful modules
 RUN docker-php-ext-install mysqli && \
@@ -43,6 +43,7 @@ COPY configure/configureWP.sql /tmp/configureWP.sql
 COPY configure/startServicesScript.sh /root/startServicesScript.sh
 COPY src/uploads.zip /tmp/uploads.zip
 COPY configure/wp-config.php /tmp/wp-config.php
+COPY configure/.htaccess /tmp/.htaccess
 
 # Install mariadb, create and init the database.
 RUN apt-get install -y mariadb-server  && \
@@ -50,7 +51,6 @@ RUN apt-get install -y mariadb-server  && \
 	mysql < /tmp/createUserAndDatabase.sql && \
 	mysql myshop < /tmp/myshopdb.sql && \
 	mysql myshop < /tmp/configureWP.sql
-
 
 # Install Wordpress, WooCommerce and the plugin
 # WORKDIR /tmp
@@ -65,15 +65,15 @@ RUN curl -o /tmp/${WP_ARCHIVE} https://wordpress.org/${WP_ARCHIVE} && \
 	cd /var/www/html/wp-content/plugins && \
 	git clone https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca.git && \
 	cp -f /tmp/wp-config.php  /var/www/html/wp-config.php && \
+    wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php  -O /var/www/html/adminer.php && \
+	cp /tmp/.htaccess /var/www/html/.htaccess && \
 	unzip /tmp/uploads.zip -d /var/www/html/wp-content/uploads/ && \
 	chown -R www-data:www-data /var/www/html/*
-
 
 # Remove the temp file.
 RUN rm -rf /tmp/*
 
 EXPOSE 80 3306
-
 
 ######  Start Server Services with the bash shell ######
 ENTRYPOINT ["/bin/bash"]

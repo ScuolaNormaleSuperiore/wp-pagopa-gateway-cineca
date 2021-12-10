@@ -36,7 +36,7 @@ require_once 'inc/encryption-manager.php';
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
 define( 'DEBUG_MODE_ENABLED', 1 );
 define( 'WAIT_NUM_SECONDS', 5 );
-define( 'WAIT_NUM_ATTEMPTS', 6 );
+define( 'WAIT_NUM_ATTEMPTS', 4 );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -480,6 +480,7 @@ function wp_gateway_pagopa_init() {
 
 			$executed     = false;
 			$num_attempts = 1;
+			sleep( 2 );
 			for ( $num_attempts; $executed === false && $num_attempts <= WAIT_NUM_ATTEMPTS; $num_attempts++ ) {
 				$payment_status = $this->gateway_controller->get_payment_status();
 				if ( DEBUG_MODE_ENABLED ) {
