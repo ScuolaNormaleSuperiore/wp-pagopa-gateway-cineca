@@ -114,7 +114,7 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function __construct() {
 			$this->id           = 'pagopa_gateway_cineca';
-			$this->icon         = plugins_url( 'assets/img/LogoPagoPaSmall2.png', __FILE__ );
+			$this->icon         = plugins_url( 'assets/img/LogoPagoPaSmall.png', __FILE__ );
 			$this->has_fields   = true;
 			$this->method_title = 'PagoPA Gateway';
 
@@ -133,8 +133,16 @@ function wp_gateway_pagopa_init() {
 			$this->init_settings();
 
 			// Load the settings into variables.
+			$desc = '';
+			if ( 'it_IT' === get_locale() ) {
+				$desc = $this->get_option( 'description' );
+			} else {
+				$desc = $this->get_option( 'description_en' );
+			}
+
+			$icon_list         = $this->get_icon_list();
 			$this->title       = $this->get_option( 'title' );
-			$this->description = $this->get_option( 'description' );
+			$this->description = $icon_list . $desc;
 			$this->enabled     = $this->get_option( 'enabled' );
 			$this->testmode    = $this->get_option( 'testmode' );
 
@@ -143,6 +151,46 @@ function wp_gateway_pagopa_init() {
 
 			// You can also register a webhook here.
 			add_action( 'woocommerce_api_' . HOOK_PAYMENT_COMPLETE, array( $this, 'webhook_payment_complete' ) );
+
+			// Use a custom style.
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		}
+
+		/**
+		 * Return a string with all the icons of the available payment methods.
+		 *
+		 * @return string
+		 */
+		private function get_icon_list() {
+
+			$img_list = '';
+			$folder   = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'IMG' . DIRECTORY_SEPARATOR . 'cc';
+			$folder   = wp_normalize_path( $folder );
+			$files    = list_files( $folder, 1 );
+
+			if ( is_array( $files ) ) {
+				foreach ( $files as $fp ) {
+					$filename  = basename( $fp );
+					$file_url  = self::get_plugin_url() . '/assets/img/cc/' . $filename;
+					$img_list .= $this->getImgSrc( $file_url );
+				}
+			}
+
+			if ( '' !== $img_list ) {
+				$img_list = "<span id='ppa_icon_list'>" . $img_list . '</span><br>';
+			}
+			return $img_list;
+		}
+
+		/**
+		 *
+		 * Return the code of each icon to display.
+		 *
+		 * @param string $link - The absolute url of the image.
+		 * @return void
+		 */
+		private function getImgSrc( $link ) {
+			return "<span class='ppa_card_icon'><img class='ppa_card_icon_img' src='" . $link . "' ></span>";
 		}
 
 		/**
@@ -172,11 +220,17 @@ function wp_gateway_pagopa_init() {
 					'default'     => 'PagoPA',
 					'desc_tip'    => true,
 				),
-				// This controls the description which the user sees during checkout.
+				// This controls the description that the user sees during checkout.
+				'description_en'         => array(
+					'title'       => __( 'Default description', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'The description of the plugin shown in the checkout page for non italian users.', 'wp-pagopa-gateway-cineca' ),
+					'default'     => __( 'Pay using the Cineca Gateway for PagoPA', 'wp-pagopa-gateway-cineca' ),
+				),
 				'description'            => array(
 					'title'       => __( 'Description', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'The description of the plugin', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'The italian description of the plugin shown in the checkout page.', 'wp-pagopa-gateway-cineca' ),
 					'default'     => __( 'Pay using the Cineca Gateway for PagoPA', 'wp-pagopa-gateway-cineca' ),
 				),
 				// Place the payment gateway in test mode using test API credentials.
@@ -552,6 +606,36 @@ function wp_gateway_pagopa_init() {
 			$logger  = wc_get_logger();
 			$context = array( 'source' => 'wp-pagopa-gateway-cineca' );
 			$logger->log( $log_type, $message, $context );
+		}
+
+		/**
+		 * Return the name of the plkugin
+		 *
+		 * @return void
+		 */
+		public static function get_plugin_name() {
+			return 'wp-pagopa-gateway-cineca';
+		}
+
+		/**
+		 * Return the url of the plugin.
+		 *
+		 * @return  string
+		 */
+		public static function get_plugin_url() {
+			return get_site_url() . '/wp-content/plugins/wp-pagopa-gateway-cineca';
+		}
+
+		/**
+		 * Enqueue the css and the js files.
+		 *
+		 * @return void
+		 */
+		public static function enqueue_scripts() {
+			$css_base_url = self::get_plugin_url() . '/assets/css/';
+			$plugin_name  = self::get_plugin_name();
+			$file_path    = self::get_plugin_url() . '/assets/css/wp-pagopa-gateway-cineca.css';
+			wp_enqueue_style( $plugin_name . 'css-1', $file_path );
 		}
 
 	} // end plugin class

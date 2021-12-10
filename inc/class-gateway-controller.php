@@ -76,7 +76,7 @@ class Gateway_Controller {
 			'location'           => $this->wsdl_url,
 			'cache_wsdl'         => WSDL_CACHE_NONE,
 			'trace'              => true,
-			'connection_timeout' => intval(WAIT_NUM_SECONDS) * intval(WAIT_NUM_ATTEMPTS) * 10,
+			'connection_timeout' => intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 10,
 			'local_cert'         => $this->local_cert,
 			'passphrase'         => $this->passphrase,
 			'stream_context'     => stream_context_create( $context_options ),
@@ -365,20 +365,7 @@ class Gateway_Controller {
 	public function extract_token_parameters( $token ) {
 		$key     = $this->plugin->settings['encription_key'];
 		$decoded = Encryption_Manager::decrypt_text( base64_decode( $token ), $key );
-		// $decoded = base64_decode( $token );
 		return explode( PAR_SPLITTER, $decoded );
-	}
-
-
-
-	/**
-	 * Execute the SOAP call to get the status of a payment position on the gateway.
-	 *
-	 * @param string $iuv - Identificatore Universale Pagamento .
-	 * @return void
-	 */
-	public function check_payment_status( $iuv ) {
-
 	}
 
 }
