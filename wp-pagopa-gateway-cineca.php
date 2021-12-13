@@ -171,7 +171,7 @@ function wp_gateway_pagopa_init() {
 		private function get_icon_list() {
 
 			$img_list = '';
-			$folder   = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'IMG' . DIRECTORY_SEPARATOR . 'cc';
+			$folder   = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'cc';
 			$folder   = wp_normalize_path( $folder );
 			$files    = list_files( $folder, 1 );
 
@@ -463,11 +463,13 @@ function wp_gateway_pagopa_init() {
 		 *
 		 * @param array $args - Arguments of the function.
 		 * @return void - Redirect to the thankyou page.
+		 *
+		 * @throws Exception( 'Invalid token' ) token if the passed token is not valid.
 		 */
 		public function webhook_payment_complete( $args ) {
-			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
-			$id_session         = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
-			$outcome            = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
+			$token      = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
+			$id_session = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
+			$outcome    = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
 			if ( '' === $token ) {
 				echo 'Invalid request';
 				exit;
@@ -605,6 +607,7 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function webhook_scheduled_actions( $args ) {
 			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
+			$this->log_action( 'info', 'Token:' . $token );
 			// Check if the token is present.
 			if ( ! $token ) {
 				echo 'Invalid token';
@@ -617,6 +620,7 @@ function wp_gateway_pagopa_init() {
 				exit;
 			}
 			// Check the token validity.
+			$this->log_action( 'info', 'API Token:' . $options['api_token'] );
 			if ( $options['api_token'] !== $token ) {
 				echo 'Invalid token';
 				exit;
@@ -638,6 +642,7 @@ function wp_gateway_pagopa_init() {
 		 */
 		private function update_orders_status() {
 			// Get all the on-hold orders of the last NUM_DAYS_TO_CHECK days in the 'on-hold' status.
+			$this->log_action( 'info', '[Cron] Started the procedure to check orders status.' );
 			$diff_string  = '-' . NUM_DAYS_TO_CHECK . ' day';
 			$initial_date = gmdate( 'Y-m-d', strtotime( $diff_string, strtotime( 'today' ) ) );
 			$final_date   = gmdate( 'Y-m-d' );
@@ -651,8 +656,7 @@ function wp_gateway_pagopa_init() {
 					'date_created' => $date_created,
 				),
 			);
-
-			$this->log_action( 'info', 'Started the procedure to check orders status.' );
+			$this->log_action( 'info', '[Cron] Orders to update: ' . count( $orders ) );
 
 			// Looop all pending orders.
 			foreach ( $orders as $order ) {
@@ -667,17 +671,14 @@ function wp_gateway_pagopa_init() {
 
 				if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
 					// Change the status of the paid order to 'processing'.
-					// $order->payment_complete();
+					$order->payment_complete();
 					$iuv = $order->get_meta( '_iuv' );
 					$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_SCRIPT, $iuv );
 					// Send an email.
 					$this->send_processing_notification_mail( $order );
 				}
-
-
 			}
-
-			$this->log_action( 'info', 'Ended the procedure to check orders status.' );
+			$this->log_action( 'info', '[Cron] Ended the procedure to check orders status.' );
 			return 'OK';
 		}
 
