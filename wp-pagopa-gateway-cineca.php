@@ -39,6 +39,8 @@ define( 'DEBUG_MODE_ENABLED', 1 );
 define( 'WAIT_NUM_SECONDS', 5 );
 define( 'WAIT_NUM_ATTEMPTS', 4 );
 define( 'NUM_DAYS_TO_CHECK', 7 );
+define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ));
+
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -301,14 +303,14 @@ function wp_gateway_pagopa_init() {
 					'type'        => 'text',
 					'description' => __( 'The key used to encrypt the token.', 'wp-pagopa-gateway-cineca' ),
 				),
-				'checkpayment'    => array(
-					'title'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
-					'label'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
-					'type'        => 'checkbox',
-					'description' => __( 'Check the payment passed by the callback.', 'wp-pagopa-gateway-cineca' ),
-					'default'     => 'yes',
-					'desc_tip'    => true,
-				),
+				// 'checkpayment'    => array(
+				// 	'title'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
+				// 	'label'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
+				// 	'type'        => 'checkbox',
+				// 	'description' => __( 'Check the payment passed by the callback.', 'wp-pagopa-gateway-cineca' ),
+				// 	'default'     => 'yes',
+				// 	'desc_tip'    => true,
+				// ),
 				'api_token'        => array(
 					'title'       => __( 'API token', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
@@ -403,9 +405,9 @@ function wp_gateway_pagopa_init() {
 
 			// Create the payment position on the Cineca gateway.
 			$this->gateway_controller = new Gateway_Controller( $this );
-
 			// Init the gateway.
 			$init_result = $this->gateway_controller->init( $order );
+
 			// Check if the gateway is connected.
 			if ( 'KO' === $init_result['code'] ) {
 				// Error initializing the gateway.
@@ -470,8 +472,9 @@ function wp_gateway_pagopa_init() {
 				echo 'Invalid request';
 				exit;
 			}
-			$gateway_controller = new Gateway_Controller( $this );
-			$par_array          = $gateway_controller->extract_token_parameters( $token );
+
+			$par_array = Gateway_Controller::extract_token_parameters( $token );
+
 			// Retrieve the parameters from the token.
 			try {
 				$order_id = $par_array[0];
@@ -531,9 +534,9 @@ function wp_gateway_pagopa_init() {
 
 			// Ask the status of the payment to the gateway.
 			$this->gateway_controller = new Gateway_Controller( $this );
-
 			// Init the gateway.
 			$init_result = $this->gateway_controller->init( $order );
+
 			// Check if the gateway is connected.
 			if ( 'KO' === $init_result['code'] ) {
 				// Error initializing the gateway.
@@ -620,7 +623,7 @@ function wp_gateway_pagopa_init() {
 			}
 
 			// Action1: Update the status of the orders.
-			$result = self::update_orders_status();
+			$result = $this->update_orders_status();
 
 			// Actions2: Add here other actions...
 
@@ -633,17 +636,80 @@ function wp_gateway_pagopa_init() {
 		 *
 		 * @return void
 		 */
-		private static function update_orders_status() {
-			$gateway_controller = new Gateway_Controller( $this );
+		private function update_orders_status() {
 			// Get all the on-hold orders of the last NUM_DAYS_TO_CHECK days in the 'on-hold' status.
+			$diff_string  = '-' . NUM_DAYS_TO_CHECK . ' day';
+			$initial_date = gmdate( 'Y-m-d', strtotime( $diff_string, strtotime( 'today' ) ) );
+			$final_date   = gmdate( 'Y-m-d' );
+			$final_date   = gmdate( 'Y-m-d' );
+			$date_created = $initial_date . '...' . $final_date;
+			$orders = wc_get_orders (
+				array(
+					'limit'        => -1,
+					'type'         => 'shop_order',
+					'status'       => array( 'wc-on-hold' ),
+					'date_created' => $date_created,
+				),
+			);
 
-			// Looop all orders
+			$this->log_action( 'info', 'Started the procedure to check orders status.' );
 
-			// check if the order has been paid.
+			// Looop all pending orders.
+			foreach ( $orders as $order ) {
+				// Create the gateway controller.
+				$gateway_controller = new Gateway_Controller( $this );
+				// Init the gateway.
+				$init_result = $gateway_controller->init( $order );
+				$log_manager = new Log_Manager( $order );
 
-			// Change the status of the paid order to 'processing'.
+				// Check the status of the order.
+				$payment_status = $gateway_controller->get_payment_status();
 
+				if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
+					// Change the status of the paid order to 'processing'.
+					// $order->payment_complete();
+					$iuv = $order->get_meta( '_iuv' );
+					$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_SCRIPT, $iuv );
+					// Send an email.
+					$this->send_processing_notification_mail( $order );
+				}
+
+
+			}
+
+			$this->log_action( 'info', 'Ended the procedure to check orders status.' );
 			return 'OK';
+		}
+
+		/**
+		 * Send processing notification email.
+		 *
+		 * @param array $order - The order.
+		 * @return void
+		 */
+		public function send_processing_notification_mail( $order ) {
+			$text_domain = self::get_text_domain();
+			$body     =  sprintf( __( 'The order n. %s has been paid. Please, manage the order.', $text_domain ), $order->get_order_number() );
+			$subject  = __( 'Payment of the order n.', $text_domain );
+			$subject  = $subject . ' ' . $order->get_order_number();
+			$receiver = 'ilclaudio@gmail.com';
+
+			// Get woocommerce mailer.
+			$mailer   = WC()->mailer();
+			$emails   = $mailer->get_emails();
+			$receiver = $emails['WC_Email_New_Order']->recipient;
+			$this->log_action( 'info', 'Sending email to:' . $receiver);
+
+			// Wrap message using woocommerce html email template.
+			$heading = false;
+			$wrapped_message = $mailer->wrap_message( $heading, $body );
+			// Create new WC_Email instance.
+			$wc_email = new WC_Email();
+			// Style the wrapped message with woocommerce inline styles.
+			$html_message = $wc_email->style_inline( $wrapped_message );
+
+			// Send e-mail using WP mail function.
+			$mailer->send( $receiver, $subject, $html_message, HTML_EMAIL_HEADERS, '');
 		}
 
 		/**
@@ -668,17 +734,26 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function log_action( $log_type, $message ) {
 			$logger  = wc_get_logger();
-			$context = array( 'source' => 'wp-pagopa-gateway-cineca' );
+			$context = array( 'source' => self::get_plugin_name() );
 			$logger->log( $log_type, $message, $context );
 		}
 
 		/**
-		 * Return the name of the plkugin
+		 * Return the name of the plkugin.
 		 *
-		 * @return void
+		 * @return string - The name of the plugin.
 		 */
 		public static function get_plugin_name() {
 			return 'wp-pagopa-gateway-cineca';
+		}
+
+		/**
+		 * Return the text domain.
+		 *
+		 * @return string - The text domain.
+		 */
+		public static function get_text_domain() {
+			return self::get_plugin_name();
 		}
 
 		/**
@@ -696,7 +771,6 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public static function enqueue_scripts() {
-			$css_base_url = self::get_plugin_url() . '/assets/css/';
 			$plugin_name  = self::get_plugin_name();
 			$file_path    = self::get_plugin_url() . '/assets/css/wp-pagopa-gateway-cineca.css';
 			wp_enqueue_style( $plugin_name . 'css-1', $file_path );

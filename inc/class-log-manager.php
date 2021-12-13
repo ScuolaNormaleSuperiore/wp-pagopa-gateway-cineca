@@ -22,6 +22,7 @@ define( 'STATUS_PAYMENT_NOT_CREATED', 'not_created' );
 define( 'STATUS_PAYMENT_EXECUTED', 'executed' );
 define( 'STATUS_PAYMENT_NOT_EXECUTED', 'not_executed' );
 define( 'STATUS_PAYMENT_CONFIRMED', 'confirmed' );
+define( 'STATUS_PAYMENT_CONFIRMED_BY_SCRIPT', 'confirmed_by_script' );
 define( 'STATUS_PAYMENT_NOT_CONFIRMED', 'not_confirmed' );
 
 /**

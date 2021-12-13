@@ -154,7 +154,7 @@ class Gateway_Controller {
 				),
 				'importoTotale'      => $this->order->get_total(),
 				'dataScadenza'       => $expiration_date,
-				'causale'            => __( 'Payment of the order n. ', 'wp-pagopa-gateway-cineca' ) . $this->order->get_order_number(),
+				'causale'            => __( 'Payment of the order n.', 'wp-pagopa-gateway-cineca' ) . ' ' . $this->order->get_order_number(),
 				'singoloVersamento'  => array(
 					'codSingoloVersamentoEnte' => $this->order->get_order_number(),
 					'importo'                  => $this->order->get_total(),
@@ -335,7 +335,7 @@ class Gateway_Controller {
 		$customer_code    = $this->plugin->settings['application_code'];
 		$order_number     = $this->order->get_order_number();
 		$raw_order_number = $this->build_raw_order_number( $this->plugin->settings['order_prefix'], $order_number );
-		$token            = $this->create_token( $order_number, $iuv );
+		$token            = self::create_token( $order_number, $iuv );
 		$order_hook       = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?token=' . $token;
 		$encoded_hook     = rawurlencode( $order_hook );
 		$redirect_url     = $this->ws_data['frontend_base_url'] . PATH_FRONT_END_CINECA . '?cod_vers_ente=' . $raw_order_number . '&cod_app=' . $customer_code . '&retUrl=' . $encoded_hook;
@@ -349,9 +349,10 @@ class Gateway_Controller {
 	 * @param string $iuv - The Iuv of the payment.
 	 * @return string - The token containing the session parameters.
 	 */
-	public function create_token( $order_id, $iuv ) {
+	public static function create_token( $order_id, $iuv ) {
 		$plain_token     = $order_id . PAR_SPLITTER . $iuv;
-		$key             = $this->plugin->settings['encription_key'];
+		$options         = self::get_plugin_options();
+		$key             = $options['encription_key'];
 		$encrypted_token = Encryption_Manager::encrypt_text( $plain_token, $key );
 		return base64_encode( $encrypted_token );
 	}
@@ -362,10 +363,20 @@ class Gateway_Controller {
 	 * @param string $token - The token with the parameters.
 	 * @return array - The array containing the parameters.
 	 */
-	public function extract_token_parameters( $token ) {
-		$key     = $this->plugin->settings['encription_key'];
+	public static function extract_token_parameters( $token ) {
+		$options = self::get_plugin_options();
+		$key     = $options['encription_key'];
 		$decoded = Encryption_Manager::decrypt_text( base64_decode( $token ), $key );
 		return explode( PAR_SPLITTER, $decoded );
+	}
+
+	/**
+	 * Return the plugin options.
+	 *
+	 * @return array -  The options of the plugin.
+	 */
+	private static function get_plugin_options() {
+		return get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
 	}
 
 }
