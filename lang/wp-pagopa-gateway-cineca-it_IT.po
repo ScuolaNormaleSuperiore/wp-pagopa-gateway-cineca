@@ -93,7 +93,7 @@ msgid "Enable/Disable"
 msgstr "Abilita/Disabilita"
 
 #: wp-pagopa-gateway-cineca.php:302
-msgid "Encription key"
+msgid "Encryption key"
 msgstr "Chiave di crittografia"
 
 #: inc/class-gateway-controller.php:314

@@ -6,7 +6,7 @@
  * @author      ICT Scuola Normale Superiore
  * @category    Payment Module
  * @package     PagoPA Gateway Cineca
- * @version     1.0.5-b1
+ * @version     1.0.6-b1
  * @copyright   Copyright (c) 2021 SNS)
  * @license     GNU General Public License v3.0
  */

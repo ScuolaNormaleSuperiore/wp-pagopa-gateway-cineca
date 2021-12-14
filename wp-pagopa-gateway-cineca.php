@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.0.5-b1
+ * Version: 1.0.6-b1
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -273,7 +273,7 @@ function wp_gateway_pagopa_init() {
 				'accounting_code'        => array(
 					'title'       => __( 'Accounting code', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Accounting code as defined in the PagoPA taxonomy (https://www.pagopa.gov.it/it/pubbliche-amministrazioni/documentazione/#n3)', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Accounting code as defined in the PagoPA taxonomy (https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json)', 'wp-pagopa-gateway-cineca' ),
 					'default'     => '0601120SP',
 				),
 				'id_payment_model'       => array(
@@ -298,8 +298,8 @@ function wp_gateway_pagopa_init() {
 					'description' => __( 'The prefix that the plugin will prepend to the order number.It can be an empty string.', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'TEST',
 				),
-				'encription_key'         => array(
-					'title'       => __( 'Encription key', 'wp-pagopa-gateway-cineca' ),
+				'encryption_key'         => array(
+					'title'       => __( 'Encryption key', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'The key used to encrypt the token.', 'wp-pagopa-gateway-cineca' ),
 				),

@@ -6,7 +6,7 @@
  * @author      ICT Scuola Normale Superiore
  * @category    Payment Module
  * @package     PagoPA Gateway Cineca
- * @version     1.0.5-b1
+ * @version     1.0.6-b1
  * @copyright   Copyright (c) 2021 SNS)
  * @license     GNU General Public License v3.0
  */
@@ -15,7 +15,7 @@ DEFINE( 'CIPHER', 'aes-256-ctr' );
 DEFINE( 'IV_KEY', 'p2345hd9101f45t1' );
 
 /**
- * EncriptionManager class
+ * EncryptionManager class
  */
 class Encryption_Manager {
 
@@ -23,7 +23,7 @@ class Encryption_Manager {
 	 * Encrypt the text passed as parameter.
 	 *
 	 * @param String $text - The text to be encrypted.
-	 * @param String $key - The key for the encription.
+	 * @param String $key - The key for the encryption.
 	 * @return string
 	 */
 	public static function encrypt_text( $text, $key ) {

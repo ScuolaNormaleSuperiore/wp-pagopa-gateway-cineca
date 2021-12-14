@@ -6,7 +6,7 @@
  * @author      ICT Scuola Normale Superiore
  * @category    Payment Module
  * @package     PagoPA Gateway Cineca
- * @version     1.0.5-b1
+ * @version     1.0.6-b1
  * @copyright   Copyright (c) 2021 SNS)
  * @license     GNU General Public License v3.0
  */
@@ -346,7 +346,7 @@ class Gateway_Controller {
 	public static function create_token( $order_id, $iuv ) {
 		$plain_token     = $order_id . PAR_SPLITTER . $iuv;
 		$options         = self::get_plugin_options();
-		$key             = $options['encription_key'];
+		$key             = $options['encryption_key'];
 		$encrypted_token = Encryption_Manager::encrypt_text( $plain_token, $key );
 		return base64_encode( $encrypted_token );
 	}
@@ -359,7 +359,7 @@ class Gateway_Controller {
 	 */
 	public static function extract_token_parameters( $token ) {
 		$options = self::get_plugin_options();
-		$key     = $options['encription_key'];
+		$key     = $options['encryption_key'];
 		$decoded = Encryption_Manager::decrypt_text( base64_decode( $token ), $key );
 		return explode( PAR_SPLITTER, $decoded );
 	}

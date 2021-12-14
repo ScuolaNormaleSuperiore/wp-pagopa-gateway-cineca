@@ -1,36 +1,29 @@
 
 TODO LIST:
 
-1) Gestione parametrizzata dei campi aggiuntivi:
+1) Managen the following fields in a new plugin:
 	a) _billing_ita_sdi
 	b) _billing_ita_cf
-	c) _billing_vat)
+	c) _billing_vat
 
-2) *** VERIFICHE:
-		- Controllare se le quantità in stock sono modificate correttamente.
-		- Verifica del workflow degli stati.
+2) Add a validation of the plugin configuration parameters.
 
-3) Realizzare Docker per testare il plugin.
+3) Check the license of the plugin.
 
-4) webhook_payment_complete: Verifica dello stato dell'ordine (deve essere in attesa di pagamento e deve passare 'in lavorazione')
+4) DOCUMENTATION:
+		- How to convert a certificate from pk12 to pem.
+		- Update README with instructions to install anda configure the plugin.
+		- Describe the worflow of the procedure.
 
-5) Validazione dei parametri di configurazione del plugin.
+5) *** Refactoring:
+		- Extract init_form_fields from main class.
 
-6) Verificare la licenza di rilascio del plugin e modificare i file.
+6) Check the use of the certificates.
 
-7) DOCUMENTAZIONE:
-		- Istruzioni per convertire certificato da pk12 a pem.
-		- Aggiornare README con documentazione per installare e configurare plugin.
-		- Descrivere schema di funzionamento.
+7) Check Nonces in webhook_payment_complete.
 
-8) *** Rifattorizzazioni:
-		- Tirare fuori configurazione da init_form_fields
+8) Create container on Rancher.
 
-9) Verificare utilizzo e funzionamento dei certificati.
+9) Add administration table to manage the log of the plugin.
 
-10) Verifica gestione Nonces e parametri di ingresso in webhook_payment_complete.
-
-11) Realizzazione versione di TEST su Rancher.
-
-12) disabilitare il modulo se soap o woocommerce non sonop più installatti.
 
