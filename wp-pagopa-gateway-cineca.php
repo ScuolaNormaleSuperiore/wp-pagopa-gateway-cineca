@@ -689,9 +689,8 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function send_processing_notification_mail( $order ) {
-			$text_domain = self::get_text_domain();
-			$body     =  sprintf( __( 'The order n. %s has been paid. Please, manage the order.', $text_domain ), $order->get_order_number() );
-			$subject  = __( 'Payment of the order n.', $text_domain );
+			$body     = sprintf( __( 'The order n. %s has been paid. Please, manage the order.', 'wp-pagopa-gateway-cineca' ), $order->get_order_number() );
+			$subject  = __( 'Payment of the order n.', 'wp-pagopa-gateway-cineca' );
 			$subject  = $subject . ' ' . $order->get_order_number();
 			$receiver = 'ilclaudio@gmail.com';
 
@@ -746,15 +745,6 @@ function wp_gateway_pagopa_init() {
 		 */
 		public static function get_plugin_name() {
 			return 'wp-pagopa-gateway-cineca';
-		}
-
-		/**
-		 * Return the text domain.
-		 *
-		 * @return string - The text domain.
-		 */
-		public static function get_text_domain() {
-			return self::get_plugin_name();
 		}
 
 		/**

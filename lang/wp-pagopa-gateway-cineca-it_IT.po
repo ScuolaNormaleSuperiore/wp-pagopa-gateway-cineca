@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2021-12-13 15:45+0000\n"
+"PO-Revision-Date: 2021-12-14 08:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -100,7 +100,7 @@ msgstr "Chiave di crittografia"
 msgid "Error in the Cineca response"
 msgstr "Errore nella risposta di Cineca"
 
-#: wp-pagopa-gateway-cineca.php:498
+#: wp-pagopa-gateway-cineca.php:500
 msgid "Error retrieving the order"
 msgstr "Si è verificato un errore recuperando l'ordine"
 
@@ -114,7 +114,7 @@ msgstr "Nome del file con il certificato .pem"
 msgid "Front end base url"
 msgstr "Indirizzo base del front end Cineca"
 
-#: wp-pagopa-gateway-cineca.php:414 wp-pagopa-gateway-cineca.php:543
+#: wp-pagopa-gateway-cineca.php:414 wp-pagopa-gateway-cineca.php:545
 msgid "Gateway connection error."
 msgstr "Errore di connessione al gateway."
 
@@ -142,11 +142,11 @@ msgstr ""
 "ID del modello di pagamento relativo all'e-commerce definito nel back office "
 "di Cineca"
 
-#: wp-pagopa-gateway-cineca.php:525
+#: wp-pagopa-gateway-cineca.php:527
 msgid "Iuv"
 msgstr "Iuv"
 
-#: wp-pagopa-gateway-cineca.php:522
+#: wp-pagopa-gateway-cineca.php:524
 msgid "Order id"
 msgstr "Numero d'ordine"
 
@@ -190,7 +190,7 @@ msgstr "ID del modello di pagamento"
 msgid "Payment module configuration"
 msgstr "Configurazione del modulo del pagamento"
 
-#: wp-pagopa-gateway-cineca.php:577
+#: wp-pagopa-gateway-cineca.php:579
 msgid ""
 "Payment not confirmed by the gateway. Please contact the staff, the order "
 "number is:"
@@ -198,7 +198,7 @@ msgstr ""
 "ll pagamento non è stato confermato dal gateway. Per favore, contatta lo "
 "staff, il numero d'ordine è:"
 
-#: inc/class-gateway-controller.php:157
+#: wp-pagopa-gateway-cineca.php:693 inc/class-gateway-controller.php:157
 #, fuzzy
 #| msgid "Payment of the order n. "
 msgid "Payment of the order n."
@@ -232,7 +232,7 @@ msgid ""
 "users."
 msgstr "La descrizione del metodo di pagamento in inglese."
 
-#: wp-pagopa-gateway-cineca.php:487
+#: wp-pagopa-gateway-cineca.php:489
 msgid "The gateway passed an invalid token for the order"
 msgstr "Il gateway ha passato un token invalido per questo ordine"
 
@@ -248,6 +248,11 @@ msgstr "Lo Iuv assegnato all'ordine è:"
 msgid "The key used to encrypt the token."
 msgstr "La chiave usata per crittografare il token."
 
+#: wp-pagopa-gateway-cineca.php:692
+#, php-format
+msgid "The order n. %s has been paid. Please, manage the order."
+msgstr "L'ordine n. %s è stato pagato. Per favore, gestisci l'ordine."
+
 #: wp-pagopa-gateway-cineca.php:298
 msgid ""
 "The prefix that the plugin will prepend to the order number.It can be an "
@@ -256,7 +261,7 @@ msgstr ""
 "Il prefisso che il plugin aggiungerà al numero d'ordine. Può essere una "
 "stringa vuota."
 
-#: wp-pagopa-gateway-cineca.php:510
+#: wp-pagopa-gateway-cineca.php:512
 msgid "The status of the payment is not consistent"
 msgstr "Lo stato del pagamento non è consistente"
 
@@ -280,7 +285,7 @@ msgstr "Nome utente fornito da Cineca abilitato all'uso delle API"
 msgid "VAT code of the customer"
 msgstr "Partita Iva dell'Ente"
 
-#: wp-pagopa-gateway-cineca.php:520
+#: wp-pagopa-gateway-cineca.php:522
 msgid ""
 "You have canceled the payment. To confirm the order, make the payment and "
 "contact the staff."
