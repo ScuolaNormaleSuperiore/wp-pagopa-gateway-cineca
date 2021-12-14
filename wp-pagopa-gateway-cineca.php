@@ -39,7 +39,7 @@ define( 'DEBUG_MODE_ENABLED', 1 );
 define( 'WAIT_NUM_SECONDS', 5 );
 define( 'WAIT_NUM_ATTEMPTS', 4 );
 define( 'NUM_DAYS_TO_CHECK', 7 );
-define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ));
+define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) );
 
 
 // Register the hooks to install and uninstall the plugin.
@@ -194,7 +194,7 @@ function wp_gateway_pagopa_init() {
 		 * Return the code of each icon to display.
 		 *
 		 * @param string $link - The absolute url of the image.
-		 * @return void
+		 * @return string - The link of the image.
 		 */
 		private function getImgSrc( $link ) {
 			return "<span class='ppa_card_icon'><img class='ppa_card_icon_img' src='" . $link . "' ></span>";
@@ -292,26 +292,18 @@ function wp_gateway_pagopa_init() {
 					'type'        => 'text',
 					'description' => __( 'Passphrase of the certificate', 'wp-pagopa-gateway-cineca' ),
 				),
-				'order_prefix'          => array(
+				'order_prefix'           => array(
 					'title'       => __( 'Order prefix', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'The prefix that the plugin will prepend to the order number.It can be an empty string.', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'TEST',
 				),
-				'encription_key'  => array(
+				'encription_key'         => array(
 					'title'       => __( 'Encription key', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'The key used to encrypt the token.', 'wp-pagopa-gateway-cineca' ),
 				),
-				// 'checkpayment'    => array(
-				// 	'title'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
-				// 	'label'       => __( 'Check the payment', 'wp-pagopa-gateway-cineca' ),
-				// 	'type'        => 'checkbox',
-				// 	'description' => __( 'Check the payment passed by the callback.', 'wp-pagopa-gateway-cineca' ),
-				// 	'default'     => 'yes',
-				// 	'desc_tip'    => true,
-				// ),
-				'api_token'        => array(
+				'api_token'              => array(
 					'title'       => __( 'API token', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Token used by the REST API and the scheduled actions.', 'wp-pagopa-gateway-cineca' ),
@@ -404,7 +396,7 @@ function wp_gateway_pagopa_init() {
 			$log_manager->log( STATUS_PAYMENT_SUBMITTED );
 
 			// Create the payment position on the Cineca gateway.
-			$this->gateway_controller = new Gateway_Controller( $this );
+			$this->gateway_controller = new Gateway_Controller();
 			// Init the gateway.
 			$init_result = $this->gateway_controller->init( $order );
 
@@ -442,8 +434,8 @@ function wp_gateway_pagopa_init() {
 			// Add the Iuv as metadata to the order.
 			$order->update_meta_data( '_iuv', $payment_position['iuv'] );
 			// Add a note to the order with the Iuv code.
-			$note       = __( 'The Iuv of the order is:', 'wp-pagopa-gateway-cineca' );
-			$note       = $note . ' ' . $payment_position['iuv'];
+			$note = __( 'The Iuv of the order is:', 'wp-pagopa-gateway-cineca' );
+			$note = $note . ' ' . $payment_position['iuv'];
 			$order->add_order_note( $note );
 			// Change the status of the order.
 			$order->update_status( 'on-hold', __( 'Payment in progress', 'wp-pagopa-gateway-cineca' ) );
@@ -535,7 +527,7 @@ function wp_gateway_pagopa_init() {
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
 			// Ask the status of the payment to the gateway.
-			$this->gateway_controller = new Gateway_Controller( $this );
+			$this->gateway_controller = new Gateway_Controller();
 			// Init the gateway.
 			$init_result = $this->gateway_controller->init( $order );
 
@@ -603,7 +595,7 @@ function wp_gateway_pagopa_init() {
 		 * Hook called to start scheduled actions.
 		 *
 		 * @param array $args - Arguments of the function.
-		 * @return string - Redirect to the thankyou page.
+		 * @return void
 		 */
 		public function webhook_scheduled_actions( $args ) {
 			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
@@ -648,7 +640,7 @@ function wp_gateway_pagopa_init() {
 			$final_date   = gmdate( 'Y-m-d' );
 			$final_date   = gmdate( 'Y-m-d' );
 			$date_created = $initial_date . '...' . $final_date;
-			$orders = wc_get_orders (
+			$orders      = wc_get_orders (
 				array(
 					'limit'        => -1,
 					'type'         => 'shop_order',
@@ -661,7 +653,7 @@ function wp_gateway_pagopa_init() {
 			// Looop all pending orders.
 			foreach ( $orders as $order ) {
 				// Create the gateway controller.
-				$gateway_controller = new Gateway_Controller( $this );
+				$gateway_controller = new Gateway_Controller();
 				// Init the gateway.
 				$init_result = $gateway_controller->init( $order );
 				$log_manager = new Log_Manager( $order );
@@ -701,7 +693,7 @@ function wp_gateway_pagopa_init() {
 			$this->log_action( 'info', 'Sending email to:' . $receiver);
 
 			// Wrap message using woocommerce html email template.
-			$heading = false;
+			$heading         = false;
 			$wrapped_message = $mailer->wrap_message( $heading, $body );
 			// Create new WC_Email instance.
 			$wc_email = new WC_Email();
@@ -762,8 +754,8 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public static function enqueue_scripts() {
-			$plugin_name  = self::get_plugin_name();
-			$file_path    = self::get_plugin_url() . '/assets/css/wp-pagopa-gateway-cineca.css';
+			$plugin_name = self::get_plugin_name();
+			$file_path   = self::get_plugin_url() . '/assets/css/wp-pagopa-gateway-cineca.css';
 			wp_enqueue_style( $plugin_name . 'css-1', $file_path );
 		}
 

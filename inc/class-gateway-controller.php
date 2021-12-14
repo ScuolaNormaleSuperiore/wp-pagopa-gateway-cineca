@@ -23,24 +23,23 @@ class Gateway_Controller {
 	/**
 	 * Create the Gateway controller.
 	 *
-	 * @param WP_Gateway_PagoPa $plugin - The payment plugin.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin  = $plugin;
+	public function __construct() {
+		$this->options = self::get_plugin_options();
 		$this->ws_data = array();
 
-		if ( 'yes' === $this->plugin->settings['testmode'] ) {
+		if ( 'yes' === $this->options['testmode'] ) {
 			// Get the parameters of the TEST configutation .
-			$this->ws_data['frontend_base_url'] = trim( $this->plugin->settings['base_fronted_url_test'], '/' );
-			$this->ws_data['ws_soap_base_url']  = trim( $this->plugin->settings['base_url_test'], '/' );
-			$this->ws_data['ws_username']       = $this->plugin->settings['username_test'];
-			$this->ws_data['ws_password']       = $this->plugin->settings['password_test'];
+			$this->ws_data['frontend_base_url'] = trim( $this->options['base_fronted_url_test'], '/' );
+			$this->ws_data['ws_soap_base_url']  = trim( $this->options['base_url_test'], '/' );
+			$this->ws_data['ws_username']       = $this->options['username_test'];
+			$this->ws_data['ws_password']       = $this->options['password_test'];
 		} else {
 			// Get the parameters of the PRODUCTION configutation .
-			$this->ws_data['frontend_base_url'] = trim( $this->plugin->settings['base_fronted_url_prod'], '/' );
-			$this->ws_data['ws_soap_base_url']  = trim( $this->plugin->settings['base_url_prod'], '/' );
-			$this->ws_data['ws_username']       = $this->plugin->settings['username_prod'];
-			$this->ws_data['ws_password']       = $this->plugin->settings['password_prod'];
+			$this->ws_data['frontend_base_url'] = trim( $this->options['base_fronted_url_prod'], '/' );
+			$this->ws_data['ws_soap_base_url']  = trim( $this->options['base_url_prod'], '/' );
+			$this->ws_data['ws_username']       = $this->options['username_prod'];
+			$this->ws_data['ws_password']       = $this->options['password_prod'];
 		}
 	}
 
@@ -52,9 +51,9 @@ class Gateway_Controller {
 	 */
 	public function init( $order ) {
 		$this->order      = $order;
-		$this->local_cert = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . $this->plugin->settings['cert_abs_path'];
+		$this->local_cert = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . $this->options['cert_abs_path'];
 		$this->local_cert = wp_normalize_path( $this->local_cert );
-		$this->passphrase = $this->plugin->settings['cert_passphrase'];
+		$this->passphrase = $this->options['cert_passphrase'];
 
 		// set some SSL/TLS specific options .
 		$context_options = array(
@@ -114,30 +113,27 @@ class Gateway_Controller {
 		$expiration_date = gmdate( 'Y-m-d\TH:i:s', strtotime( '3 hour' ) );
 
 		// If the VAT field is specified then the customer is a company not a person.
-		$vat = $this->order->get_meta( '_billing_vat' );
-		if ( $vat ) {
+		$vat              = $this->order->get_meta( '_billing_vat' );
+		$billing_coompany = $this->order->get_billing_company();
+		if ( $billing_coompany && $vat ) {
 			// The customer is a company.
-			$persona_fisica  = false;
 			$codice_univoco  = $this->format_string( $vat );
 			$ragione_sociale = $this->format_string( $this->order->get_billing_company() );
-			// $sdi = $this->order->get_meta( '_billing_ita_sdi' ).
 		} else {
 			// The customer is a person.
-			$persona_fisica  = true;
 			$codice_univoco  = $this->format_string( $this->order->get_meta( '_billing_ita_cf' ) );
 			$ragione_sociale = $this->format_string( $this->order->get_billing_first_name() . ' ' . $this->order->get_billing_last_name() );
-			// $sdi = ''.
 		}
 
-		$raw_order_number = $this->build_raw_order_number( $this->plugin->settings['order_prefix'], $this->order->get_order_number() );
+		$raw_order_number = $this->build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
 
 		$bodyrichiesta = array(
 			'generaIuv'        => true,
 			'aggiornaSeEsiste' => false,
 			'versamento'       => array(
-				'codApplicazione'    => $this->plugin->settings['application_code'],
+				'codApplicazione'    => $this->options['application_code'],
 				'codVersamentoEnte'  => $raw_order_number,
-				'codDominio'         => $this->plugin->settings['domain_code'],
+				'codDominio'         => $this->options['domain_code'],
 				'debitore'           => array(
 					'codUnivoco'     => $codice_univoco,
 					'indirizzo'      => $this->order->get_billing_address_2() ?
@@ -159,12 +155,12 @@ class Gateway_Controller {
 					'codSingoloVersamentoEnte' => $this->order->get_order_number(),
 					'importo'                  => $this->order->get_total(),
 					'tributo'                  => array(
-						'ibanAccredito'   => $this->plugin->settings['iban'],
-						'tipoContabilita' => $this->plugin->settings['accounting_type'],
-						'codContabilita'  => $this->plugin->settings['accounting_code'] . '/',
+						'ibanAccredito'   => $this->options['iban'],
+						'tipoContabilita' => $this->options['accounting_type'],
+						'codContabilita'  => $this->options['accounting_code'] . '/',
 					),
 				),
-				'idModelloPagamento' => $this->plugin->settings['id_payment_model'],
+				'idModelloPagamento' => $this->options['id_payment_model'],
 			),
 		);
 
@@ -183,7 +179,6 @@ class Gateway_Controller {
 					$result_code = 'OK';
 					$esito       = $result->codOperazione;
 					$iuv         = $result->iuvGenerato->iuv;
-					// error_log( '@@@ COD-OPERAZIONE' .  $esito); .
 				} else {
 					// Payment creation failed: Error in the Cineca response.
 					$esito       = $this->get_error_message( $result );
@@ -258,10 +253,9 @@ class Gateway_Controller {
 	 * @return array
 	 */
 	public function get_payment_status() {
-		$today         = gmdate( 'Y-m-d' );
-		$raw_order_number = $this->build_raw_order_number( $this->plugin->settings['order_prefix'], $this->order->get_order_number() );
-		$bodyrichiesta = array(
-			'codApplicazione'   => $this->plugin->settings['application_code'],
+		$raw_order_number = $this->build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
+		$bodyrichiesta    = array(
+			'codApplicazione'   => $this->options['application_code'],
 			'codVersamentoEnte' => $raw_order_number,
 		);
 
@@ -332,9 +326,9 @@ class Gateway_Controller {
 	 * @return string - The redirect url.
 	 */
 	public function get_payment_url( $iuv, $hook ) {
-		$customer_code    = $this->plugin->settings['application_code'];
+		$customer_code    = $this->options['application_code'];
 		$order_number     = $this->order->get_order_number();
-		$raw_order_number = $this->build_raw_order_number( $this->plugin->settings['order_prefix'], $order_number );
+		$raw_order_number = $this->build_raw_order_number( $this->options['order_prefix'], $order_number );
 		$token            = self::create_token( $order_number, $iuv );
 		$order_hook       = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?token=' . $token;
 		$encoded_hook     = rawurlencode( $order_hook );

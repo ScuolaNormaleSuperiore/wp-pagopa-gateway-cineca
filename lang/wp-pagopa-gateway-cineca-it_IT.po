@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2021-12-14 08:36+0000\n"
+"PO-Revision-Date: 2021-12-14 08:39+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -267,7 +267,7 @@ msgstr "Lo stato del pagamento non è consistente"
 
 #: wp-pagopa-gateway-cineca.php:226
 msgid "The title of the plugin"
-msgstr "titolo del plugin"
+msgstr "Titolo del plugin"
 
 #: wp-pagopa-gateway-cineca.php:224
 msgid "Title"
