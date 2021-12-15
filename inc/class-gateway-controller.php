@@ -75,7 +75,7 @@ class Gateway_Controller {
 			'location'           => $this->wsdl_url,
 			'cache_wsdl'         => WSDL_CACHE_NONE,
 			'trace'              => true,
-			'connection_timeout' => intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 10,
+			'connection_timeout' => intval( TOTAL_SOAP_TIMEOUT ),
 			'local_cert'         => $this->local_cert,
 			'passphrase'         => $this->passphrase,
 			'stream_context'     => stream_context_create( $context_options ),
