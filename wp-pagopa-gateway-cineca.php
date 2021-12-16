@@ -41,6 +41,8 @@ define( 'WAIT_NUM_ATTEMPTS', 4 );
 define( 'NUM_DAYS_TO_CHECK', 7 );
 define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) );
 
+define( 'TOTAL_SOAP_TIMEOUT', intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 20 );
+ini_set( 'default_socket_timeout', intval( TOTAL_SOAP_TIMEOUT ) );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -544,8 +546,11 @@ function wp_gateway_pagopa_init() {
 			$executed     = false;
 			$num_attempts = 1;
 			sleep( 2 );
-			for ( $num_attempts; $executed === false && $num_attempts <= WAIT_NUM_ATTEMPTS; $num_attempts++ ) {
+			for ( $num_attempts; ( false === $executed ) && ( $num_attempts <= WAIT_NUM_ATTEMPTS ); $num_attempts++ ) {
+
+				// Check the status of the payment.
 				$payment_status = $this->gateway_controller->get_payment_status();
+
 				if ( DEBUG_MODE_ENABLED ) {
 					$this->log_action( 'info', print_r( $payment_status, true ) );
 				}

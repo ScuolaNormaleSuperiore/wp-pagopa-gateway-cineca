@@ -14,8 +14,6 @@
 define( 'PATH_WSDL_CINECA', '/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl' );
 define( 'PATH_FRONT_END_CINECA', '/portalepagamenti.server.frontend/#/ext' );
 define( 'PAR_SPLITTER', '||' );
-define( 'TOTAL_SOAP_TIMEOUT', intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 20 );
-ini_set( 'default_socket_timeout', intval( TOTAL_SOAP_TIMEOUT ) );
 
 /**
  * Gateway_Controller class
@@ -77,7 +75,7 @@ class Gateway_Controller {
 			'location'           => $this->wsdl_url,
 			'cache_wsdl'         => WSDL_CACHE_NONE,
 			'trace'              => true,
-			'connection_timeout' => ,
+			'connection_timeout' => intval( TOTAL_SOAP_TIMEOUT ),
 			'local_cert'         => $this->local_cert,
 			'passphrase'         => $this->passphrase,
 			'stream_context'     => stream_context_create( $context_options ),
