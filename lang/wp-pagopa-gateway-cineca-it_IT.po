@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2022-01-03 12:08+0000\n"
+"PO-Revision-Date: 2022-01-03 13:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -68,6 +68,18 @@ msgstr "Nome del file del certificato"
 msgid "Certificate passphrase"
 msgstr "Password del certificato"
 
+#: class-log-manager.php
+msgid "confirmed"
+msgstr "confermato"
+
+#: class-log-manager.php
+msgid "confirmed_by_script"
+msgstr "confermato_da_script"
+
+#: class-log-manager.php
+msgid "created"
+msgstr "creato"
+
 #: inc/class-log-list-table.php:45
 msgid "Customer ID"
 msgstr "ID cliente"
@@ -116,6 +128,10 @@ msgstr "Errore nella risposta di Cineca"
 msgid "Error retrieving the order"
 msgstr "Si è verificato un errore recuperando l'ordine"
 
+#: class-log-manager.php
+msgid "executed"
+msgstr "eseguito"
+
 #: wp-pagopa-gateway-cineca.php:299
 msgid "File name of the .pem certificate"
 msgstr "Nome del file con il certificato .pem"
@@ -161,6 +177,18 @@ msgstr ""
 #: wp-pagopa-gateway-cineca.php:531 inc/class-log-list-table.php:47
 msgid "Iuv"
 msgstr "Iuv"
+
+#: class-log-manager.php
+msgid "not_confirmed"
+msgstr "non_confermato"
+
+#: class-log-manager.php
+msgid "not_created"
+msgstr "non_creato"
+
+#: class-log-manager.php
+msgid "not_executed"
+msgstr "non_eseguito"
 
 #: inc/class-log-list-table.php:43
 msgid "Order ID"
@@ -257,6 +285,10 @@ msgstr "Data fine"
 #: inc/class-log-list-table.php:44
 msgid "Status"
 msgstr "Stato"
+
+#: class-log-manager.php
+msgid "submitted"
+msgstr "sottomesso"
 
 #: wp-pagopa-gateway-cineca.php:352
 msgid "Test credentials"

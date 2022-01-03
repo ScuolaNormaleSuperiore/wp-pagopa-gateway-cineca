@@ -161,8 +161,25 @@ class Log_List_Table extends WP_List_Table {
 			case 'description':
 				return $item[ $column_name ];
 			case 'status':
-				$name = $item [ $column_name ];
-				return __( $name, 'wp-pagopa-gateway-cineca' );
+				$value     = $item [ $column_name ];
+				$str_value = '';
+				switch ( $value ) {
+					case STATUS_PAYMENT_NOT_EXECUTED:
+					case STATUS_PAYMENT_NOT_CONFIRMED:
+					case STATUS_PAYMENT_NOT_CREATED:
+						// $str_value = '<b style="color:red">' . __( $value, 'wp-pagopa-gateway-cineca' ) . '</b>';
+						$str_value = '<b style="color:red">' . $value . '</b>';
+						break;
+					case STATUS_PAYMENT_CONFIRMED:
+						// $str_value = '<b style="color:green">' . __( $value, 'wp-pagopa-gateway-cineca' ) . '</b>';
+						$str_value = '<b style="color:green">' . $value. '</b>';
+						break;
+					default:
+						// $str_value = __( $value, 'wp-pagopa-gateway-cineca' );
+						$str_value = $value;
+						break;
+				}
+				return $str_value;
 		}
 	}
 

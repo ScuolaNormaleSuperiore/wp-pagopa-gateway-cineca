@@ -324,3 +324,35 @@ msgid ""
 "You have canceled the payment. To confirm the order, make the payment and "
 "contact the staff."
 msgstr ""
+
+#: class-log-manager.php
+msgid "submitted"
+msgstr ""
+
+#: class-log-manager.php
+msgid "created"
+msgstr ""
+
+#: class-log-manager.php
+msgid "not_created"
+msgstr ""
+
+#: class-log-manager.php
+msgid "executed"
+msgstr ""
+
+#: class-log-manager.php
+msgid "not_executed"
+msgstr ""
+
+#: class-log-manager.php
+msgid "confirmed"
+msgstr ""
+
+#: class-log-manager.php
+msgid "confirmed_by_script"
+msgstr ""
+
+#: class-log-manager.php
+msgid "not_confirmed"
+msgstr ""
