@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.0.7-b1
+ * Version: 1.0.8-b1
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -42,8 +42,9 @@ define( 'WAIT_NUM_ATTEMPTS', 4 );
 define( 'NUM_DAYS_TO_CHECK', 7 );
 define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) );
 
-define( 'TOTAL_SOAP_TIMEOUT', intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 20 );
-ini_set( 'default_socket_timeout', intval( TOTAL_SOAP_TIMEOUT ) );
+define( 'TOTAL_SOAP_TIMEOUT', 20 );
+// define( 'TOTAL_SOAP_TIMEOUT', intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 20 );
+// ini_set( 'default_socket_timeout', intval( TOTAL_SOAP_TIMEOUT ) );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -531,25 +532,40 @@ function wp_gateway_pagopa_init() {
 			// Payment executed.
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
-			// Ask the status of the payment to the gateway.
-			$this->gateway_controller = new Gateway_Controller();
-			// Init the gateway.
-			$init_result = $this->gateway_controller->init( $order );
+			// // Ask the status of the payment to the gateway.
+			// $this->gateway_controller = new Gateway_Controller();
+			// // Init the gateway.
+			// $init_result = $this->gateway_controller->init( $order );
 
-			// Check if the gateway is connected.
-			if ( 'KO' === $init_result['code'] ) {
-				// Error initializing the gateway.
-				$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
-				$error_desc = $error_msg . ' - ' . $init_result['msg'];
-				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-				$this->error_redirect( $error_msg );
-				return;
-			}
+			// // Check if the gateway is connected.
+			// if ( 'KO' === $init_result['code'] ) {
+			// 	// Error initializing the gateway.
+			// 	$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+			// 	$error_desc = $error_msg . ' - ' . $init_result['msg'];
+			// 	$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
+			// 	$this->error_redirect( $error_msg );
+			// 	return;
+			// }
 
 			$executed     = false;
 			$num_attempts = 1;
 			sleep( 2 );
 			for ( $num_attempts; ( false === $executed ) && ( $num_attempts <= WAIT_NUM_ATTEMPTS ); $num_attempts++ ) {
+
+				// Ask the status of the payment to the gateway.
+				$this->gateway_controller = new Gateway_Controller();
+				// Init the gateway.
+				$init_result = $this->gateway_controller->init( $order );
+
+				// Check if the gateway is connected.
+				if ( 'KO' === $init_result['code'] ) {
+					// Error initializing the gateway.
+					$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+					$error_desc = $error_msg . ' - ' . $init_result['msg'];
+					$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
+					$this->error_redirect( $error_msg );
+					return;
+				}
 
 				// Check the status of the payment.
 				$payment_status = $this->gateway_controller->get_payment_status();
@@ -578,17 +594,16 @@ function wp_gateway_pagopa_init() {
 				// Payment not confirmed.
 				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
 				$error_msg  = $error_msg . ' ' . $order_id . ' - Iuv: ' . $iuv;
-				// ATT!! Only for debug purposes (remove the following line of code asap).
 				$error_desc = $error_msg . ' - Code:' . $payment_status['code'];
 				$error_desc = $error_desc . ' - Status: ' . $payment_status['msg'];
 				$error_desc = $error_desc . ' - Attempts: ' . $num_attempts;
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-				$this->error_redirect( $error_desc );
+				$this->error_redirect( $error_msg );
 				return;
 			} else {
 				// Payment confirmed.
 				$order->payment_complete();
-				$log_desc = 'Attemps: ' . $num_attempts;
+				$log_desc = 'Attempts: ' . $num_attempts;
 				if ( DEBUG_MODE_ENABLED ) {
 					$this->log_action( 'info', $log_desc );
 				}
