@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.0.6-b1
+ * Version: 1.0.8-b1
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -30,7 +30,8 @@ if ( ! function_exists( 'add_action' ) ) {
 
 require_once 'inc/class-gateway-controller.php';
 require_once 'inc/class-log-manager.php';
-require_once 'inc/encryption-manager.php';
+require_once 'inc/class-encryption-manager.php';
+require_once 'inc/class-transactions-manager.php';
 
 // Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
@@ -41,8 +42,9 @@ define( 'WAIT_NUM_ATTEMPTS', 4 );
 define( 'NUM_DAYS_TO_CHECK', 7 );
 define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) );
 
-define( 'TOTAL_SOAP_TIMEOUT', intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 20 );
-ini_set( 'default_socket_timeout', intval( TOTAL_SOAP_TIMEOUT ) );
+define( 'TOTAL_SOAP_TIMEOUT', 20 );
+// define( 'TOTAL_SOAP_TIMEOUT', intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 20 );
+// ini_set( 'default_socket_timeout', intval( TOTAL_SOAP_TIMEOUT ) );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -64,7 +66,6 @@ function install_pagopa_plugin() {
  * @return void
  */
 function uninstall_pagopa_plugin() {
-
 	// Removed the plugin tables.
 	Log_Manager::drop_table();
 }
@@ -89,7 +90,6 @@ add_action( 'plugins_loaded', 'wp_gateway_pagopa_init' );
  * Init PagoPA class.
  */
 function wp_gateway_pagopa_init() {
-
 	// Check if WooCommerce is installed.
 	if ( is_admin() && ! class_exists( 'WC_Payment_Gateways' ) ) {
 		echo '<div id="message" class="error"><p>ERROR: To use the plugin wp-pagopa-gateway-cineca WooCommerce must be installed!</p></div>';
@@ -101,6 +101,10 @@ function wp_gateway_pagopa_init() {
 		return;
 	}
 
+	// If WooCommerce is installed add a page in its menu.
+	if ( class_exists( 'woocommerce' ) ) {
+		add_action( 'admin_menu', 'add_plugin_menu' );
+	}
 	/**
 	 * Add the gateway(s) to WooCommerce.
 	 */
@@ -163,6 +167,7 @@ function wp_gateway_pagopa_init() {
 
 			// Use a custom style.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
 		}
 
 		/**
@@ -375,7 +380,6 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function validate_fields() {
 			// Checkout fields should be validate earlier. That is in the checkout phase.
-			// error_log( '@@@ validate fields @@@' );.
 			return true;
 		}
 
@@ -528,25 +532,40 @@ function wp_gateway_pagopa_init() {
 			// Payment executed.
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
-			// Ask the status of the payment to the gateway.
-			$this->gateway_controller = new Gateway_Controller();
-			// Init the gateway.
-			$init_result = $this->gateway_controller->init( $order );
+			// // Ask the status of the payment to the gateway.
+			// $this->gateway_controller = new Gateway_Controller();
+			// // Init the gateway.
+			// $init_result = $this->gateway_controller->init( $order );
 
-			// Check if the gateway is connected.
-			if ( 'KO' === $init_result['code'] ) {
-				// Error initializing the gateway.
-				$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
-				$error_desc = $error_msg . ' - ' . $init_result['msg'];
-				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-				$this->error_redirect( $error_msg );
-				return;
-			}
+			// // Check if the gateway is connected.
+			// if ( 'KO' === $init_result['code'] ) {
+			// 	// Error initializing the gateway.
+			// 	$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+			// 	$error_desc = $error_msg . ' - ' . $init_result['msg'];
+			// 	$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
+			// 	$this->error_redirect( $error_msg );
+			// 	return;
+			// }
 
 			$executed     = false;
 			$num_attempts = 1;
 			sleep( 2 );
 			for ( $num_attempts; ( false === $executed ) && ( $num_attempts <= WAIT_NUM_ATTEMPTS ); $num_attempts++ ) {
+
+				// Ask the status of the payment to the gateway.
+				$this->gateway_controller = new Gateway_Controller();
+				// Init the gateway.
+				$init_result = $this->gateway_controller->init( $order );
+
+				// Check if the gateway is connected.
+				if ( 'KO' === $init_result['code'] ) {
+					// Error initializing the gateway.
+					$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+					$error_desc = $error_msg . ' - ' . $init_result['msg'];
+					$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
+					$this->error_redirect( $error_msg );
+					return;
+				}
 
 				// Check the status of the payment.
 				$payment_status = $this->gateway_controller->get_payment_status();
@@ -575,17 +594,16 @@ function wp_gateway_pagopa_init() {
 				// Payment not confirmed.
 				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
 				$error_msg  = $error_msg . ' ' . $order_id . ' - Iuv: ' . $iuv;
-				// ATT!! Only for debug purposes (remove the following line of code asap).
 				$error_desc = $error_msg . ' - Code:' . $payment_status['code'];
 				$error_desc = $error_desc . ' - Status: ' . $payment_status['msg'];
 				$error_desc = $error_desc . ' - Attempts: ' . $num_attempts;
 				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-				$this->error_redirect( $error_desc );
+				$this->error_redirect( $error_msg );
 				return;
 			} else {
 				// Payment confirmed.
 				$order->payment_complete();
-				$log_desc = 'Attemps: ' . $num_attempts;
+				$log_desc = 'Attempts: ' . $num_attempts;
 				if ( DEBUG_MODE_ENABLED ) {
 					$this->log_action( 'info', $log_desc );
 				}
@@ -766,3 +784,26 @@ function wp_gateway_pagopa_init() {
 
 	} // end plugin class
 }
+
+
+/**
+ * Creates the menu of the plugin.
+ *
+ * @return void
+ */
+function add_plugin_menu() {
+	$required_role = 'edit_themes';
+	$title         = __( 'PagoPA Gateway', 'wp-pagopa-gateway-cineca' );
+	load_plugin_textdomain( 'wp-pagopa-gateway-cineca', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );
+	$trans_manager = new Transaction_Manager();
+	add_submenu_page(
+		'woocommerce',
+		$title,
+		__( 'PagoPA Transactions', 'wp-pagopa-gateway-cineca' ),
+		$required_role,
+		'wc-edizioni-sns-activations-page',
+		array( $trans_manager, 'admin_show_transactions_page' ),
+		30
+	);
+}
+

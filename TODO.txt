@@ -24,6 +24,4 @@ TODO LIST:
 
 8) Create container on Rancher.
 
-9) Add administration table to manage the log of the plugin.
-
 
