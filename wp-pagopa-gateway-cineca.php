@@ -30,7 +30,8 @@ if ( ! function_exists( 'add_action' ) ) {
 
 require_once 'inc/class-gateway-controller.php';
 require_once 'inc/class-log-manager.php';
-require_once 'inc/encryption-manager.php';
+require_once 'inc/class-encryption-manager.php';
+require_once 'inc/class-transactions-manager.php';
 
 // Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
@@ -64,7 +65,6 @@ function install_pagopa_plugin() {
  * @return void
  */
 function uninstall_pagopa_plugin() {
-
 	// Removed the plugin tables.
 	Log_Manager::drop_table();
 }
@@ -89,7 +89,7 @@ add_action( 'plugins_loaded', 'wp_gateway_pagopa_init' );
  * Init PagoPA class.
  */
 function wp_gateway_pagopa_init() {
-
+	error_log( '@@@ wp_gateway_pagopa_init @@@' );
 	// Check if WooCommerce is installed.
 	if ( is_admin() && ! class_exists( 'WC_Payment_Gateways' ) ) {
 		echo '<div id="message" class="error"><p>ERROR: To use the plugin wp-pagopa-gateway-cineca WooCommerce must be installed!</p></div>';
@@ -101,6 +101,10 @@ function wp_gateway_pagopa_init() {
 		return;
 	}
 
+	// If WooCommerce is installed add a page in its menu.
+	if ( class_exists( 'woocommerce' ) ) {
+		add_action( 'admin_menu', 'add_plugin_menu' );
+	}
 	/**
 	 * Add the gateway(s) to WooCommerce.
 	 */
@@ -119,6 +123,7 @@ function wp_gateway_pagopa_init() {
 		 * Define the fields of the plugin.
 		 */
 		public function __construct() {
+			error_log(' @@@ wp-pagopa-gateway-cineca-->construct() @@@');
 			$this->id           = 'pagopa_gateway_cineca';
 			$this->icon         = plugins_url( 'assets/img/LogoPagoPaSmall.png', __FILE__ );
 			$this->has_fields   = true;
@@ -163,6 +168,7 @@ function wp_gateway_pagopa_init() {
 
 			// Use a custom style.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
 		}
 
 		/**
@@ -375,7 +381,6 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function validate_fields() {
 			// Checkout fields should be validate earlier. That is in the checkout phase.
-			// error_log( '@@@ validate fields @@@' );.
 			return true;
 		}
 
@@ -766,3 +771,25 @@ function wp_gateway_pagopa_init() {
 
 	} // end plugin class
 }
+
+
+/**
+ * Creates the menu of the plugin.
+ *
+ * @return void
+ */
+function add_plugin_menu() {
+	$required_role = 'edit_themes';
+	$title         = __( 'PagoPA Gateway', 'wp-pagopa-gateway-cineca' );
+	$trans_manager = new Transaction_Manager();
+	add_submenu_page(
+		'woocommerce',
+		$title,
+		__( 'PagoPA Transactions', 'wp-pagopa-gateway-cineca' ),
+		$required_role,
+		'wc-edizioni-sns-activations-page',
+		array( $trans_manager, 'admin_show_transactions_page' ),
+		30
+	);
+}
+
