@@ -25,7 +25,6 @@ class Transaction_Manager {
 	 * @return void
 	 */
 	public function admin_show_transactions_page() {
-		error_log( '@@@ admin_show_transactions_page' );
 		$title      = __( 'Transactions', 'wp-pagopa-gateway-cineca' );
 		$start_date = ( ! empty( $_POST['search_start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['search_start_date'] ) ) : '' );
 		$end_date   = ( ! empty( $_POST['search_end_date'] ) ? sanitize_text_field( wp_unslash( $_POST['search_end_date'] ) ) : '' );
@@ -38,17 +37,16 @@ class Transaction_Manager {
 
 		echo '<form method="post">';
 		echo '<input type="hidden" name="page" value="wc-edizioni-sns-activations-page" />';
-		// $list_table->search_box( __( 'Search', 'wp-pagopa-gateway-cineca' ), 'search_id' );
 		echo '<p class="search-box">
-			<label class="screen-reader-text" for="search_id-search-input">' . $srch_label . ':</label>
+			<label class="screen-reader-text" for="search_id-search-input">' . esc_attr( $srch_label ) . ':</label>
 			<input type="search" id="search_id-search-input" name="s" value="">
-			<input type="submit" id="search-submit" class="button" value="Search"></p>';
-		echo '<span style="float: right"><input type="date" id="search_end_date" name="search_end_date" value="' . $end_date . '"> <b>' . $ed_label . '</b>&nbsp;</span>';
-		echo '<span style="float: right"><input type="date" id="search_start_date" name="search_start_date" value="' . $start_date . '" <b>' . $sd_label . '</b>&nbsp;</span>';
+			<input type="submit" id="search-submit" class="button" value="' . esc_attr( $srch_label ) . '"></p>';
+		echo '<span style="float: right"><input type="date" id="search_end_date" name="search_end_date" value="' . esc_attr( $end_date ) . '"> <b>' . esc_attr( $ed_label ) . '</b>&nbsp;</span>';
+		echo '<span style="float: right"><input type="date" id="search_start_date" name="search_start_date" value="' . esc_attr( $start_date ) . '" <b>' . esc_attr( $sd_label ) . '</b>&nbsp;</span>';
 		echo '</form>';
 
 		echo '<div class=\"wrap\">';
-		echo '<h2>' . $title . '</h2>';
+		echo '<h2>' . esc_attr( $title ) . '</h2>';
 
 		$list_table->display();
 		echo '</div>';

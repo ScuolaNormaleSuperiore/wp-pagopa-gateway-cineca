@@ -89,7 +89,6 @@ add_action( 'plugins_loaded', 'wp_gateway_pagopa_init' );
  * Init PagoPA class.
  */
 function wp_gateway_pagopa_init() {
-	error_log( '@@@ wp_gateway_pagopa_init @@@' );
 	// Check if WooCommerce is installed.
 	if ( is_admin() && ! class_exists( 'WC_Payment_Gateways' ) ) {
 		echo '<div id="message" class="error"><p>ERROR: To use the plugin wp-pagopa-gateway-cineca WooCommerce must be installed!</p></div>';
@@ -123,7 +122,6 @@ function wp_gateway_pagopa_init() {
 		 * Define the fields of the plugin.
 		 */
 		public function __construct() {
-			error_log(' @@@ wp-pagopa-gateway-cineca-->construct() @@@');
 			$this->id           = 'pagopa_gateway_cineca';
 			$this->icon         = plugins_url( 'assets/img/LogoPagoPaSmall.png', __FILE__ );
 			$this->has_fields   = true;
@@ -781,6 +779,7 @@ function wp_gateway_pagopa_init() {
 function add_plugin_menu() {
 	$required_role = 'edit_themes';
 	$title         = __( 'PagoPA Gateway', 'wp-pagopa-gateway-cineca' );
+	load_plugin_textdomain( 'wp-pagopa-gateway-cineca', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );
 	$trans_manager = new Transaction_Manager();
 	add_submenu_page(
 		'woocommerce',
