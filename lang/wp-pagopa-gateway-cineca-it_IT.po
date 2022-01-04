@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2022-01-03 13:46+0000\n"
+"PO-Revision-Date: 2022-01-04 11:29+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -280,7 +280,7 @@ msgstr "Cerca"
 
 #: inc/class-transactions-manager.php:32
 msgid "Start date"
-msgstr "Data fine"
+msgstr "Data inizio"
 
 #: inc/class-log-list-table.php:44
 msgid "Status"

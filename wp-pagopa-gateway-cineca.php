@@ -180,7 +180,7 @@ function wp_gateway_pagopa_init() {
 			$img_list = '';
 			$folder   = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'cc';
 			$folder   = wp_normalize_path( $folder );
-			$files    = list_files( $folder, 1 );
+			$files    = glob( $folder . '/*' );
 
 			if ( is_array( $files ) ) {
 				foreach ( $files as $fp ) {
@@ -531,21 +531,6 @@ function wp_gateway_pagopa_init() {
 
 			// Payment executed.
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
-
-			// // Ask the status of the payment to the gateway.
-			// $this->gateway_controller = new Gateway_Controller();
-			// // Init the gateway.
-			// $init_result = $this->gateway_controller->init( $order );
-
-			// // Check if the gateway is connected.
-			// if ( 'KO' === $init_result['code'] ) {
-			// 	// Error initializing the gateway.
-			// 	$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
-			// 	$error_desc = $error_msg . ' - ' . $init_result['msg'];
-			// 	$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-			// 	$this->error_redirect( $error_msg );
-			// 	return;
-			// }
 
 			$executed     = false;
 			$num_attempts = 1;

@@ -1,7 +1,7 @@
 
 TODO LIST:
 
-1) Managen the following fields in a new plugin:
+1) Manage the following fields in a new plugin:
 	a) _billing_ita_sdi
 	b) _billing_ita_cf
 	c) _billing_vat

@@ -1,7 +1,5 @@
 # ignore log files and databases
 *.log
-*.sql
-*.sqlite
 
 .vscode
 .idea
