@@ -18,6 +18,7 @@ Beta testing
 - Management of payment worflow.
 - A schedulable action to manage and update the orders paid offline.
 - Internationalization of messages and labels.
+- Check all the transactions from the backoffice.
 
 ## Getting started
 1. First ask Cineca to activate the service and to activate the test and the production enviroment. They will give you the following data for both the test and the production enviroment:
@@ -75,10 +76,13 @@ If these fields are not specified, the plugin works the same but the user will b
 
 ## Gallery
 ![Enable](docs/screenshots/EnablePlugin_1.png)
-**Image 1:** Enable the plugin
+**Image 1:** Backoffice: enable the plugin.
 
 ![configure](docs/screenshots/ConfigurePlugin_1.png) 
-**Image 2:** Configure the plugin
+**Image 2:** Backoffice: configure the plugin.
+
+![transactions](docs/screenshots/Transactions.png) 
+**Image 3:** Backoffice: check transactions.
 
 ## Documentation
 - Check the docs folder of the plugin.
