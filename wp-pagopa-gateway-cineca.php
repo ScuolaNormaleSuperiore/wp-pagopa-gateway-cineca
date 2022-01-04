@@ -2,7 +2,7 @@
 /**
  * PagoPA Gateway Cineca
  *
- * @package     PagoP Gateway Cineca
+ * @package     PagoPA Gateway Cineca
  * @author      ICT Scuola Normale Superiore
  * @copyright   © 2021-2022, SNS
  * @license     GNU General Public License v3.0
