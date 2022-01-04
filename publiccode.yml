@@ -14,12 +14,11 @@ description:
     localisedName: Gateway Cineca a PagoPA
     genericName: Payment gateway
     longDescription: |2
-       Il progetto prevede la realizzazione di un plugin WordPress (gateway) che consenta di integrare il [portale dei pagamenti PagoPA Cineca](https://sns.pagoatenei.cineca.it/) con il sistema di e-commerce di ateneo ([edizioni.sns.it](https://edizioni.sns.it/)) basato su WooCommerce. 
-
-      Il sistema di e-commerce di ateneo (Centro Edizioni) prevederà la
-      possibilità di effettuare il pagamento degli acquisti tramite la
-      piattaforma nazionale PagoPA integrandosi con il portale pagamenti
-      disponibile in ateneo.
+      "Gateway Cineca a PagoPA" è un gateway di pagamento PagoPa per WooCommerce. Questo plugin consente l'integrazione tra un sistema di e-commerce di basato 
+      su Wordpress / WooCommerce e il [portale dei pagamenti PagoAtenei di Cineca](https://sns.pagoatenei.cineca.it/).
+      
+      Permette a un cliente dell'e-commerce in cui è installato di pagare con carta di credito oppure di stampare un avviso di pagamento PagoPa da pagare in un secondo momento in ricevitoria.
+      Il plugin sfrutta il gateway PagoPa messo a disposizione da Cineca e il portale Pago Atenei.
     shortDescription: |-
       Plugin WooCommerce per l'integrazione con portale di pagamenti PagoPA
       Cineca
