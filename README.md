@@ -32,6 +32,13 @@ Beta testing
 1. The Wordpress CMS (version >= 5.6.6).
 2. The WooCommerce plugin (version >= 5.0.0) for WordPress.
 3. The web server Apache with *mod_ssl* and *soap* extension installed and enabled.
+4. See section "Custom fields".
+
+## Custom fields
+At the moment the uses the following fields to fill the request that creates a payment on the gateway: **_billing_ita_cf** (fiscal code for persons) and **_billing_vat** (vat for companies).
+We have another plugin that adds these meta tags to the order, but unfortunately we have not yet publicly released it.
+If these fields are not specified, the plugin works the same but the user will be considered a person with **Fiscal Code = First Name + Last Name**.
+
 ## Installation and configuration
 1. [Download](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/archive/refs/heads/main.zip) the last stable version of the plugin.
 2. Unzip the content into the wp-content/plugins folder.
@@ -64,6 +71,7 @@ Beta testing
    - **Base url of the API**: the base url of the PagoAtenei Soap web services. It is provided by Cineca.
    - **Username of the API**: the username to use the Soap web services. It is provided by Cineca.
    - **Password of the API**: the password to use the Soap web services. It is provided by Cineca. 
+
 
 ## Gallery
 ![Enable](docs/screenshots/EnablePlugin_1.png)

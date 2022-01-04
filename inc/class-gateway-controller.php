@@ -125,6 +125,11 @@ class Gateway_Controller {
 			$ragione_sociale = $this->format_string( $this->order->get_billing_first_name() . ' ' . $this->order->get_billing_last_name() );
 		}
 
+		// If neither vat nor piva is specified.
+		if ( '' === trim( $codice_univoco ) ) {
+			$codice_univoco = $ragione_sociale;
+		}
+
 		$raw_order_number = $this->build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
 
 		$bodyrichiesta = array(
