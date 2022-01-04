@@ -14,6 +14,11 @@
 define( 'PER_PAGE_ITEMS', 20 );
 require_once 'class-log-manager.php';
 
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/screen.php';
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
+
 /**
  * Undocumented class
  */

@@ -180,7 +180,8 @@ function wp_gateway_pagopa_init() {
 			$img_list = '';
 			$folder   = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'cc';
 			$folder   = wp_normalize_path( $folder );
-			$files    = list_files( $folder, 1 );
+			// $files    = list_files( $folder, 1 );
+			$files    = glob( $folder .'/*' );
 
 			if ( is_array( $files ) ) {
 				foreach ( $files as $fp ) {
