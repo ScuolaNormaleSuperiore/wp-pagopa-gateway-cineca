@@ -76,13 +76,18 @@ If these fields are not specified, the plugin works the same but the user will b
 
 ## Gallery
 ![Enable](docs/screenshots/EnablePlugin_1.png)
+
 **Image 1:** Backoffice: enable the plugin.
 
+
 ![configure](docs/screenshots/ConfigurePlugin_1.png) 
+
 **Image 2:** Backoffice: configure the plugin.
 
-![transactions](docs/screenshots/Transactions.png) 
+![transactions](docs/screenshots/Transactions.png)
+
 **Image 3:** Backoffice: check transactions.
+
 
 ## Documentation
 - Check the docs folder of the plugin.
@@ -93,7 +98,28 @@ If these fields are not specified, the plugin works the same but the user will b
 
 ## Demo
 ### Docker
-You can test the plugin using a Docker container that contains all the software components needed (Wordpress + WooCommerce + wp-pagopa-gateway-cineca). See this Docker file: 
+You can test the plugin using a *Docker* container that runs all the software components needed (Wordpress + WooCommerce + wp-pagopa-gateway-cineca). See this Docker file: [Dockerfile](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/setup/Docker/Dockerfile).
+
+The commands to build and run the container are:
+- docker build -t myshop-img -f Dockerfile .
+- docker run -p 80:80 -p 3306:3306 --name=myshop -d myshop-img
+ 
+To get the container shell run:
+- docker exec -it myshop /bin/bash
+  
+To url of the e-commerce is: http://localhost/myshop/ .
+
+To log in as Administrator the url is: http://localhost/mio-account/ and the account is: manager / password
+
+On the container you can find the Adminer tool to check the database tables.
+The url of Adminer is: http://localhost/adminer.php
+To configure it use these parameters:
+- System: Mysql
+- Server: 127.0.0.1
+- Utente: admin
+- Password: admin
+- Database: myshop
+
 
 
 ## Repository

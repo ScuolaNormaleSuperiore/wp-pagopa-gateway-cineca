@@ -68,6 +68,7 @@ RUN curl -o /tmp/${WP_ARCHIVE} https://wordpress.org/${WP_ARCHIVE} && \
     wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php  -O /var/www/html/adminer.php && \
 	cp /tmp/.htaccess /var/www/html/.htaccess && \
 	unzip /tmp/uploads.zip -d /var/www/html/wp-content/uploads/ && \
+	wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php  -O /var/www/html/adminer.php && \
 	chown -R www-data:www-data /var/www/html/*
 
 # Remove the temp file.
