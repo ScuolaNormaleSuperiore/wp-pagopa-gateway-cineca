@@ -34,12 +34,14 @@ class Gateway_Controller {
 			$this->ws_data['ws_soap_base_url']  = trim( $this->options['base_url_test'], '/' );
 			$this->ws_data['ws_username']       = $this->options['username_test'];
 			$this->ws_data['ws_password']       = $this->options['password_test'];
+			$this->ws_data['id_payment_model']  = $this->options['id_payment_model_test'];
 		} else {
 			// Get the parameters of the PRODUCTION configutation .
 			$this->ws_data['frontend_base_url'] = trim( $this->options['base_fronted_url_prod'], '/' );
 			$this->ws_data['ws_soap_base_url']  = trim( $this->options['base_url_prod'], '/' );
 			$this->ws_data['ws_username']       = $this->options['username_prod'];
 			$this->ws_data['ws_password']       = $this->options['password_prod'];
+			$this->ws_data['id_payment_model']  = $this->options['id_payment_model_prod'];
 		}
 	}
 
@@ -165,7 +167,7 @@ class Gateway_Controller {
 						'codContabilita'  => $this->options['accounting_code'] . '/',
 					),
 				),
-				'idModelloPagamento' => $this->options['id_payment_model'],
+				'idModelloPagamento' => $this->ws_data['id_payment_model'],
 			),
 		);
 

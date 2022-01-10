@@ -283,11 +283,6 @@ function wp_gateway_pagopa_init() {
 					'description' => __( 'Accounting code as defined in the PagoPA taxonomy (https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json)', 'wp-pagopa-gateway-cineca' ),
 					'default'     => '0601120SP',
 				),
-				'id_payment_model'       => array(
-					'title'       => __( 'Payment model ID', 'wp-pagopa-gateway-cineca' ),
-					'type'        => 'text',
-					'description' => __( 'ID of payment model related to the e-commerce defined on the Cineca back office', 'wp-pagopa-gateway-cineca' ),
-				),
 				'cert_abs_path'          => array(
 					'title'       => __( 'Certificate file name', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
@@ -342,6 +337,11 @@ function wp_gateway_pagopa_init() {
 					'type'        => 'text',
 					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
 				),
+				'id_payment_model_prod'  => array(
+					'title'       => __( 'Payment model ID', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'ID of payment model related to the e-commerce defined on the Cineca back office', 'wp-pagopa-gateway-cineca' ),
+				),
 				// Test credentials.
 				'test_credentials'       => array(
 					'title' => __( 'Test credentials', 'wp-pagopa-gateway-cineca' ),
@@ -368,6 +368,11 @@ function wp_gateway_pagopa_init() {
 					'title'       => __( 'API password', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+				),
+				'id_payment_model_test'  => array(
+					'title'       => __( 'Payment model ID', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'ID of payment model related to the e-commerce defined on the Cineca back office', 'wp-pagopa-gateway-cineca' ),
 				),
 			);
 
