@@ -254,6 +254,14 @@ function wp_gateway_pagopa_init() {
 					'default'     => 'yes',
 					'desc_tip'    => true,
 				),
+				'confirm_payment'        => array(
+					'title'       => __( 'Payment confirmation', 'wp-pagopa-gateway-cineca' ),
+					'label'       => __( 'Ask for payment confirmation', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'checkbox',
+					'description' => __( 'Checks the status of the payment in the callback procedure', 'wp-pagopa-gateway-cineca' ),
+					'default'     => 'no',
+					'desc_tip'    => true,
+				),
 				'application_code'       => array(
 					'title'       => __( 'Application code', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
@@ -535,53 +543,62 @@ function wp_gateway_pagopa_init() {
 			// Payment executed.
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
-			$executed     = false;
+			// Check if confirmation should be requested.
+			$options         = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
+			$confirm_payment = ( 'yes' === $options['confirm_payment'] ) ? true : false;
+
+			$confirmed    = false;
 			$num_attempts = 1;
-			sleep( 2 );
-			for ( $num_attempts; ( false === $executed ) && ( $num_attempts <= WAIT_NUM_ATTEMPTS ); $num_attempts++ ) {
 
-				// Ask the status of the payment to the gateway.
-				$this->gateway_controller = new Gateway_Controller();
-				// Init the gateway.
-				$init_result = $this->gateway_controller->init( $order );
+			if ( $confirm_payment ) {
+				// Confirmation required.
+				sleep( 2 );
+				for ( $num_attempts; ( false === $confirmed ) && ( $num_attempts <= WAIT_NUM_ATTEMPTS ); $num_attempts++ ) {
+					// Ask the status of the payment to the gateway.
+					$this->gateway_controller = new Gateway_Controller();
+					// Init the gateway.
+					$init_result = $this->gateway_controller->init( $order );
+					// Check if the gateway is connected.
+					if ( 'KO' === $init_result['code'] ) {
+						// Error initializing the gateway.
+						$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+						$error_desc = $error_msg . ' - ' . $init_result['msg'];
+						$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
+						$this->error_redirect( $error_msg );
+						return;
+					}
 
-				// Check if the gateway is connected.
-				if ( 'KO' === $init_result['code'] ) {
-					// Error initializing the gateway.
-					$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
-					$error_desc = $error_msg . ' - ' . $init_result['msg'];
-					$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-					$this->error_redirect( $error_msg );
-					return;
+					// Check the status of the payment.
+					$payment_status = $this->gateway_controller->get_payment_status();
+
+					if ( DEBUG_MODE_ENABLED ) {
+						error_log( '@@@ Attempts: ' . $num_attempts );
+						error_log( '@@@ Stato: ' . $payment_status['msg'] );
+						$this->log_action( 'info', print_r( $payment_status, true ) );
+					}
+					if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
+						// Payment executed, exit from the loop.
+						$confirmed = true;
+						break;
+					} elseif ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'NON_ESEGUITO' === $payment_status['msg'] ) ) {
+						// Payment not yet executed wait and retry.
+						sleep( WAIT_NUM_SECONDS );
+						$confirmed = false;
+					} else {
+						// Error reported by the gateway, exit from the loop.
+						$confirmed = false;
+						break;
+					}
 				}
 
-				// Check the status of the payment.
-				$payment_status = $this->gateway_controller->get_payment_status();
+				$num_attempts = $num_attempts <= WAIT_NUM_ATTEMPTS ? $num_attempts : $num_attempts - 1;
 
-				// error_log( '@@@ Attempts: ' . $num_attempts );
-				// error_log( '@@@ Stato: ' . $payment_status['msg'] );
-
-				if ( DEBUG_MODE_ENABLED ) {
-					$this->log_action( 'info', print_r( $payment_status, true ) );
-				}
-				if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
-					// Payment executed, exit from the loop.
-					$executed = true;
-					break;
-				} elseif ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'NON_ESEGUITO' === $payment_status['msg'] ) ) {
-					// Payment not yet executed wait and retry.
-					sleep( WAIT_NUM_SECONDS );
-					$executed = false;
-				} else {
-					// Error reported by the gateway, exit from the loop.
-					$executed = false;
-					break;
-				}
+			} else {
+				// // Confirmation NOT required
+				$confirmed = true;
 			}
 
-			$num_attempts = $num_attempts <= WAIT_NUM_ATTEMPTS ? $num_attempts : $num_attempts - 1;
-
-			if ( ! ( $executed ) ) {
+			if ( ! ( $confirmed ) ) {
 				// Payment not confirmed.
 				$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
 				$error_msg  = $error_msg . ' ' . $order_id . ' - Iuv: ' . $iuv;
@@ -654,7 +671,7 @@ function wp_gateway_pagopa_init() {
 			$final_date   = gmdate( 'Y-m-d' );
 			$final_date   = gmdate( 'Y-m-d' );
 			$date_created = $initial_date . '...' . $final_date;
-			$orders       = wc_get_orders (
+			$orders       = wc_get_orders(
 				array(
 					'limit'        => -1,
 					'type'         => 'shop_order',
@@ -691,7 +708,7 @@ function wp_gateway_pagopa_init() {
 		/**
 		 * Send processing notification email.
 		 *
-		 * @param array $order - The order.
+		 * @param object $order - The order.
 		 * @return void
 		 */
 		public function send_processing_notification_mail( $order ) {
@@ -704,7 +721,7 @@ function wp_gateway_pagopa_init() {
 			$mailer   = WC()->mailer();
 			$emails   = $mailer->get_emails();
 			$receiver = $emails['WC_Email_New_Order']->recipient;
-			$this->log_action( 'info', 'Sending email to:' . $receiver);
+			$this->log_action( 'info', 'Sending email to:' . $receiver );
 
 			// Wrap message using woocommerce html email template.
 			$heading         = false;
@@ -715,7 +732,7 @@ function wp_gateway_pagopa_init() {
 			$html_message = $wc_email->style_inline( $wrapped_message );
 
 			// Send e-mail using WP mail function.
-			$mailer->send( $receiver, $subject, $html_message, HTML_EMAIL_HEADERS, '');
+			$mailer->send( $receiver, $subject, $html_message, HTML_EMAIL_HEADERS, '' );
 		}
 
 		/**

@@ -356,3 +356,15 @@ msgstr ""
 #: class-log-manager.php
 msgid "not_confirmed"
 msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:259
+msgid "Ask for payment confirmation"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:258
+msgid "Payment confirmation"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:258
+msgid "Payment confirmation"
+msgstr ""

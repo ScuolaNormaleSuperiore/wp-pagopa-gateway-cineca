@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2022-01-04 11:29+0000\n"
+"PO-Revision-Date: 2022-01-18 22:53+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -51,6 +51,10 @@ msgstr "Nome utente della API"
 msgid "Application code"
 msgstr "Codice applicazione"
 
+#: wp-pagopa-gateway-cineca.php:259
+msgid "Ask for payment confirmation"
+msgstr "Chiedi la conferma di pagamento"
+
 #: wp-pagopa-gateway-cineca.php:337 wp-pagopa-gateway-cineca.php:364
 msgid "Base url of the API for the Cineca Payment Portal"
 msgstr ""
@@ -70,15 +74,15 @@ msgstr "Password del certificato"
 
 #: class-log-manager.php
 msgid "confirmed"
-msgstr "confermato"
+msgstr "confirmed"
 
 #: class-log-manager.php
 msgid "confirmed_by_script"
-msgstr "confermato_da_script"
+msgstr "confirmed_by_script"
 
 #: class-log-manager.php
 msgid "created"
-msgstr "creato"
+msgstr "created"
 
 #: inc/class-log-list-table.php:45
 msgid "Customer ID"
@@ -130,7 +134,7 @@ msgstr "Si è verificato un errore recuperando l'ordine"
 
 #: class-log-manager.php
 msgid "executed"
-msgstr "eseguito"
+msgstr "executed"
 
 #: wp-pagopa-gateway-cineca.php:299
 msgid "File name of the .pem certificate"
@@ -180,15 +184,15 @@ msgstr "Iuv"
 
 #: class-log-manager.php
 msgid "not_confirmed"
-msgstr "non_confermato"
+msgstr "not_confirmed"
 
 #: class-log-manager.php
 msgid "not_created"
-msgstr "non_creato"
+msgstr "not_created"
 
 #: class-log-manager.php
 msgid "not_executed"
-msgstr "non_eseguito"
+msgstr "not_executed"
 
 #: inc/class-log-list-table.php:43
 msgid "Order ID"
@@ -229,6 +233,10 @@ msgstr "Paga usando il gateway Cineca per PagoPA"
 #: wp-pagopa-gateway-cineca.php:142
 msgid "Pay with the Cineca PagoPA Gateway"
 msgstr "Paga con il gateway Cineca di PagoPA"
+
+#: wp-pagopa-gateway-cineca.php:258
+msgid "Payment confirmation"
+msgstr "Conferma di pagamento"
 
 #: wp-pagopa-gateway-cineca.php:434
 msgid "Payment error reported by the gateway"
@@ -288,7 +296,7 @@ msgstr "Stato"
 
 #: class-log-manager.php
 msgid "submitted"
-msgstr "sottomesso"
+msgstr "submitted"
 
 #: wp-pagopa-gateway-cineca.php:352
 msgid "Test credentials"
