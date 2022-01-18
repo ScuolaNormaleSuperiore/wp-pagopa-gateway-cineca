@@ -38,13 +38,11 @@ define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
 define( 'HOOK_SCHEDULED_ACTIONS', 'pagopa_execute_actions' );
 define( 'DEBUG_MODE_ENABLED', 1 );
 define( 'WAIT_NUM_SECONDS', 5 );
-define( 'WAIT_NUM_ATTEMPTS', 4 );
+define( 'WAIT_NUM_ATTEMPTS', 35 );
 define( 'NUM_DAYS_TO_CHECK', 7 );
 define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) );
 
 define( 'TOTAL_SOAP_TIMEOUT', 20 );
-// define( 'TOTAL_SOAP_TIMEOUT', intval( WAIT_NUM_SECONDS ) * intval( WAIT_NUM_ATTEMPTS ) * 20 );
-// ini_set( 'default_socket_timeout', intval( TOTAL_SOAP_TIMEOUT ) );
 
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
@@ -560,6 +558,9 @@ function wp_gateway_pagopa_init() {
 				// Check the status of the payment.
 				$payment_status = $this->gateway_controller->get_payment_status();
 
+				// error_log( '@@@ Attempts: ' . $num_attempts );
+				// error_log( '@@@ Stato: ' . $payment_status['msg'] );
+
 				if ( DEBUG_MODE_ENABLED ) {
 					$this->log_action( 'info', print_r( $payment_status, true ) );
 				}
@@ -653,7 +654,7 @@ function wp_gateway_pagopa_init() {
 			$final_date   = gmdate( 'Y-m-d' );
 			$final_date   = gmdate( 'Y-m-d' );
 			$date_created = $initial_date . '...' . $final_date;
-			$orders      = wc_get_orders (
+			$orders       = wc_get_orders (
 				array(
 					'limit'        => -1,
 					'type'         => 'shop_order',

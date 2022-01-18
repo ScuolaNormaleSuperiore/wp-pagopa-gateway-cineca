@@ -11,7 +11,6 @@
  * @license     GNU General Public License v3.0
  */
 
-// require_once 'class-log-manager.php';
 require_once 'class-log-list-table.php';
 
 /**

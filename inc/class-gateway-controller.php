@@ -73,6 +73,7 @@ class Gateway_Controller {
 			'login'              => $this->ws_data['ws_username'],
 			'password'           => $this->ws_data['ws_password'],
 			'exception'          => true,
+			'keep_alive '        => false,
 			'encoding'           => 'UTF-8',
 			'location'           => $this->wsdl_url,
 			'cache_wsdl'         => WSDL_CACHE_NONE,
