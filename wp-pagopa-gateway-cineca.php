@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.0.13-beta
+ * Version: 1.0.14-beta
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
