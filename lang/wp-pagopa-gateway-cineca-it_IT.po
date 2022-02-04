@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2022-01-18 22:53+0000\n"
+"PO-Revision-Date: 2022-02-04 15:51+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -55,6 +55,10 @@ msgstr "Codice applicazione"
 msgid "Ask for payment confirmation"
 msgstr "Chiedi la conferma di pagamento"
 
+#: wp-pagopa-gateway-cineca.php:406
+msgid "Asycnhronous notification by PagoAtenei"
+msgstr "Notifica asincrona di PagoAtenei"
+
 #: wp-pagopa-gateway-cineca.php:337 wp-pagopa-gateway-cineca.php:364
 msgid "Base url of the API for the Cineca Payment Portal"
 msgstr ""
@@ -72,9 +76,16 @@ msgstr "Nome del file del certificato"
 msgid "Certificate passphrase"
 msgstr "Password del certificato"
 
+#: wp-pagopa-gateway-cineca.php:272
+msgid "Checks the status of the payment in the callback procedure"
+msgstr "Controlla lo stato del pagamento durante la callback di fine pagamento"
+
 #: class-log-manager.php
 msgid "confirmed"
 msgstr "confirmed"
+
+msgid "confirmed_by_notification"
+msgstr "confirmed_by_notification"
 
 #: class-log-manager.php
 msgid "confirmed_by_script"
@@ -238,6 +249,10 @@ msgstr "Paga con il gateway Cineca di PagoPA"
 msgid "Payment confirmation"
 msgstr "Conferma di pagamento"
 
+#: wp-pagopa-gateway-cineca.php:262
+msgid "Payment confirmation method"
+msgstr "Metodi di conferma del pagamento"
+
 #: wp-pagopa-gateway-cineca.php:434
 msgid "Payment error reported by the gateway"
 msgstr "Errore nel pagamento riportato dal gateway"
@@ -278,6 +293,14 @@ msgstr ""
 "Plugin che integra in WooCommerce il metodo di pagamento basato sul gateway "
 "Cineca per PagoPA"
 
+#: wp-pagopa-gateway-cineca.php:405
+msgid "Polling on PagoAtenei"
+msgstr "Polling su PagoAtenei"
+
+#: wp-pagopa-gateway-cineca.php:650
+msgid "Processing the payment"
+msgstr "Il pagamento è in fase di verifica."
+
 #: wp-pagopa-gateway-cineca.php:325
 msgid "Production credentials"
 msgstr "Credenziali di produzione"
@@ -305,6 +328,16 @@ msgstr "Credenziali di test"
 #: wp-pagopa-gateway-cineca.php:267
 msgid "The code of the application as defined in the Cineca back office"
 msgstr "Il codice dell'applicazione definito sul back office di Cineca"
+
+#: wp-pagopa-gateway-cineca.php:266
+msgid ""
+"The confirmation of a payment can be synchronous (polling on PagoAtenei "
+"waiting for its status to be updated by the PSP) or asynchronous (the order "
+"is confirmed by PagoAtenei's paNotificaTransazione notification)."
+msgstr ""
+"La conferma di un pagamento può essere sincrona (polling su  PagoAtenei fino "
+"a quando lo stato del pagamento non è aggiornato dal PSP) oppure asincrona "
+"(l'ordine è confermato da PagoAtenei con la notifica paNotificaTRansazione)."
 
 #: wp-pagopa-gateway-cineca.php:246
 msgid ""

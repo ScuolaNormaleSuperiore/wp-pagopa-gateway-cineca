@@ -368,3 +368,35 @@ msgstr ""
 #: wp-pagopa-gateway-cineca.php:258
 msgid "Payment confirmation"
 msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:262
+msgid "Payment confirmation method"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:405
+msgid "Polling on PagoAtenei"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:650
+msgid "Processing the payment"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:266
+msgid ""
+"The confirmation of a payment can be synchronous (polling on PagoAtenei "
+"waiting for its status to be updated by the PSP) or asynchronous (the order "
+"is confirmed by PagoAtenei's paNotificaTransazione notification)."
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:272
+msgid "Checks the status of the payment in the callback procedure"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:406
+msgid "Asycnhronous notification by PagoAtenei"
+msgstr ""
+
+#:
+msgid "confirmed_by_notification"
+msgstr ""
+
