@@ -598,7 +598,6 @@ function wp_gateway_pagopa_init() {
 
 					if ( DEBUG_MODE_ENABLED ) {
 						error_log( '@@@ Attempts: ' . $num_attempts );
-						error_log( '@@@ Stato: ' . $payment_status['msg'] );
 						$this->log_action( 'info', print_r( $payment_status, true ) );
 					}
 					if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
@@ -664,7 +663,6 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function webhook_transaction_notification( $args ) {
-			error_log( '@@@ webhook_transaction_notification @@@' );
 			$this->log_action( 'info', 'webhook_transaction_notification' );
 			$result    = trim( file_get_contents( 'php://input' ) );
 			// SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out.
@@ -674,7 +672,6 @@ function wp_gateway_pagopa_init() {
 			$response = json_decode( $json, true );
 			if ( $response ) {
 				$log_msg  = '@@@ Source data sent by PagoAtenei:' . $result ;
-				error_log( $log_msg );
 				$this->log_action( 'info', $log_msg );
 
 				$cod_applicazione    = $response['soapenvBody']['papaNotificaTransazione']['codApplicazione'];
@@ -699,14 +696,15 @@ function wp_gateway_pagopa_init() {
 							// Set the order as paid.
 							$order->payment_complete();
 							$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
+							$this->log_action( 'warning', 'Payment confirmed by notification.' );
 						} else {
-							$this->log_action( 'warning', 'Payment alrewady confirmed.' );
+							$this->log_action( 'warning', 'Payment already confirmed or payment not found.' );
 						}
 					} catch ( Exception $e ) {
 						$this->log_action( 'error', 'Error in paNotificaTRansazione:' . $e->getMessage() );
 					}
 				} else {
-					$this->log_action( 'warning', 'Invalid parameters or plugin settings passed to paNotificaTransazione.' );
+					$this->log_action( 'warning', 'Invalid parameters passed to paNotificaTransazione or invalid plugin settings.' );
 				}
 			}
 			// In any case return OK.
@@ -848,6 +846,9 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function log_action( $log_type, $message ) {
+			if ( DEBUG_MODE_ENABLED ) {
+				error_log( $message );
+			}
 			$logger  = wc_get_logger();
 			$context = array( 'source' => self::get_plugin_name() );
 			$logger->log( $log_type, $message, $context );
