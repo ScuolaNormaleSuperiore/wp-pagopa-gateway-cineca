@@ -22,6 +22,8 @@ define( 'STATUS_PAYMENT_NOT_CREATED', 'not_created' );
 define( 'STATUS_PAYMENT_EXECUTED', 'executed' );
 define( 'STATUS_PAYMENT_NOT_EXECUTED', 'not_executed' );
 define( 'STATUS_PAYMENT_CONFIRMED', 'confirmed' );
+define( 'STATUS_PAYMENT_WAITING_CONFIRM', 'waiting_confirmation' );
+define( 'STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION', 'confirmed_by_notification' );
 define( 'STATUS_PAYMENT_CONFIRMED_BY_SCRIPT', 'confirmed_by_script' );
 define( 'STATUS_PAYMENT_NOT_CONFIRMED', 'not_confirmed' );
 
@@ -85,7 +87,7 @@ class Log_Manager {
 			order_id bigint(20) UNSIGNED NOT NULL,
 			customer_id bigint(20) UNSIGNED NOT NULL,
 			date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			status varchar(20) NOT NULL,
+			status varchar(32) NOT NULL,
 			iuv varchar(256),
 			description text, 
 			PRIMARY KEY  (id)

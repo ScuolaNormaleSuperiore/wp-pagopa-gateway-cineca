@@ -568,8 +568,9 @@ function wp_gateway_pagopa_init() {
 			$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
 			// Check if confirmation should be requested.
-			$options         = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
-			$confirm_payment = ( 'yes' === $options['confirm_payment'] ) ? true : false;
+			$options                  = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
+			$synchronous_confirmation = ( 'SYNC-INT' === $options['payment_conf_method'] ) ? true : false;
+			$confirm_payment          = ( 'yes' === $options['confirm_payment'] ) ? true : false;
 
 			$confirmed    = false;
 			$num_attempts = 1;
@@ -634,14 +635,24 @@ function wp_gateway_pagopa_init() {
 				return;
 			} else {
 				// Payment confirmed.
-				$order->payment_complete();
-				$log_desc = 'Attempts: ' . $num_attempts;
-				if ( DEBUG_MODE_ENABLED ) {
-					$this->log_action( 'info', $log_desc );
+				if ( $synchronous_confirmation ) {
+					// Payment synchronously confirmed.
+					$order->payment_complete();
+					$log_desc = 'Attempts: ' . $num_attempts;
+					if ( DEBUG_MODE_ENABLED ) {
+						$this->log_action( 'info', $log_desc );
+					}
+					$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv, $log_desc );
+					$redirect_url = $this->get_return_url( $order );
+					wp_safe_redirect( $redirect_url );
+				} else {
+					// Payment asynchronously confirmed: will be confirmed by Pagoatenei calling pagopa_notifica_transazione.
+					$redirect_url = wc_get_checkout_url();
+					$log_desc     = __( 'Processing the payment', 'wp-pagopa-gateway-cineca' );
+					$log_manager->log( STATUS_PAYMENT_WAITING_CONFIRM, $iuv, $log_desc );
+					$redirect_url = $this->get_return_url( $order );
+					wp_safe_redirect( $redirect_url );
 				}
-				$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv, $log_desc );
-				$redirect_url = $this->get_return_url( $order );
-				wp_safe_redirect( $redirect_url );
 			}
 
 		}
@@ -661,20 +672,44 @@ function wp_gateway_pagopa_init() {
 			$xml      = simplexml_load_string( $xml );
 			$json     = wp_json_encode( $xml );
 			$response = json_decode( $json, true );
-			error_log( $result );
+			if ( $response ) {
+				$log_msg  = '@@@ Source data sent by PagoAtenei:' . $result ;
+				error_log( $log_msg );
+				$this->log_action( 'info', $log_msg );
 
-			$cod_applicazione    = $response['soapenvBody']['papaNotificaTransazione']['codApplicazione'];
-			$cod_versamento_ente = $response['soapenvBody']['papaNotificaTransazione']['codVersamentoEnte'];
-			$iuv                 = $response['soapenvBody']['papaNotificaTransazione']['transazione']['iuv'];
-			$codDominio          = $response['soapenvBody']['papaNotificaTransazione']['transazione']['codDominio'];
-			$esito               = $response['soapenvBody']['papaNotificaTransazione']['transazione']['esito'];
+				$cod_applicazione    = $response['soapenvBody']['papaNotificaTransazione']['codApplicazione'];
+				$cod_versamento_ente = $response['soapenvBody']['papaNotificaTransazione']['codVersamentoEnte'];
+				$iuv                 = $response['soapenvBody']['papaNotificaTransazione']['transazione']['iuv'];
+				$cod_dominio         = $response['soapenvBody']['papaNotificaTransazione']['transazione']['codDominio'];
+				$esito               = $response['soapenvBody']['papaNotificaTransazione']['transazione']['esito'];
 
-			// Recupera dati del plugin
-			// Verifiche su cod_applicazione, esito, 
-
-
-
-
+				// Check payment data.
+				$options = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
+				if ( ( 'ASYNC-EXT' === $options['payment_conf_method'] ) &&
+					( $cod_applicazione === $options['application_code'] ) &&
+					( $cod_dominio === $options['domain_code'] ) &&
+					( 'PAGAMENTO_ESEGUITO' === $esito ) &&
+					$iuv ) {
+					// Try to retrieve the order.
+					try {
+						$order       = new WC_Order( $cod_versamento_ente );
+						$log_manager = new Log_Manager( $order );
+						$p_status    = $log_manager->get_current_status( $order->get_id(), $iuv );
+						if ( STATUS_PAYMENT_WAITING_CONFIRM === $p_status ) {
+							// Set the order as paid.
+							$order->payment_complete();
+							$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
+						} else {
+							$this->log_action( 'warning', 'Payment alrewady confirmed.' );
+						}
+					} catch ( Exception $e ) {
+						$this->log_action( 'error', 'Error in paNotificaTRansazione:' . $e->getMessage() );
+					}
+				} else {
+					$this->log_action( 'warning', 'Invalid parameters or plugin settings passed to paNotificaTransazione.' );
+				}
+			}
+			// In any case return OK.
 			echo 'OK';
 			exit();
 		}
