@@ -29,20 +29,22 @@ class Gateway_Controller {
 
 		if ( 'yes' === $this->options['testmode'] ) {
 			// Get the parameters of the TEST configutation .
-			$this->ws_data['frontend_base_url'] = trim( $this->options['base_fronted_url_test'], '/' );
-			$this->ws_data['ws_soap_base_url']  = trim( $this->options['base_url_test'], '/' );
-			$this->ws_data['ws_username']       = $this->options['username_test'];
-			$this->ws_data['ws_password']       = $this->options['password_test'];
-			$this->ws_data['id_payment_model']  = $this->options['id_payment_model_test'];
-			$this->ws_data['confirm_payment']   = $this->options['confirm_payment'];
+			$this->ws_data['frontend_base_url']   = trim( $this->options['base_fronted_url_test'], '/' );
+			$this->ws_data['ws_soap_base_url']    = trim( $this->options['base_url_test'], '/' );
+			$this->ws_data['ws_username']         = $this->options['username_test'];
+			$this->ws_data['ws_password']         = $this->options['password_test'];
+			$this->ws_data['id_payment_model']    = $this->options['id_payment_model_test'];
+			$this->ws_data['confirm_payment']     = $this->options['confirm_payment'];
+			$this->ws_data['payment_conf_method'] = $this->options['payment_conf_method'];
 		} else {
 			// Get the parameters of the PRODUCTION configutation .
-			$this->ws_data['frontend_base_url'] = trim( $this->options['base_fronted_url_prod'], '/' );
-			$this->ws_data['ws_soap_base_url']  = trim( $this->options['base_url_prod'], '/' );
-			$this->ws_data['ws_username']       = $this->options['username_prod'];
-			$this->ws_data['ws_password']       = $this->options['password_prod'];
-			$this->ws_data['id_payment_model']  = $this->options['id_payment_model_prod'];
-			$this->ws_data['confirm_payment']   = $this->options['confirm_payment'];
+			$this->ws_data['frontend_base_url']   = trim( $this->options['base_fronted_url_prod'], '/' );
+			$this->ws_data['ws_soap_base_url']    = trim( $this->options['base_url_prod'], '/' );
+			$this->ws_data['ws_username']         = $this->options['username_prod'];
+			$this->ws_data['ws_password']         = $this->options['password_prod'];
+			$this->ws_data['id_payment_model']    = $this->options['id_payment_model_prod'];
+			$this->ws_data['confirm_payment']     = $this->options['confirm_payment'];
+			$this->ws_data['payment_conf_method'] = $this->options['payment_conf_method'];
 		}
 	}
 

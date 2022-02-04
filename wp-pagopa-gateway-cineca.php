@@ -36,6 +36,7 @@ require_once 'inc/class-transactions-manager.php';
 // Define some plugin constants.
 define( 'HOOK_PAYMENT_COMPLETE', 'pagopa_payment_complete' );
 define( 'HOOK_SCHEDULED_ACTIONS', 'pagopa_execute_actions' );
+define( 'HOOK_TRANSACTION_NOTIFICATION', 'pagopa_notifica_transazione' );
 define( 'DEBUG_MODE_ENABLED', 1 );
 define( 'WAIT_NUM_SECONDS', 5 );
 define( 'WAIT_NUM_ATTEMPTS', 35 );
@@ -163,6 +164,9 @@ function wp_gateway_pagopa_init() {
 			// Register the webhook to start scheduled jobs.
 			add_action( 'woocommerce_api_' . HOOK_SCHEDULED_ACTIONS, array( $this, 'webhook_scheduled_actions' ) );
 
+			// Register the webhook called from the gateway to notify a payment.
+			add_action( 'woocommerce_api_' . HOOK_TRANSACTION_NOTIFICATION, array( $this, 'webhook_transaction_notification' ) );
+
 			// Use a custom style.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
@@ -253,6 +257,13 @@ function wp_gateway_pagopa_init() {
 					'description' => __( 'Place the payment gateway in test mode using test API credentials', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'yes',
 					'desc_tip'    => true,
+				),
+				'payment_conf_method'    => array(
+					'title'       => __( 'Payment confirmation method', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'select',
+					'default'     => 'SYNC-INT',
+					'options'     => $this->get_options_conf_method(),
+					'desc_tip'    => __( 'The confirmation of a payment can be synchronous (polling on PagoAtenei waiting for its status to be updated by the PSP) or asynchronous (the order is confirmed by PagoAtenei\'s paNotificaTransazione notification).', 'wp-pagopa-gateway-cineca' ),
 				),
 				'confirm_payment'        => array(
 					'title'       => __( 'Payment confirmation', 'wp-pagopa-gateway-cineca' ),
@@ -382,6 +393,19 @@ function wp_gateway_pagopa_init() {
 				),
 			);
 
+		}
+
+		/**
+		 * Options list for the field payment_conf_method.
+		 *
+		 * @return array
+		 */
+		public function get_options_conf_method() {
+			$contab_ids = array(
+				'SYNC-INT'  => __( 'Polling on PagoAtenei', 'wp-pagopa-gateway-cineca' ),
+				'ASYNC-EXT' => __( 'Asycnhronous notification by PagoAtenei', 'wp-pagopa-gateway-cineca' ),
+			);
+			return $contab_ids;
 		}
 
 		/**
@@ -623,6 +647,39 @@ function wp_gateway_pagopa_init() {
 		}
 
 		/**
+		 * Hook called from the gateway to notify a payment.
+		 *
+		 * @param array $args - Incominc parameters.
+		 * @return void
+		 */
+		public function webhook_transaction_notification( $args ) {
+			error_log( '@@@ webhook_transaction_notification @@@' );
+			$this->log_action( 'info', 'webhook_transaction_notification' );
+			$result    = trim( file_get_contents( 'php://input' ) );
+			// SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out.
+			$xml      = preg_replace( '/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $result );
+			$xml      = simplexml_load_string( $xml );
+			$json     = wp_json_encode( $xml );
+			$response = json_decode( $json, true );
+			error_log( $result );
+
+			$cod_applicazione    = $response['soapenvBody']['papaNotificaTransazione']['codApplicazione'];
+			$cod_versamento_ente = $response['soapenvBody']['papaNotificaTransazione']['codVersamentoEnte'];
+			$iuv                 = $response['soapenvBody']['papaNotificaTransazione']['transazione']['iuv'];
+			$codDominio          = $response['soapenvBody']['papaNotificaTransazione']['transazione']['codDominio'];
+			$esito               = $response['soapenvBody']['papaNotificaTransazione']['transazione']['esito'];
+
+			// Recupera dati del plugin
+			// Verifiche su cod_applicazione, esito, 
+
+
+
+
+			echo 'OK';
+			exit();
+		}
+
+		/**
 		 * Hook called to start scheduled actions.
 		 *
 		 * @param array $args - Arguments of the function.
@@ -630,7 +687,7 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function webhook_scheduled_actions( $args ) {
 			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
-			$this->log_action( 'info', 'Token:' . $token );
+			$this->log_action( 'info', 'webhook_scheduled_actions Token:' . $token );
 			// Check if the token is present.
 			if ( ! $token ) {
 				echo 'Invalid token';
@@ -785,9 +842,11 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public static function enqueue_scripts() {
-			$plugin_name = self::get_plugin_name();
-			$file_path   = self::get_plugin_url() . '/assets/css/wp-pagopa-gateway-cineca.css';
-			wp_enqueue_style( $plugin_name . 'css-1', $file_path );
+			$plugin_name    = self::get_plugin_name();
+			$file_path      = self::get_plugin_url() . '/assets/css/wp-pagopa-gateway-cineca.css';
+			$plugin_data    = get_plugin_data( __FILE__ );
+			$plugin_version = $plugin_data['Version'];
+			wp_enqueue_style( $plugin_name . 'css-1', $file_path, null, $plugin_version );
 		}
 
 	} // end plugin class
