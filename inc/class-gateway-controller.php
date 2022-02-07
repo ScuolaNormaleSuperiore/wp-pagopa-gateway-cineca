@@ -136,7 +136,7 @@ class Gateway_Controller {
 			$codice_univoco = $ragione_sociale;
 		}
 
-		$raw_order_number = $this->build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
+		$raw_order_number = self::build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
 
 		$bodyrichiesta = array(
 			'generaIuv'        => true,
@@ -224,7 +224,7 @@ class Gateway_Controller {
 	 * @param string $order_number - The number of the order.
 	 * @return string
 	 */
-	private function build_raw_order_number( $order_prefix, $order_number ) {
+	public static function build_raw_order_number( $order_prefix, $order_number ) {
 		// Add the char "-" to the prefix, if present.
 		return trim( $order_prefix ) ? trim( $order_prefix ) . '-' . $order_number : $order_number;
 	}
@@ -236,7 +236,7 @@ class Gateway_Controller {
 	 * @param string $raw_order_number - The raw order number.
 	 * @return string
 	 */
-	private function extract_order_number( $order_prefix, $raw_order_number ) {
+	public static function extract_order_number( $order_prefix, $raw_order_number ) {
 		if ( trim( $order_prefix ) ) {
 			return trim( str_replace( $order_prefix . '-', '', $raw_order_number ) );
 		}
@@ -264,7 +264,7 @@ class Gateway_Controller {
 	 * @return array
 	 */
 	public function get_payment_status() {
-		$raw_order_number = $this->build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
+		$raw_order_number = self::build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
 		$bodyrichiesta    = array(
 			'codApplicazione'   => $this->options['application_code'],
 			'codVersamentoEnte' => $raw_order_number,
@@ -339,7 +339,7 @@ class Gateway_Controller {
 	public function get_payment_url( $iuv, $hook ) {
 		$customer_code    = $this->options['application_code'];
 		$order_number     = $this->order->get_order_number();
-		$raw_order_number = $this->build_raw_order_number( $this->options['order_prefix'], $order_number );
+		$raw_order_number = self::build_raw_order_number( $this->options['order_prefix'], $order_number );
 		$token            = self::create_token( $order_number, $iuv );
 		$order_hook       = trim( get_site_url(), '/' ) . '/wc-api/' . $hook . '?token=' . $token;
 		$encoded_hook     = rawurlencode( $order_hook );

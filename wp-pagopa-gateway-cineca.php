@@ -674,29 +674,35 @@ function wp_gateway_pagopa_init() {
 				$log_msg  = '@@@ Source data sent by PagoAtenei:' . $result ;
 				$this->log_action( 'info', $log_msg );
 
-				$cod_applicazione    = $response['soapenvBody']['papaNotificaTransazione']['codApplicazione'];
-				$cod_versamento_ente = $response['soapenvBody']['papaNotificaTransazione']['codVersamentoEnte'];
-				$iuv                 = $response['soapenvBody']['papaNotificaTransazione']['transazione']['iuv'];
-				$cod_dominio         = $response['soapenvBody']['papaNotificaTransazione']['transazione']['codDominio'];
-				$esito               = $response['soapenvBody']['papaNotificaTransazione']['transazione']['esito'];
+				$cod_applicazione    = $response['soapBody']['ns2paNotificaTransazione']['codApplicazione'];
+				$cod_versamento_ente = $response['soapBody']['ns2paNotificaTransazione']['codVersamentoEnte'];
+				$iuv                 = $response['soapBody']['ns2paNotificaTransazione']['transazione']['iuv'];
+				$cod_dominio         = $response['soapBody']['ns2paNotificaTransazione']['transazione']['codDominio'];
+				$esito               = $response['soapBody']['ns2paNotificaTransazione']['transazione']['stato'];
+
+				$this->log_action( 'info', '@@@ codApplicazione' . $cod_applicazione );
+				$this->log_action( 'info', '@@@ iuv' . $iuv );
+				$this->log_action( 'info', '@@@ esito' . $esito );
+				$this->log_action( 'info', '@@@ cod_versamento_ente' . $cod_versamento_ente );
 
 				// Check payment data.
 				$options = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
 				if ( ( 'ASYNC-EXT' === $options['payment_conf_method'] ) &&
 					( $cod_applicazione === $options['application_code'] ) &&
 					( $cod_dominio === $options['domain_code'] ) &&
-					( 'PAGAMENTO_ESEGUITO' === $esito ) &&
+					( 'RPT_ACCETTATA_NODO' === $esito ) &&
 					$iuv ) {
 					// Try to retrieve the order.
 					try {
-						$order       = new WC_Order( $cod_versamento_ente );
+						$order_id    = Gateway_Controller::extract_order_number( $options['order_prefix'], $cod_versamento_ente );
+						$order       = new WC_Order( $order_id );
 						$log_manager = new Log_Manager( $order );
 						$p_status    = $log_manager->get_current_status( $order->get_id(), $iuv );
 						if ( STATUS_PAYMENT_WAITING_CONFIRM === $p_status ) {
 							// Set the order as paid.
 							$order->payment_complete();
 							$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
-							$this->log_action( 'warning', 'Payment confirmed by notification.' );
+							$this->log_action( 'info', 'Payment confirmed by notification.' );
 						} else {
 							$this->log_action( 'warning', 'Payment already confirmed or payment not found.' );
 						}
@@ -846,9 +852,6 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function log_action( $log_type, $message ) {
-			if ( DEBUG_MODE_ENABLED ) {
-				error_log( $message );
-			}
 			$logger  = wc_get_logger();
 			$context = array( 'source' => self::get_plugin_name() );
 			$logger->log( $log_type, $message, $context );
