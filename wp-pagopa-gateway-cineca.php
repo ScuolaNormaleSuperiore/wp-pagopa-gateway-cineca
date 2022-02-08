@@ -165,6 +165,12 @@ function wp_gateway_pagopa_init() {
 			$this->description = $icon_list . $desc;
 			$this->enabled     = $this->get_option( 'enabled' );
 			$this->testmode    = $this->get_option( 'testmode' );
+			$this->api_user    = ( 'yes' === $this->testmode ) ?
+				$this->get_option( 'api_user_test' ) :
+				$this->get_option( 'api_user_prod') ;
+			$this->api_pwd     = ( 'yes' === $this->testmode ) ?
+				$this->get_option( 'api_pwd_test' ) :
+				$this->get_option( 'api_pwd_prod') ;
 
 			// This action hook saves the settings.
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -339,7 +345,7 @@ function wp_gateway_pagopa_init() {
 					'description' => __( 'Token used by the REST API and the scheduled actions.', 'wp-pagopa-gateway-cineca' ),
 				),
 				// Production credentials.
-				'production_credentials' => array(
+				'production_credentials'  => array(
 					'title' => __( 'Production credentials', 'wp-pagopa-gateway-cineca' ),
 					'type'  => 'title',
 				),
@@ -350,18 +356,28 @@ function wp_gateway_pagopa_init() {
 					'default'     => 'https://xxx.pagoatenei.cineca.it',
 				),
 				'base_url_prod'          => array(
-					'title'       => __( 'API base url', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'PagoAtenei API base url', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Base url of the API for the Cineca Payment Portal', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'https://gateway.pagoatenei.cineca.it',
 				),
 				'username_prod'          => array(
-					'title'       => __( 'API username', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'PagoAtenei API username', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Username of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
 				),
 				'password_prod'          => array(
-					'title'       => __( 'API password', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'PagoAtenei API password', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+				),
+				'api_user_prod'          => array(
+					'title'       => __( 'Local API username', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'Username of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+				),
+				'api_pwd_prod'           => array(
+					'title'       => __( 'Local API password', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
 				),
@@ -382,18 +398,28 @@ function wp_gateway_pagopa_init() {
 					'default'     => 'https://xxx.pagoatenei.cineca.it',
 				),
 				'base_url_test'          => array(
-					'title'       => __( 'API base url', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'PagoAtenei API base url', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Base url of the API for the Cineca Payment Portal', 'wp-pagopa-gateway-cineca' ),
 					'default'     => 'https://gateway.pp.pagoatenei.cineca.it',
 				),
 				'username_test'          => array(
-					'title'       => __( 'API username', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'PagoAtenei API username', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Username of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
 				),
 				'password_test'          => array(
-					'title'       => __( 'API password', 'wp-pagopa-gateway-cineca' ),
+					'title'       => __( 'PagoAtenei API password', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+				),
+				'api_user_test'          => array(
+					'title'       => __( 'Local API username', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'text',
+					'description' => __( 'Username of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+				),
+				'api_pwd_test'           => array(
+					'title'       => __( 'Local API password', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
 					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
 				),
@@ -674,6 +700,7 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function webhook_transaction_notification( $args ) {
+			$this->verifyAPIAuthentication();
 			$this->log_action( 'info', 'webhook_transaction_notification' );
 			$result    = trim( file_get_contents( 'php://input' ) );
 			// SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out.
@@ -733,6 +760,27 @@ function wp_gateway_pagopa_init() {
 			echo NOTIFY_TRANSACTION_RESPONSE;
 			exit();
 		}
+
+		/**
+		 * Check authorization to use the API.
+		 *
+		 * @return boolen - True if the account is right.
+		 */
+		private function verifyAPIAuthentication() {
+			$api_username  = $this->api_user ?  $this->api_user : '';
+			$api_password  = $this->api_pwd ?  $this->api_pwd : '';
+			if ( $api_username && $api_username ) {
+				$auth          = apache_request_headers();
+				$authorization = $auth['Authorization'];
+				$valid_token   = 'Basic ' . base64_encode( $api_username . ':' . $api_password );
+				if ( $authorization !== $valid_token ){
+					header( 'HTTP/1.1 401 Unauthorized' );
+					exit;
+				}
+			}
+			return true;
+		}
+
 
 		/**
 		 * Hook called to start scheduled actions.
