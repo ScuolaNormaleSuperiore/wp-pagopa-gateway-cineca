@@ -104,7 +104,7 @@ class Log_Manager {
 	}
 
 	/**
-	 * Undocumented function
+	 * Retrieve the current status of a payment.
 	 *
 	 * @param  string $order_id - The number of the order.
 	 * @param  string $iuv - The iuv of the payment.
@@ -113,11 +113,25 @@ class Log_Manager {
 	public function get_current_status( $order_id, $iuv ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . LOG_TABLE_NAME;
-
 		$sql    = $wpdb->prepare( "SELECT status FROM {$table_name}  WHERE order_id=%s AND iuv=%s ORDER BY id DESC LIMIT 1", $order_id, $iuv );
 		$status = $wpdb->get_var( $sql );
-
 		return $status ? $status : '';
+	}
+
+	/**
+	 * Check if a payment is passed for a given status.
+	 *
+	 * @param  string $order_id - The number of the order.
+	 * @param  string $iuv - The iuv of the payment.
+	 * @param  string $status - The status to check.
+	 * @return boolean - Return true if there is payment that satisfies these requirements .
+	 */
+	public function check_payment_status( $order_id, $iuv, $status ) {
+		global $wpdb;
+		$table_name = $wpdb->prefix . LOG_TABLE_NAME;
+		$sql    = $wpdb->prepare( "SELECT COUNT(*) AS counter FROM {$table_name}  WHERE order_id=%s AND iuv=%s AND status=%s", $order_id, $iuv, $status );
+		$status = $wpdb->get_var( $sql );
+		return intval( $status ) > 0 ? true : false;
 	}
 
 	/**
@@ -130,7 +144,6 @@ class Log_Manager {
 		$table_name = $wpdb->prefix . LOG_TABLE_NAME;
 		$sql        = "DROP TABLE IF EXISTS $table_name;";
 		$wpdb->query( $sql );
-
 		// Delete the version number of the table.
 		delete_option( LOG_TABLE_VERSION_OPTION );
 	}

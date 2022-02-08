@@ -45,6 +45,17 @@ define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) 
 
 define( 'TOTAL_SOAP_TIMEOUT', 20 );
 
+define( 'NOTIFY_TRANSACTION_RESPONSE',
+	'<?xml version=\'1.0\' encoding=\'UTF-8\'?>' .
+	'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' .
+	'<soapenv:Body>' .
+	'<ns2:paNotificaTransazioneResponse xmlns:ns2="http://www.govpay.it/servizi/pa/">' .
+	'OK' .
+	'</ns2:paNotificaTransazioneResponse>' .
+	'</soapenv:Body>' .
+	'</soapenv:Envelope>' );
+
+
 // Register the hooks to install and uninstall the plugin.
 register_activation_hook( __FILE__, 'install_pagopa_plugin' );
 register_deactivation_hook( __FILE__, 'uninstall_pagopa_plugin' );
@@ -539,8 +550,8 @@ function wp_gateway_pagopa_init() {
 			$log_manager = new Log_Manager( $order );
 
 			// Check the consinstence of the parameters: order and iuv.
-			$p_status = $log_manager->get_current_status( $order_id, $iuv );
-			if ( STATUS_PAYMENT_CREATED !== $p_status ) {
+			$p_found = $log_manager->check_payment_status( $order_id, $iuv, STATUS_PAYMENT_CREATED );
+			if ( ! $p_found ) {
 				// Error checking the parameters passed by the gateway.
 				$error_msg = __( 'The status of the payment is not consistent', 'wp-pagopa-gateway-cineca' );
 				$error_msg = $error_msg . ' n. ' . $order_id;
@@ -670,51 +681,56 @@ function wp_gateway_pagopa_init() {
 			$xml      = simplexml_load_string( $xml );
 			$json     = wp_json_encode( $xml );
 			$response = json_decode( $json, true );
-			if ( $response ) {
-				$log_msg  = '@@@ Source data sent by PagoAtenei:' . $result ;
-				$this->log_action( 'info', $log_msg );
 
-				$cod_applicazione    = $response['soapBody']['ns2paNotificaTransazione']['codApplicazione'];
-				$cod_versamento_ente = $response['soapBody']['ns2paNotificaTransazione']['codVersamentoEnte'];
-				$iuv                 = $response['soapBody']['ns2paNotificaTransazione']['transazione']['iuv'];
-				$cod_dominio         = $response['soapBody']['ns2paNotificaTransazione']['transazione']['codDominio'];
-				$esito               = $response['soapBody']['ns2paNotificaTransazione']['transazione']['stato'];
+			try {
+				if ( $response ) {
+					$cod_applicazione    = $response['soapBody']['ns2paNotificaTransazione']['codApplicazione'];
+					$cod_versamento_ente = $response['soapBody']['ns2paNotificaTransazione']['codVersamentoEnte'];
+					$iuv                 = $response['soapBody']['ns2paNotificaTransazione']['transazione']['iuv'];
+					$cod_dominio         = $response['soapBody']['ns2paNotificaTransazione']['transazione']['codDominio'];
+					$stato               = $response['soapBody']['ns2paNotificaTransazione']['transazione']['stato'];
 
-				$this->log_action( 'info', '@@@ codApplicazione' . $cod_applicazione );
-				$this->log_action( 'info', '@@@ iuv' . $iuv );
-				$this->log_action( 'info', '@@@ esito' . $esito );
-				$this->log_action( 'info', '@@@ cod_versamento_ente' . $cod_versamento_ente );
+					// $log_msg  = '@@@ Source data sent by PagoAtenei:' . $result ;
+					// $this->log_action( 'info', $log_msg );
+					$this->log_action( 'info', '@@@ codApplicazione: ' . $cod_applicazione );
+					$this->log_action( 'info', '@@@ iuv: ' . $iuv );
+					$this->log_action( 'info', '@@@ stato: ' . $stato );
+					$this->log_action( 'info', '@@@ cod_versamento_ente: ' . $cod_versamento_ente );
 
-				// Check payment data.
-				$options = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
-				if ( ( 'ASYNC-EXT' === $options['payment_conf_method'] ) &&
-					( $cod_applicazione === $options['application_code'] ) &&
-					( $cod_dominio === $options['domain_code'] ) &&
-					( 'RPT_ACCETTATA_NODO' === $esito ) &&
-					$iuv ) {
-					// Try to retrieve the order.
-					try {
-						$order_id    = Gateway_Controller::extract_order_number( $options['order_prefix'], $cod_versamento_ente );
-						$order       = new WC_Order( $order_id );
-						$log_manager = new Log_Manager( $order );
-						$p_status    = $log_manager->get_current_status( $order->get_id(), $iuv );
-						if ( STATUS_PAYMENT_WAITING_CONFIRM === $p_status ) {
-							// Set the order as paid.
-							$order->payment_complete();
-							$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
-							$this->log_action( 'info', 'Payment confirmed by notification.' );
+					if ( 'RT_ACCETTATA_PA' === $stato ) {
+						// Check payment data.
+						$options = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
+						$esito   = $response['soapBody']['ns2paNotificaTransazione']['transazione']['esito'];
+						$this->log_action( 'info', '@@@ esito: ' . $esito );
+						if ( ( 'ASYNC-EXT' === $options['payment_conf_method'] ) &&
+							( $cod_applicazione === $options['application_code'] ) &&
+							( $cod_dominio === $options['domain_code'] ) &&
+							( 'PAGAMENTO_ESEGUITO' === $esito ) &&
+							$iuv ) {
+							// Try to retrieve the order.
+							$order_id    = Gateway_Controller::extract_order_number( $options['order_prefix'], $cod_versamento_ente );
+							$order       = new WC_Order( $order_id );
+							$log_manager = new Log_Manager( $order );
+							$p_found     = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_WAITING_CONFIRM );
+							if ( $p_found ) {
+								// Set the order as paid.
+								$order->payment_complete();
+								$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
+								$this->log_action( 'info', 'Payment confirmed by notification. Order: ' . $cod_versamento_ente );
+							} else {
+								$this->log_action( 'warning', 'Payment already confirmed or payment not found. Order: '. $cod_versamento_ente );
+							}
 						} else {
-							$this->log_action( 'warning', 'Payment already confirmed or payment not found.' );
+							$this->log_action( 'warning', 'Invalid parameters passed to paNotificaTransazione or invalid plugin settings. Order: '. $cod_versamento_ente );
 						}
-					} catch ( Exception $e ) {
-						$this->log_action( 'error', 'Error in paNotificaTRansazione:' . $e->getMessage() );
 					}
-				} else {
-					$this->log_action( 'warning', 'Invalid parameters passed to paNotificaTransazione or invalid plugin settings.' );
 				}
+			} catch ( Exception $e ) {
+				$this->log_action( 'error', 'Error in paNotificaTransazione:' . $e->getMessage() );
 			}
 			// In any case return OK.
-			echo 'OK';
+			header( 'Content-type: text/xml; charset=utf-8' );
+			echo NOTIFY_TRANSACTION_RESPONSE;
 			exit();
 		}
 
@@ -852,6 +868,9 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function log_action( $log_type, $message ) {
+			if ( DEBUG_MODE_ENABLED ) {
+				error_log( $message );
+			}
 			$logger  = wc_get_logger();
 			$context = array( 'source' => self::get_plugin_name() );
 			$logger->log( $log_type, $message, $context );
