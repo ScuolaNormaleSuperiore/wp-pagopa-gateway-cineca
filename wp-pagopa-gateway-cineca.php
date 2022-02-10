@@ -375,12 +375,12 @@ function wp_gateway_pagopa_init() {
 				'api_user_prod'          => array(
 					'title'       => __( 'Local API username', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Username of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Username of the account enabled to the use of the plugin\'s api', 'wp-pagopa-gateway-cineca' ),
 				),
 				'api_pwd_prod'           => array(
 					'title'       => __( 'Local API password', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Password of the account enabled to the use of the plugin\'s api', 'wp-pagopa-gateway-cineca' ),
 				),
 				'id_payment_model_prod'  => array(
 					'title'       => __( 'Payment model ID', 'wp-pagopa-gateway-cineca' ),
@@ -417,12 +417,12 @@ function wp_gateway_pagopa_init() {
 				'api_user_test'          => array(
 					'title'       => __( 'Local API username', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Username of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Username of the account enabled to the use of the plugin\'s api', 'wp-pagopa-gateway-cineca' ),
 				),
 				'api_pwd_test'           => array(
 					'title'       => __( 'Local API password', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
-					'description' => __( 'Password of the account enabled to the use of the API', 'wp-pagopa-gateway-cineca' ),
+					'description' => __( 'Password of the account enabled to the use of the plugin\'s api', 'wp-pagopa-gateway-cineca' ),
 				),
 				'id_payment_model_test'  => array(
 					'title'       => __( 'Payment model ID', 'wp-pagopa-gateway-cineca' ),

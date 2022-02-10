@@ -5,6 +5,7 @@
 .idea
 
 lang/wp-pagopa-gateway-cineca-it_IT-backup*
+lang/wp-pagopa-gateway-cineca-backup-*
 
 # Empty folder for the certificates
 cert/*
