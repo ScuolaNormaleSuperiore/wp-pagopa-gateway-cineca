@@ -53,7 +53,8 @@ define( 'NOTIFY_TRANSACTION_RESPONSE',
 	'OK' .
 	'</ns2:paNotificaTransazioneResponse>' .
 	'</soapenv:Body>' .
-	'</soapenv:Envelope>' );
+	'</soapenv:Envelope>' 
+);
 
 
 // Register the hooks to install and uninstall the plugin.
@@ -167,10 +168,10 @@ function wp_gateway_pagopa_init() {
 			$this->testmode    = $this->get_option( 'testmode' );
 			$this->api_user    = ( 'yes' === $this->testmode ) ?
 				trim( $this->get_option( 'api_user_test' ) ) :
-				trim( $this->get_option( 'api_user_prod') );
+				trim( $this->get_option( 'api_user_prod' ) );
 			$this->api_pwd     = ( 'yes' === $this->testmode ) ?
 				trim( $this->get_option( 'api_pwd_test' ) ) :
-				trim( $this->get_option( 'api_pwd_prod') );
+				trim( $this->get_option( 'api_pwd_prod' ) );
 
 			// This action hook saves the settings.
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -700,7 +701,7 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function webhook_transaction_notification( $args ) {
-			$this->log_action( 'info', 'webhook_transaction_notification' );
+			$this->log_action( 'info', '@@@ webhook_transaction_notification @@@' );
 			$this->verifyAPIAuthentication();
 			$result    = trim( file_get_contents( 'php://input' ) );
 			// SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out.
@@ -745,10 +746,10 @@ function wp_gateway_pagopa_init() {
 								$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
 								$this->log_action( 'info', 'Payment confirmed by notification. Order: ' . $cod_versamento_ente );
 							} else {
-								$this->log_action( 'warning', 'Payment already confirmed or payment not found. Order: '. $cod_versamento_ente );
+								$this->log_action( 'warning', 'Payment already confirmed or payment not found. Order: ' . $cod_versamento_ente );
 							}
 						} else {
-							$this->log_action( 'warning', 'Invalid parameters passed to paNotificaTransazione or invalid plugin settings. Order: '. $cod_versamento_ente );
+							$this->log_action( 'warning', 'Invalid parameters passed to paNotificaTransazione or invalid plugin settings. Order: ' . $cod_versamento_ente );
 						}
 					}
 				}
@@ -767,14 +768,14 @@ function wp_gateway_pagopa_init() {
 		 * @return boolen - True if the account is right.
 		 */
 		private function verifyAPIAuthentication() {
-			$this->log_action( 'info', json_encode( apache_request_headers() ) );
+			// $this->log_action( 'info', json_encode( apache_request_headers() ) );
 			$api_username  = $this->api_user;
 			$api_password  = $this->api_pwd;
 			if ( $api_username && $api_username ) {
 				$auth          = apache_request_headers();
 				$authorization = isset( $auth['Authorization'] ) ? $auth['Authorization'] : '';
 				$valid_token   = 'Basic ' . base64_encode( $api_username . ':' . $api_password );
-				if ( $authorization !== $valid_token ){
+				if ( $authorization !== $valid_token ) {
 					header( 'HTTP/1.1 401 Unauthorized' );
 					exit;
 				}
@@ -821,7 +822,7 @@ function wp_gateway_pagopa_init() {
 		/**
 		 * Check the status of 'on-hold' orders on the gateway and if they have been paid change the status of the order to 'processing'.
 		 *
-		 * @return void
+		 * @return string
 		 */
 		private function update_orders_status() {
 			// Get all the on-hold orders of the last NUM_DAYS_TO_CHECK days in the 'on-hold' status.

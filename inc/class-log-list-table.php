@@ -87,7 +87,7 @@ class Log_List_Table extends WP_List_Table {
 		$start_date      = ( ! empty( $_POST['search_start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['search_start_date'] ) ) : '' );
 		$end_date        = ( ! empty( $_POST['search_end_date'] ) ? sanitize_text_field( wp_unslash( $_POST['search_end_date'] ) ) : '' );
 		// Get page number.
-		if ( empty( $paged ) || ! is_numeric( $paged) || ( $paged <= 0 ) ) {
+		if ( empty( $paged ) || ! is_numeric( $paged ) || ( $paged <= 0 ) ) {
 			$paged = 1;
 		}
 		$perpage          = intval( PER_PAGE_ITEMS );
@@ -98,7 +98,7 @@ class Log_List_Table extends WP_List_Table {
 		$query_condition  = '';
 
 		// Add where condition.
-		if ( $search_string || $start_date) {
+		if ( $search_string || $start_date ) {
 			$query .= ' WHERE ';
 		}
 
@@ -177,7 +177,7 @@ class Log_List_Table extends WP_List_Table {
 						break;
 					case STATUS_PAYMENT_CONFIRMED:
 						// $str_value = '<b style="color:green">' . __( $value, 'wp-pagopa-gateway-cineca' ) . '</b>';
-						$str_value = '<b style="color:green">' . $value. '</b>';
+						$str_value = '<b style="color:green">' . $value . '</b>';
 						break;
 					default:
 						// $str_value = __( $value, 'wp-pagopa-gateway-cineca' );
