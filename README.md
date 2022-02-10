@@ -50,6 +50,10 @@ If these fields are not specified, the plugin works the same but the user will b
    - **Description en**: a description for the payment method, will be shown in the english version of the checkout page.
    - **Description it**: a description for the payment method, will be shown in the italian version of the checkout page.
    - **Enable/Disable test mode**: the flag to enable the test mode.
+   - **Payment confirmation method**: 
+   - - **Polling on PagoAtenei**: The order is considered paid if the payment callback is called with a valid token and exists a pendig order with that order_id and iuv. A further control on the state can be activated enabling the option "Payment confirmation".
+   - - **Asycnhronous notification by PagoAtenei**: The order is considered paid only if PagoAtenei sends a paNotificaTransazione message with esito=PAGAMENTO_ESEGUITO.
+   - **Payment confirmation**: If set, the callback invoked after payment waits for the payment to be propagated from the PSP to PagoAtenei. This verification is done with a polling on Pagoatenei. If not set, the plugin considers the order paid without further checks.
    - **Aplication code**: the application code assigned by Cineca.
    - **Domain code**: the Vat code of the institution.
    - **Iban**: the Iban of the institution.
@@ -60,19 +64,33 @@ If these fields are not specified, the plugin works the same but the user will b
    - **Order prefix**: a prefix that is added to the WP order number before being sent to the gateway. You can leave it empty. It is useful if you use multiple instances of the site in test or dev enviroments to keep separate the orders of the various instances.
    - **Encryption key**: the key used to encrypt the token passed to the gateway.
    - **API token**: the token used to start the scheduled actions and the REST API. If empty these features are disabled.
+   - 
   
   **Production credentials**
    - **Cineca front end url**: the url of the front end of PagoAtenei. It is provided by Cineca.
-   - **Base url of the API**: the base url of the PagoAtenei Soap web services. It is provided by Cineca.
-   - **Username of the API**: the username to use the Soap web services. It is provided by Cineca.
-   - **Password of the API**: the password to use the Soap web services. It is provided by Cineca.
+   - **PagoAtenei API base url**: the base url of the PagoAtenei Soap web services. It is provided by Cineca.
+   - **PagoAtenei API username**: the username to use the Soap web services of PagoAtenei. It is provided by Cineca.
+   - **PagoAtenei API password**: the password to use the Soap web services of PagoAtenei. It is provided by Cineca.
+   - **Local API username**: the username of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
+   - **Local API password**:the password of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
  
   **Test credentials**
    - **Cineca front end url**: the url of the front end of PagoAtenei. It is provided by Cineca.
-   - **Base url of the API**: the base url of the PagoAtenei Soap web services. It is provided by Cineca.
-   - **Username of the API**: the username to use the Soap web services. It is provided by Cineca.
-   - **Password of the API**: the password to use the Soap web services. It is provided by Cineca. 
+   - **PagoAtenei API base url**: the base url of the PagoAtenei Soap web services. It is provided by Cineca.
+   - **PagoAtenei API username**: the username to use the Soap web services of PagoAtenei. It is provided by Cineca.
+   - **PagoAtenei API password**: the password to use the Soap web services of PagoAtenei. It is provided by Cineca.
+   - **Local API username**: the username of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
+   - **Local API password**:the password of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
 
+## Payment confimation: possible configurations
+- **Payment confirmation method** = ***Asycnhronous notification by PagoAtenei*** and **Payment confirmation** = ***false***: The order is considered paid only if a paNotificaTransazione is invoked by PagoAtenei. The site must be hosted on a public server and Cineca must be asked to activate and configure the message paNotificaTransazione. You can't try this configuration on a local development enviroment.
+- **Payment confirmation method** = ***Polling on PagoAtenei*** and **Payment confirmation** = ***false***: The order is considered paid when the callback is correctly invoked and the order is in the right state. No further checks are carried out.
+- **Payment confirmation method** = ***Polling on PagoAtenei*** and **Payment confirmation** = ***true***: The callback, after checking the token and the order state, starts a polling on PagoAtenei until PagoAtenei receives the payment confirmation from the PSP.
+
+The first is the suggested and most secure configuration.
+
+## How to test the PagoAtenei's SOAP Api
+After having requested and obtained the connection parameters from Cineca, you can use SoapUI to test the SOAP web services. In the setup\TestSoap directory you can find a SOAP project or you can create a new project using this [WSDL](https://gateway.pp.pagoatenei.cineca.it/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl).
 
 ## Gallery
 ![Enable](docs/screenshots/EnablePlugin_1.png)
@@ -108,6 +126,8 @@ To get the container shell run:
 - docker exec -it myshop /bin/bash
   
 To url of the e-commerce is: http://localhost/myshop/ .
+
+To test the plugin you have to enable it and configure it with the data provided to you by Cineca.
 
 To log in as Administrator the url is: http://localhost/mio-account/ and the account is: manager / password
 
