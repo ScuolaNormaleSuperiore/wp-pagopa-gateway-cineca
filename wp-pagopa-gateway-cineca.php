@@ -53,7 +53,7 @@ define( 'NOTIFY_TRANSACTION_RESPONSE',
 	'OK' .
 	'</ns2:paNotificaTransazioneResponse>' .
 	'</soapenv:Body>' .
-	'</soapenv:Envelope>' 
+	'</soapenv:Envelope>'
 );
 
 

@@ -8,20 +8,18 @@ TODO LIST:
 
 2) Add a validation of the plugin configuration parameters.
 
-3) Check the license of the plugin.
-
-4) DOCUMENTATION:
+3) DOCUMENTATION:
 		- How to convert a certificate from pk12 to pem.
 		- Update README with instructions to install anda configure the plugin.
 		- Describe the worflow of the procedure.
 
-5) *** Refactoring:
+4) *** Refactoring:
 		- Extract init_form_fields from main class.
 
-6) Check the use of the certificates.
+5) Check the use of the certificates.
 
-7) Check Nonces in webhook_payment_complete.
+6) Check Nonces in webhook_payment_complete.
 
-8) Create container on Rancher.
+
 
 
