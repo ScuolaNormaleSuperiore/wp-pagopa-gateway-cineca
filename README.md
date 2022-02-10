@@ -88,9 +88,24 @@ If these fields are not specified, the plugin works the same but the user will b
 - **Payment confirmation method** = ***Polling on PagoAtenei*** and **Payment confirmation** = ***true***: The callback, after checking the token and the order state, starts a polling on PagoAtenei until PagoAtenei receives the payment confirmation from the PSP.
 
 The first is the suggested and most secure configuration.
+## Schemas of the flow
+The following two pictures explain how the system works:
+- [States schema](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDegliStati.png)
+- [Payment schema](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDeiPagamenti.png)
 
 ## How to test the PagoAtenei's SOAP Api
 After having requested and obtained the connection parameters from Cineca, you can use SoapUI to test the SOAP web services. In the setup\TestSoap directory you can find a SOAP project or you can create a new project using this [WSDL](https://gateway.pp.pagoatenei.cineca.it/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl).
+
+## Entry points and callback
+The plugin exposes these three entry-points:
+
+1. HOOK_PAYMENT_COMPLETE --> pagopa_payment_complete: is the callback called by PagoAtenei when an order is paid or cancelled.
+
+2. HOOK_SCHEDULED_ACTIONS --> pagopa_execute_actions: is am entry-point that a cronjob can call to manage the orders payd offline.
+
+3. HOOK_TRANSACTION_NOTIFICATION --> pagopa_notifica_transazione: is an entry point called by PagoAtenei to notify a payment.
+
+
 
 ## Gallery
 ![Enable](docs/screenshots/EnablePlugin_1.png)
