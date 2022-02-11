@@ -1,154 +1,163 @@
 # <img src="docs/Logo.png" width=50> PagoPA Gateway 
-**PagoPa Gateway** is a **WooCommerce plugin** for integration with **PagoPA Cineca payment portal**.
+**PagoPa Gateway** è un   plugin per **WooCommerce** che permette di integrare in un e-commerce un metodo di pagamento basato sul portale dei pagamenti di *Cineca* chiamato **PagoAtenei**.
 
-It is a payment gateway than can be used on a site implemented with *WordPress* and *WooCommerce*.
+Il plugin può essere usato su siti realizzati con *WordPress* e *WooCommerce*.
+Il plugin richiede anche che l'Ente attivi con *Cineca* il servizio **PagoAtenei.
 
-**PagoPa Gateway** allows the customers of your e-commerce to pay with **PagoPA** using a **credit card** or printing the payment notice and paying it **offline**.
+**PagoPa Gateway** permette ai clienti di un e-commerce di pagare con **PagoPA** usando una **credit card** oppure stampando l'avviso di pagamento e pagandolo  **offline** (per esempio in una ricevitoria).
 
-The project was born from the need to integrate the payment method PagoPA into the site "Edizioni" ([edizioni.sns.it](https://edizioni.sns.it)) using the [portale dei pagamenti PagoPA Cineca](https://sns.pagoatenei.cineca.it/).
+Il progetto è nato dalla necessità di permettere ai clienti del sito "**Edizioni**" ([edizioni.sns.it](https://edizioni.sns.it)) di pagare gli ordini con **PagoPA**.
 
 
-## Project status
-Beta testing
+## Stato del progetto
+Il plugin è in fase di test.
 
-## Features
-- Pay order using PagoPA.
-- Form to configure the connection to the Cineca gateway.
-- Test and production distinct configurations.
-- Management of payment worflow.
-- A schedulable action to manage and update the orders paid offline.
-- Internationalization of messages and labels.
-- Check all the transactions from the backoffice.
+## Funzionalità
+- Pagamento degli ordini con **PagoPA** (online e offline).
+- Form per configurare la connessione al gateway **Cineca** e altri parametri di funzionamento del plugin.
+- configurazioni distinte per l'ambiente di test e l'ambiente di produzione.
+- Gestione del workflow di pagamento.
+- Procedura schedulabile per gestire e aggiornare gli ordini pagati offline.
+- Gestione della notifica asincrona dei pagamenti da parte di PagoAtenei.
+- Gestione della conferma sincrona dei pagamenti.
+- Internazionalizzazione di etichetti e messaggi (italiano e inglese).
+- Maschera per il controllo delle transazioni nel backoffice di Wordpress.
+- Docker per testare il plugin velocemente.
 
-## Getting started
-1. First ask Cineca to activate the service and to activate the test and the production enviroment. They will give you the following data for both the test and the production enviroment:
-   - The Api username.
-   - The Api password.
-   - The WSDL of the service.
-   - An SSL certificate with the related passphrase.
-2. Check if the software requirements are satisfied (see the "*Software requirements*" paragraph of this file).
-3. Download, install and configure the plugin as described in the "*Installation and configuration*" paragraph of this document.
+## Prima attivazione del sistema
+1. Concordare con *Cineca* l'attivazione del servizio PagoAtenei e degli ambienti di test e di produzione. I dati forniti da *Cineca* sono:
+   - Una username per utilizzare l'Api Soap.
+   - Una password per utilizzare l'api Soap.
+   - Il WSDL del servizio.
+   - Un certificato SSL con la relativa password.
+2. Attivare sul portale dei pagamenti (sia in ambiente di test che di produzione) un Motivo e un Modello da associare ai pagamenti dell'e-commerce. Il codice del Modello è uno dei parametri di confgurazione del plugin.
+3. Assicurarsi che i requisiti software siano soddisfatti dal proprio sistema (vedere il paragrafo "***Requisiti software***" di questo documento).
+4. Scaricare, installare e configurare il plugin come descritto nel paragrafo "***Installazione e configurazione***" di questo documento.
 
-## Software requirements
-1. The Wordpress CMS (version >= 5.6.6).
-2. The WooCommerce plugin (version >= 5.0.0) for WordPress.
-3. The web server Apache with *mod_ssl* and *soap* extension installed and enabled.
-4. See section "Custom fields".
+## Requisiti software
+1. Il CMS Wordpress (versione >= 5.6.6).
+2. Il plugin Woocommerce (versione >= 5.0.0) per Wordpress .
+3. Un web server Apache (o equivalente) con le estensioni *mod_ssl* e *soap* installate e abilitate.
+4. Leggere la sezione "***Campi personalizzati***".
 
-## Custom fields
-At the moment the uses the following fields to fill the request that creates a payment on the gateway: **_billing_ita_cf** (fiscal code for persons) and **_billing_vat** (vat for companies).
-We have another plugin that adds these meta tags to the order, but unfortunately we have not yet publicly released it.
-If these fields are not specified, the plugin works the same but the user will be considered a person with **Fiscal Code = First Name + Last Name**.
-
-## Installation and configuration
-1. [Download](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/archive/refs/heads/main.zip) the last stable version of the plugin.
-2. Unzip the content into the wp-content/plugins folder.
-3. Activate the plugin from the administration interface of Wordpress. 
-4. Configure the plugin from the administration interface of Worpdress. The following fields must be specified:
-   - **Enable/disable**: the flag to enable the payment gateway.
-   - **Title**: the name of the gateway, will be shown in the checkout page.
-   - **Description en**: a description for the payment method, will be shown in the english version of the checkout page.
-   - **Description it**: a description for the payment method, will be shown in the italian version of the checkout page.
-   - **Enable/Disable test mode**: the flag to enable the test mode.
-   - **Payment confirmation method**: 
-   - - **Polling on PagoAtenei**: The order is considered paid if the payment callback is called with a valid token and exists a pendig order with that order_id and iuv. A further control on the state can be activated enabling the option "Payment confirmation".
-   - - **Asycnhronous notification by PagoAtenei**: The order is considered paid only if PagoAtenei sends a paNotificaTransazione message with esito=PAGAMENTO_ESEGUITO.
-   - **Payment confirmation**: If set, the callback invoked after payment waits for the payment to be propagated from the PSP to PagoAtenei. This verification is done with a polling on Pagoatenei. If not set, the plugin considers the order paid without further checks.
-   - **Aplication code**: the application code assigned by Cineca.
-   - **Domain code**: the Vat code of the institution.
-   - **Iban**: the Iban of the institution.
-   - **Accounting type**: accounting code as defined in the PagoPA taxonomy (https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json).
-   - **Payment model ID**: the ID of the payment model defined in the Cineca backoffice related to the payments coming from the e-commerce. This model will be accessible also from the Cineca frontoffice.
-   - **Certificate name**: the name of the *pem* certificate provided by Cineca. If the certificate has a *pk12* format it must be converted to the *pem* format.
-   - **Certificate password**: the password of the certificate provided by Cineca.
-   - **Order prefix**: a prefix that is added to the WP order number before being sent to the gateway. You can leave it empty. It is useful if you use multiple instances of the site in test or dev enviroments to keep separate the orders of the various instances.
-   - **Encryption key**: the key used to encrypt the token passed to the gateway.
-   - **API token**: the token used to start the scheduled actions and the REST API. If empty these features are disabled.
-   - 
+## Campi personalizzati
+Il plugin usa i seguenti campi per compilare la richiesta inviata a PagoAtenei per la creazione di un pagamento:
+ - **_billing_ita_cf**: Il Codice Fiscale per le persone fisiche.
+ - **_billing_vat** : La Partita Iva per le aziende.
   
-  **Production credentials**
-   - **Cineca front end url**: the url of the front end of PagoAtenei. It is provided by Cineca.
-   - **PagoAtenei API base url**: the base url of the PagoAtenei Soap web services. It is provided by Cineca.
-   - **PagoAtenei API username**: the username to use the Soap web services of PagoAtenei. It is provided by Cineca.
-   - **PagoAtenei API password**: the password to use the Soap web services of PagoAtenei. It is provided by Cineca.
-   - **Local API username**: the username of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
-   - **Local API password**:the password of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
- 
-  **Test credentials**
-   - **Cineca front end url**: the url of the front end of PagoAtenei. It is provided by Cineca.
-   - **PagoAtenei API base url**: the base url of the PagoAtenei Soap web services. It is provided by Cineca.
-   - **PagoAtenei API username**: the username to use the Soap web services of PagoAtenei. It is provided by Cineca.
-   - **PagoAtenei API password**: the password to use the Soap web services of PagoAtenei. It is provided by Cineca.
-   - **Local API username**: the username of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
-   - **Local API password**:the password of the account used to protect the paNotificaTransazione entry-point. It must be communicated to Cineca.
+Edizioni usa un altro plugin personalizzato che aggiunge questi meta tag all'ordine, ma purtroppo quel plugin non può essere pubblicato in riuso.
+Se questi campi non sono specificati, il plugin funziona lo stesso, ma di default un cliente verrà considerato come una persona con **Codice Fiscale = Nome + Cognome**.
 
-## Payment confimation: possible configurations
-- **Payment confirmation method** = ***Asycnhronous notification by PagoAtenei*** and **Payment confirmation** = ***false***: The order is considered paid only if a paNotificaTransazione is invoked by PagoAtenei. The site must be hosted on a public server and Cineca must be asked to activate and configure the message paNotificaTransazione. You can't try this configuration on a local development enviroment.
-- **Payment confirmation method** = ***Polling on PagoAtenei*** and **Payment confirmation** = ***false***: The order is considered paid when the callback is correctly invoked and the order is in the right state. No further checks are carried out.
-- **Payment confirmation method** = ***Polling on PagoAtenei*** and **Payment confirmation** = ***true***: The callback, after checking the token and the order state, starts a polling on PagoAtenei until PagoAtenei receives the payment confirmation from the PSP.
+## Intallazione e configurazione
+1. [Scaricare](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/archive/refs/heads/main.zip) l'ultima versione stabile del plugin.
+2. Scompattare il contenuto dell'archivio nella cartella **wp-content/plugins**.
+3. Attivare il plugin dall'interfaccia di amministrazione di Wordpress.
+4. Configurare il plugin dall'interfaccia di amministrazione di Wordpress (*W->WooCommerce->Impostazioni->Pagamenti->PagoPA Gateway->Gestisci*):
+   - **Abilita/Disabilita**: Flag per abilitare o disabilitare il plugin.
+   - **Titolo**: Il nome del metodo di pagamento è mostrato nella pagina di checkout d un ordine.
+   - **Descrizione in inglese**: Una descrizione in inglese del metodo di pagamento, è mostrata nella versione inglese della pagina di checkout di un ordine.
+   - **Descrizione**: Una descrizione in italiano del metodo di pagamento, è mostrata nella versione italiana della pagina di checkout di un ordine.
+   - **Abilita la modalità di test**: Flag per abilitare o disabilitare la modalità di test e la connessione all'ambiente di test di *Cineca*.
+   - **Metodi di conferma del pagamento**: 
+   - - **Polling su PagoAtenei**: L'ordine è considerato valido se la callback del plugin è invocata da PagoAtenei con un token valido e se esiste un ordine in attesa di pagamento con quel numero d'ordine e quello Iuv. Può essere attivato un controllo ulteriore sulo stato del pagamento abilitando il flag "***Conferma di pagamento***".
+   - - **Notifica asincrona di PagoAtenei**: L'ordine è considerato pagato solo se PagaoAtenei incia un messaggio **paNotificaTransazione** con **esito=PAGAMENTO_ESEGUITO**.
+   - **Conferma di pagamento**: Se impostato, la callback invocata da *PagoAtenei* dopo un pagamento resta in attesa che il pagamento sia propagata dal PSP a *PagoAtenei*. Questa verifica è effettuata con un polling su *PagoAtenei* (gpChiedistatoVersamento), se non impostato, il plugin considera l'ordine pagato senza ulteriori controlli.
+   - **Codice applicazione**: Il codice applicazione fornito da *Cineca*.
+   - **Codice di dominio**: La Partita Iva dell'Ente.
+   - **Iban**: L'Iban dell'Ente.
+   - **Tipo contabilità**: Tipo di contabilità come definita dalla tassonomia di PagoPA consultabile [qui](https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json).
+   - **Nome del file del certificato**: Il nome del certificato ***pem*** fornito da Cineca. Se il certificato fornito fosse nel formato *pk12* allora dovrebbe essere convertito nel formato *pem*.
+   - **Password del certificato**: La password del certificato fornita da *Cineca*.
+   - **Prefisso dell'ordine**: Un prefisso aggiunto al numero d'ordine di WooCommerce rpima che sia inviato al gateway di pagamento. E' utile per distinguere gli ordini di più istanze dello stesso sito, specialmente in fase di test. Può essere vuoto.
+   - **Chiave di crittografia**: La chiave usata per criptare il token inviato al gateway.
+   - **Token dell'API del plugin**: Il token usato per autenticare l'invocazione delle azioni schedulate e la REST API del plugin. Se vuoto la funzionalità è disabilitata. 
+  
+  **Credenziali di produzione**
+   - **Indirizzo base del front end Cineca**: L'url del front-end di *PagoAtenei*. E' fornito da *Cineca*.
+   - **Url di PagoAtenei**: L'indirizzo base dei web services Soap di *PagoAtenei*. E' fornito da *Cineca*.
+   - **PagoAtenei API username**: Lo username da usare per invocare i web services di *PagoAtenei*. E' fornito da *Cineca*.
+   - **Password di Pagoatenei**: La password da usare per invocare i web services di *PagoAtenei*. E' fornita da *Cineca*.
+   - **Username dell'API del plugin**: Lo username dell'account che PagoAtenei deve utilizzare per invocare l'entry-point paNotificaTransazione. Deve essere comunicato a *Cineca*.
+   - **Password dell'API del plugin**: La password dell'account che PagoAtenei deve utilizzare per invocare l'entry-point paNotificaTransazione. Deve essere comunicata a *Cineca*.
+    - **ID del modello di pagamento**: L'ID del Modello di pagamento denito nel backoffice di *PagoAtenei* relativo agli ordini dell'e-commerce.
+  
+  **Credenziali di test**
+   - **Indirizzo base del front end Cineca**: L'url del front-end di *PagoAtenei*. E' fornito da *Cineca*.
+   - **Url di PagoAtenei**: L'indirizzo base dei web services Soap di *PagoAtenei*. E' fornito da *Cineca*.
+   - **PagoAtenei API username**: Lo username da usare per invocare i web services di *PagoAtenei*. E' fornito da *Cineca*.
+   - **Password di Pagoatenei**: La password da usare per invocare i web services di *PagoAtenei*. E' fornita da *Cineca*.
+   - **Username dell'API del plugin**: Lo username dell'account che PagoAtenei deve utilizzare per invocare l'entry-point paNotificaTransazione. Deve essere comunicato a *Cineca*.
+   - **Password dell'API del plugin**: La password dell'account che PagoAtenei deve utilizzare per invocare l'entry-point paNotificaTransazione. Deve essere comunicata a *Cineca*.
+    - **ID del modello di pagamento**: L'ID del Modello di pagamento denito nel backoffice di *PagoAtenei* relativo agli ordini dell'e-commerce.
+## conferma del pagamento: configurazioni possibili
+- **Metodo di conferma del pagamento** = ***Notifica asincrona di PagoAtenei*** and **Payment confirmation** = ***falso***: L'ordine è considerato pagato solo quando PagoAtenei invoca l'entry-point ***paNotificaTransazione***. Il sito deve essere ospitato sun un server pubblico e bisogna chiedere a *Cineca* di attivare e configurare il messaggio ***paNotificaTransazione***. Non è possibile provare questa configurazione in un ambiente di sviluppo locale.
+- **Metodo di conferma del pagamento** = ***Polling su PagoAtenei*** and **Conferma del pagamento** = ***falso***: L'ordine è considerato pagato solo se la callback è invocata correttamente da *PagoAtenei* e l'ordine è nello stato corretto. Non sono effettuati controlli aggiuntivi.
+- **Metodo di conferma del pagamento** = ***Polling su PagoAtenei*** and **Conferma del pagamento** = ***vero***: La callback, dopo aver controllato il token e lo stato dell'ordine, interroga in polling *PagoAtenei* fino a quando *PagoAtenei* non riceve la notifica del pagamento dal **PSP**.
 
-The first is the suggested and most secure configuration.
-## Schemas of the flow
-The following two pictures explain how the system works:
-- [States schema](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDegliStati.png)
-- [Payment schema](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDeiPagamenti.png)
+La prima di quelle elencate è la configurazione consigliata e quella più sicura.
+## Schemi del flusso
+Le immagini seguenti spiegano graficamente il flusso e il funzionamento del sistema:
+- [Schema degli stati](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDegliStati.png)
+- [Schema dei pagamenti](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDeiPagamenti.png)
 
-## How to test the PagoAtenei's SOAP Api
-After having requested and obtained the connection parameters from Cineca, you can use SoapUI to test the SOAP web services. In the setup\TestSoap directory you can find a SOAP project or you can create a new project using this [WSDL](https://gateway.pp.pagoatenei.cineca.it/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl).
-
-## Entry points and callback
-The plugin exposes these three entry-points:
-
-1. HOOK_PAYMENT_COMPLETE --> pagopa_payment_complete: is the callback called by PagoAtenei when an order is paid or cancelled.
-
-2. HOOK_SCHEDULED_ACTIONS --> pagopa_execute_actions: is am entry-point that a cronjob can call to manage the orders payd offline.
-
-3. HOOK_TRANSACTION_NOTIFICATION --> pagopa_notifica_transazione: is an entry point called by PagoAtenei to notify a payment.
+## Come provare l'API Soap di PagoAtenei
+Dopo aver richiesto ed ottenuti i parametri di connessione da *Cineca*, è possibile usare il programma SoapUI per provare i web services. Nella cartella *setup\TestSoap* si trova un progetto che può essere importato e usato in SoapUI. In alternativa è possibile creare un nuovo progetto utlizzando il seguente file [WSDL](https://gateway.pp.pagoatenei.cineca.it/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl).
 
 
+## Entry pointe e callback
+Il plugin espone i seguenti entry-point:
 
-## Gallery
+1. HOOK_PAYMENT_COMPLETE --> pagopa_payment_complete: è la callback invocata da PagoAtenei quando un oordine è pagato o cancellato.
+
+2. HOOK_SCHEDULED_ACTIONS --> pagopa_execute_actions: è l'entry-point che può essere invocato da un cronjob per gestire gli ordini pagati offline.
+
+3. HOOK_TRANSACTION_NOTIFICATION --> pagopa_notifica_transazione: è l'entry-point invocato da *PagoAtenei* per notificare il pagamento di un ordine.
+
+
+
+## Galleria
 ![Enable](docs/screenshots/EnablePlugin_1.png)
 
-**Image 1:** Backoffice: enable the plugin.
+**Image 1:** Backoffice: abilitazione del plugin.
 
 
 ![configure](docs/screenshots/ConfigurePlugin_1.png) 
 
-**Image 2:** Backoffice: configure the plugin.
+**Image 2:** Backoffice: configurazione del plugin.
 
 ![transactions](docs/screenshots/Transactions.png)
 
-**Image 3:** Backoffice: check transactions.
+**Image 3:** Backoffice: controllo delle transazioni.
 
 
-## Documentation
-- Check the docs folder of the plugin.
-- Check the setup/TestSoap for the SoapUI project to test the Soap api.
-- Check the Cineca site for further Api documents:
+## Documentazione
+- Controllare la cartella ***doc*** di questo plugin.
+- controllare la cartella ***setup/TestSoap** per il progetto SoapUI per provare l'API Soap.
+- visitare il sito di *Cineca* per la documentazione e le specifiche sull'API Soap:
 	- [Modalità di Integrazione](https://wiki.u-gov.it/confluence/pages/releaseview.action?pageId=329846832)
 	- [WS pago-ATENEI Applicazioni](https://wiki.u-gov.it/confluence/display/public/UGOVINT/WS+pago-ATENEI+Applicazioni)
 
 ## Demo
 ### Docker
-You can test the plugin using a *Docker* container that runs all the software components needed (Wordpress + WooCommerce + wp-pagopa-gateway-cineca). See this Docker file: [Dockerfile](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/setup/Docker/Dockerfile).
+E' possibile provare il plugin usando un container *Docker* che contiene tutte le componenti software richieste (Wordpress + WooCommerce + wp-pagopa-gateway-cineca). 
+Il Dockerfile da usare è: [Dockerfile](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/setup/Docker/Dockerfile).
 
-The commands to build and run the container are:
+I comandi da eseguire per creare ed eseguire il container sono:
 - docker build -t myshop-img -f Dockerfile .
 - docker run -p 80:80 -p 3306:3306 --name=myshop -d myshop-img
  
-To get the container shell run:
+Per collegarsi alla shell del container, eseguire il comando:
 - docker exec -it myshop /bin/bash
   
-To url of the e-commerce is: http://localhost/myshop/ .
+L'url dell'e-commerce appena creato è: http://localhost/myshop/ .
 
-To test the plugin you have to enable it and configure it with the data provided to you by Cineca.
+Per provare il plugin è necessario abilitarlo e configurarlo con i dati fornitin da *Cineca*.
 
-To log in as Administrator the url is: http://localhost/mio-account/ and the account is: manager / password
+Per autenticarsi come amministratore del sito l'url è http://localhost/wp-admin/ e l'account is: manager / password
 
-On the container you can find the Adminer tool to check the database tables.
-The url of Adminer is: http://localhost/adminer.php
-To configure it use these parameters:
+Sul container è installato il tool Adminer per gestire le tabelle del databse.
+L'url di Adminer è: http://localhost/adminer.php
+Per configurarlo i parametri sono:
 - System: Mysql
 - Server: 127.0.0.1
 - Utente: admin
@@ -156,14 +165,18 @@ To configure it use these parameters:
 - Database: myshop
 
 
-
+## Catalogo del riuso
+Il progetto è pubblicato sul catalogo del riuso di Developers Italia. La home page del progetto è [questa](https://developers.italia.it/it/software/sns_pi-scuolanormalesuperiore-wp-pagopa-gateway-cineca).
 ## Repository
-This repository contains the source code of the project.
-## License
-The project is under the GPL-3.0-only license as found in the [LICENSE](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/LICENSE) file.
+[Questo](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca) è il repository che contiene il codice sorgente del progetto.
+## Licenza
+Il progetto è pubblicato sotto la licenza GPL-3.0-only come descritto nel file [LICENSE](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/LICENSE).
+## Lingue supportate
+Il plugin è disponibile in italiano e in inglese.
+[Questa](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/README_en.md) è la guida in inglese.
 
-## How to contribute
-The main purpose of this repository is to continue evolving the plugin. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements.
+## Come contribuire
+Lo scopo principale di questo repository è quello di far evolvere il plugin. Noi vogliamo rendere il processo per contribuire al progetto il più semplice e trasparente possibile e saremo grati alla comunità di coloro che vorranno contribuire alla soluzione di bug, al miglioramento del codice e all'aggiunta di nuove funzionalità.
 ## Copyright
 1. Detentore copyright: Scuola Normale Superiore
 2. Responsabili del progetto: Michele Fiaschi, Claudio Battaglino, Alida Isolani, Marcella Monreale
