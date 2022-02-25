@@ -14,6 +14,7 @@
 define( 'PATH_WSDL_CINECA', '/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl' );
 define( 'PATH_FRONT_END_CINECA', '/portalepagamenti.server.frontend/#/ext' );
 define( 'PAR_SPLITTER', '||' );
+define( 'USER_AGENT', 'Wordpress/PagoPaGatewayCineca' );
 
 /**
  * Gateway_Controller class
@@ -67,25 +68,26 @@ class Gateway_Controller {
 				'verify_host'       => false,
 				'verify_peer_name'  => false,
 				'allow_self_signed' => true,
+				'crypto_method'     => STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
 			),
 		);
 
 		$this->wsdl_url      = $this->ws_data['ws_soap_base_url'] . PATH_WSDL_CINECA;
 		$soap_client_options = array(
-			'user_agent'         => 'Wordpress/PagoPaGatewayCineca',
+			'user_agent'         => USER_AGENT,
 			'login'              => $this->ws_data['ws_username'],
 			'password'           => $this->ws_data['ws_password'],
+			'authentication'     => SOAP_AUTHENTICATION_BASIC,
 			'exception'          => true,
 			'keep_alive '        => false,
 			'encoding'           => 'UTF-8',
-			'location'           => $this->wsdl_url,
+			'compression'        => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
 			'cache_wsdl'         => WSDL_CACHE_NONE,
 			'trace'              => true,
 			'connection_timeout' => intval( TOTAL_SOAP_TIMEOUT ),
 			'local_cert'         => $this->local_cert,
 			'passphrase'         => $this->passphrase,
 			'stream_context'     => stream_context_create( $context_options ),
-			'crypto_method'      => STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
 			'soap_version'       => SOAP_1_1,
 		);
 
