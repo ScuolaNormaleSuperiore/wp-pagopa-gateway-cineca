@@ -101,6 +101,7 @@ Le immagini seguenti spiegano graficamente il flusso e il funzionamento del sist
 
 ## Come provare l'API Soap di PagoAtenei
 Dopo aver richiesto ed aver ottenuto i parametri di connessione da *Cineca*, è possibile usare il programma *SoapUI* per provare i web services. Nella cartella *setup\TestSoap* si trova un progetto che può essere importato e usato in SoapUI. In alternativa è possibile creare un nuovo progetto utlizzando il seguente file [WSDL](https://gateway.pp.pagoatenei.cineca.it/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl).
+Nella cartella *setup\TestApiSoapWithPhp* ci sono due script PHP (*testCaricaVersamento.php* e *testChiediStatoVersamento.php*) per verificare il collegamento con le Api di *PagoAtenei*.
 
 
 ## Entry point e callback

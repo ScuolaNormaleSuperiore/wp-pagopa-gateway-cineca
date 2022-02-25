@@ -4,8 +4,8 @@
 
 publiccodeYmlVersion: '0.2'
 applicationSuite: WooCommerce
-softwareVersion: 1.0.17
-developmentStatus: beta
+softwareVersion: 1.0.18
+developmentStatus: stable
 categories:
   - payment-gateway
 logo: docs/Logo.png
@@ -37,9 +37,9 @@ description:
       - Gestione del worflow di pagamento
 it:
   conforme:
-    gdpr: false
-    lineeGuidaDesign: false
-    misureMinimeSicurezza: false
+    gdpr: true
+    lineeGuidaDesign: true
+    misureMinimeSicurezza: true
   countryExtensionVersion: '0.2'
   piattaforme:
     anpr: false
