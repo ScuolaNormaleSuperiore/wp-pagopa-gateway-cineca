@@ -19,6 +19,7 @@ define( 'LOG_DB_VERSION', '0.1' );
 define( 'STATUS_PAYMENT_SUBMITTED', 'submitted' );
 define( 'STATUS_PAYMENT_CREATED', 'created' );
 define( 'STATUS_PAYMENT_NOT_CREATED', 'not_created' );
+define( 'STATUS_PAYMENT_CANCELLED', 'cancelled' );
 define( 'STATUS_PAYMENT_EXECUTED', 'executed' );
 define( 'STATUS_PAYMENT_NOT_EXECUTED', 'not_executed' );
 define( 'STATUS_PAYMENT_CONFIRMED', 'confirmed' );

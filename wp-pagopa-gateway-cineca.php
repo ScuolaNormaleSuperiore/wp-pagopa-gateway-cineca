@@ -588,7 +588,7 @@ function wp_gateway_pagopa_init() {
 				// Error checking the parameters passed by the gateway.
 				$error_msg = __( 'The status of the payment is not consistent', 'wp-pagopa-gateway-cineca' );
 				$error_msg = $error_msg . ' n. ' . $order_id;
-				$log_manager->log( STATUS_PAYMENT_NOT_CREATED, null, $error_msg );
+				$log_manager->log( STATUS_PAYMENT_CANCELLED, null, $error_msg );
 				$this->error_redirect( $error_msg );
 				return;
 			}
@@ -603,7 +603,7 @@ function wp_gateway_pagopa_init() {
 				if ( $iuv ) {
 					$error_msg = $error_msg . ' - ' . __( 'Iuv', 'wp-pagopa-gateway-cineca' ) . ': ' . $iuv;
 				}
-				$log_manager->log( STATUS_PAYMENT_NOT_CREATED, null, $error_msg );
+				$log_manager->log( STATUS_PAYMENT_CANCELLED, null, $error_msg );
 				$this->error_redirect( $error_msg );
 				return;
 			}
@@ -745,7 +745,7 @@ function wp_gateway_pagopa_init() {
 							$order_id    = Gateway_Controller::extract_order_number( $options['order_prefix'], $cod_versamento_ente );
 							$order       = new WC_Order( $order_id );
 							$log_manager = new Log_Manager( $order );
-							$p_found     = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_WAITING_CONFIRM );
+							$p_found     = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_CREATED );
 							if ( $p_found ) {
 								// Set the order as paid.
 								$order->payment_complete();
