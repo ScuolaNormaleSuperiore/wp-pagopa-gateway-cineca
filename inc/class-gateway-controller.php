@@ -118,7 +118,8 @@ class Gateway_Controller {
 	 * @return array
 	 */
 	public function load_payment_position() {
-		$expiration_date = gmdate( 'Y-m-d\TH:i:s', strtotime( '3 hour' ) );
+		$hours_toexpire  = intval( $this->options['expire_hours'] );
+		$expiration_date = gmdate( 'Y-m-d\TH:i:s', strtotime( $hours_toexpire . ' hour' ) );
 
 		// If the VAT field is specified then the customer is a company not a person.
 		$vat              = $this->order->get_meta( '_billing_vat' );

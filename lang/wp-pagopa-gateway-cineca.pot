@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PagoPa Gateway\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-10 10:58+0000\n"
+"POT-Creation-Date: 2022-03-11 14:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -30,7 +30,7 @@ msgstr ""
 msgid "Accounting type"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:344
+#: wp-pagopa-gateway-cineca.php:350
 msgid "API token"
 msgstr ""
 
@@ -42,23 +42,23 @@ msgstr ""
 msgid "Ask for payment confirmation"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:444
+#: wp-pagopa-gateway-cineca.php:450
 msgid "Asycnhronous notification by PagoAtenei"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:362 wp-pagopa-gateway-cineca.php:404
+#: wp-pagopa-gateway-cineca.php:368 wp-pagopa-gateway-cineca.php:410
 msgid "Base url of the API for the Cineca Payment Portal"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:356 wp-pagopa-gateway-cineca.php:398
+#: wp-pagopa-gateway-cineca.php:362 wp-pagopa-gateway-cineca.php:404
 msgid "Base url of the Cineca front end"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:322
+#: wp-pagopa-gateway-cineca.php:328
 msgid "Certificate file name"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:328
+#: wp-pagopa-gateway-cineca.php:334
 msgid "Certificate passphrase"
 msgstr ""
 
@@ -98,7 +98,7 @@ msgstr ""
 msgid "Enable/Disable"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:339
+#: wp-pagopa-gateway-cineca.php:345
 msgid "Encryption key"
 msgstr ""
 
@@ -106,24 +106,24 @@ msgstr ""
 msgid "End date"
 msgstr ""
 
-#: inc/class-gateway-controller.php:319
+#: inc/class-gateway-controller.php:322
 msgid "Error in the Cineca response"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:571
+#: wp-pagopa-gateway-cineca.php:577
 msgid "Error retrieving the order"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:324
+#: wp-pagopa-gateway-cineca.php:330
 msgid "File name of the .pem certificate"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:354 wp-pagopa-gateway-cineca.php:396
+#: wp-pagopa-gateway-cineca.php:360 wp-pagopa-gateway-cineca.php:402
 #| msgid "front end base url"
 msgid "Front end base url"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:485 wp-pagopa-gateway-cineca.php:627
+#: wp-pagopa-gateway-cineca.php:491 wp-pagopa-gateway-cineca.php:633
 msgid "Gateway connection error."
 msgstr ""
 
@@ -147,21 +147,21 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:388 wp-pagopa-gateway-cineca.php:430
+#: wp-pagopa-gateway-cineca.php:394 wp-pagopa-gateway-cineca.php:436
 msgid ""
 "ID of payment model related to the e-commerce defined on the Cineca back "
 "office"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:598 inc/class-log-list-table.php:53
+#: wp-pagopa-gateway-cineca.php:604 inc/class-log-list-table.php:53
 msgid "Iuv"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:381 wp-pagopa-gateway-cineca.php:423
+#: wp-pagopa-gateway-cineca.php:387 wp-pagopa-gateway-cineca.php:429
 msgid "Local API password"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:376 wp-pagopa-gateway-cineca.php:418
+#: wp-pagopa-gateway-cineca.php:382 wp-pagopa-gateway-cineca.php:424
 msgid "Local API username"
 msgstr ""
 
@@ -169,27 +169,27 @@ msgstr ""
 msgid "Order ID"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:595
+#: wp-pagopa-gateway-cineca.php:601
 msgid "Order id"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:333
+#: wp-pagopa-gateway-cineca.php:339
 msgid "Order prefix"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:360 wp-pagopa-gateway-cineca.php:402
+#: wp-pagopa-gateway-cineca.php:366 wp-pagopa-gateway-cineca.php:408
 msgid "PagoAtenei API base url"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:371 wp-pagopa-gateway-cineca.php:413
+#: wp-pagopa-gateway-cineca.php:377 wp-pagopa-gateway-cineca.php:419
 msgid "PagoAtenei API password"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:366 wp-pagopa-gateway-cineca.php:408
+#: wp-pagopa-gateway-cineca.php:372 wp-pagopa-gateway-cineca.php:414
 msgid "PagoAtenei API username"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:970
+#: wp-pagopa-gateway-cineca.php:976
 msgid "PagoPA Gateway"
 msgstr ""
 
@@ -197,19 +197,19 @@ msgstr ""
 msgid "PagoPA Gateway Cineca"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:976
+#: wp-pagopa-gateway-cineca.php:982
 msgid "PagoPA Transactions"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:330
+#: wp-pagopa-gateway-cineca.php:336
 msgid "Passphrase of the certificate"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:373 wp-pagopa-gateway-cineca.php:415
+#: wp-pagopa-gateway-cineca.php:379 wp-pagopa-gateway-cineca.php:421
 msgid "Password of the account enabled to the use of the API"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:383 wp-pagopa-gateway-cineca.php:425
+#: wp-pagopa-gateway-cineca.php:389 wp-pagopa-gateway-cineca.php:431
 msgid "Password of the account enabled to the use of the plugin's api"
 msgstr ""
 
@@ -229,15 +229,15 @@ msgstr ""
 msgid "Payment confirmation method"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:501
+#: wp-pagopa-gateway-cineca.php:507
 msgid "Payment error reported by the gateway"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:520
+#: wp-pagopa-gateway-cineca.php:526
 msgid "Payment in progress"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:386 wp-pagopa-gateway-cineca.php:428
+#: wp-pagopa-gateway-cineca.php:392 wp-pagopa-gateway-cineca.php:434
 msgid "Payment model ID"
 msgstr ""
 
@@ -245,13 +245,13 @@ msgstr ""
 msgid "Payment module configuration"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:665
+#: wp-pagopa-gateway-cineca.php:671
 msgid ""
 "Payment not confirmed by the gateway. Please contact the staff, the order "
 "number is:"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:877 inc/class-gateway-controller.php:164
+#: wp-pagopa-gateway-cineca.php:883 inc/class-gateway-controller.php:167
 #| msgid "Payment of the order n. "
 msgid "Payment of the order n."
 msgstr ""
@@ -264,15 +264,15 @@ msgstr ""
 msgid "Plugin to integrate WooCommerce with Cineca PagoPA payment portal"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:443
+#: wp-pagopa-gateway-cineca.php:449
 msgid "Polling on PagoAtenei"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:688
+#: wp-pagopa-gateway-cineca.php:694
 msgid "Processing the payment"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:350
+#: wp-pagopa-gateway-cineca.php:356
 msgid "Production credentials"
 msgstr ""
 
@@ -288,7 +288,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:392
+#: wp-pagopa-gateway-cineca.php:398
 msgid "Test credentials"
 msgstr ""
 
@@ -309,7 +309,7 @@ msgid ""
 "users."
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:560
+#: wp-pagopa-gateway-cineca.php:566
 msgid "The gateway passed an invalid token for the order"
 msgstr ""
 
@@ -317,26 +317,26 @@ msgstr ""
 msgid "The italian description of the plugin shown in the checkout page."
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:516
+#: wp-pagopa-gateway-cineca.php:522
 msgid "The Iuv of the order is:"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:341
+#: wp-pagopa-gateway-cineca.php:347
 msgid "The key used to encrypt the token."
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:876
+#: wp-pagopa-gateway-cineca.php:882
 #, php-format
 msgid "The order n. %s has been paid. Please, manage the order."
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:335
+#: wp-pagopa-gateway-cineca.php:341
 msgid ""
 "The prefix that the plugin will prepend to the order number.It can be an "
 "empty string."
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:583
+#: wp-pagopa-gateway-cineca.php:589
 msgid "The status of the payment is not consistent"
 msgstr ""
 
@@ -348,7 +348,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:346
+#: wp-pagopa-gateway-cineca.php:352
 msgid "Token used by the REST API and the scheduled actions."
 msgstr ""
 
@@ -356,19 +356,27 @@ msgstr ""
 msgid "Transactions"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:368 wp-pagopa-gateway-cineca.php:410
+#: wp-pagopa-gateway-cineca.php:374 wp-pagopa-gateway-cineca.php:416
 msgid "Username of the account enabled to the use of the API"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:378 wp-pagopa-gateway-cineca.php:420
+#: wp-pagopa-gateway-cineca.php:384 wp-pagopa-gateway-cineca.php:426
 msgid "Username of the account enabled to the use of the plugin's api"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:322
+msgid "Validity of payment"
+msgstr ""
+
+#: wp-pagopa-gateway-cineca.php:324
+msgid "Validity of payment in hours"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:302
 msgid "VAT code of the customer"
 msgstr ""
 
-#: wp-pagopa-gateway-cineca.php:593
+#: wp-pagopa-gateway-cineca.php:599
 msgid ""
 "You have canceled the payment. To confirm the order, make the payment and "
 "contact the staff."

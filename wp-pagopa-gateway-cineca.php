@@ -318,6 +318,12 @@ function wp_gateway_pagopa_init() {
 					'description' => __( 'Accounting code as defined in the PagoPA taxonomy (https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json)', 'wp-pagopa-gateway-cineca' ),
 					'default'     => '0601120SP',
 				),
+				'expire_hours'           => array(
+					'title'       => __( 'Validity of payment', 'wp-pagopa-gateway-cineca' ),
+					'type'        => 'number',
+					'description' => __( 'Validity of payment in hours', 'wp-pagopa-gateway-cineca' ),
+					'default'     => '24',
+				),
 				'cert_abs_path'          => array(
 					'title'       => __( 'Certificate file name', 'wp-pagopa-gateway-cineca' ),
 					'type'        => 'text',
