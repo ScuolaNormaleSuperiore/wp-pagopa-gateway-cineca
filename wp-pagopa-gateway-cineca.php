@@ -522,8 +522,6 @@ function wp_gateway_pagopa_init() {
 			$note = __( 'The Iuv of the order is:', 'wp-pagopa-gateway-cineca' );
 			$note = $note . ' ' . $payment_position['iuv'];
 			$order->add_order_note( $note );
-			// Change the status of the order.
-			$order->update_status( 'on-hold', __( 'Payment in progress', 'wp-pagopa-gateway-cineca' ) );
 			// Payment saved.
 			$log_manager->log( STATUS_PAYMENT_CREATED, $payment_position['iuv'] );
 			// Redirect the customer to the gateway to pay the payment position just created.
@@ -588,7 +586,8 @@ function wp_gateway_pagopa_init() {
 				// Error checking the parameters passed by the gateway.
 				$error_msg = __( 'The status of the payment is not consistent', 'wp-pagopa-gateway-cineca' );
 				$error_msg = $error_msg . ' n. ' . $order_id;
-				$log_manager->log( STATUS_PAYMENT_CANCELLED, null, $error_msg );
+				// $log_manager->log( STATUS_PAYMENT_CANCELLED, null, $error_msg );
+				$this->log_action( 'error', $error_msg );
 				$this->error_redirect( $error_msg );
 				return;
 			}
@@ -602,6 +601,12 @@ function wp_gateway_pagopa_init() {
 				}
 				if ( $iuv ) {
 					$error_msg = $error_msg . ' - ' . __( 'Iuv', 'wp-pagopa-gateway-cineca' ) . ': ' . $iuv;
+				}
+				if ( $outcome ) {
+					$error_msg = $error_msg . ' - ' . __( 'Outcome', 'wp-pagopa-gateway-cineca' ) . ': ' . $outcome;
+				}
+				if ( $id_session ) {
+					$error_msg = $error_msg . ' - ' . __( 'IdSession', 'wp-pagopa-gateway-cineca' ) . ': ' . $id_session;
 				}
 				$log_manager->log( STATUS_PAYMENT_CANCELLED, null, $error_msg );
 				$this->error_redirect( $error_msg );
@@ -755,7 +760,7 @@ function wp_gateway_pagopa_init() {
 								$this->log_action( 'warning', 'Payment already confirmed or payment not found. Order: ' . $cod_versamento_ente );
 							}
 						} else {
-							$this->log_action( 'warning', 'Invalid parameters passed to paNotificaTransazione or invalid plugin settings. Order: ' . $cod_versamento_ente );
+							$this->log_action( 'warning', 'Payment status in : paNotificaTransazione:' . $stato . ' - Order: ' . $cod_versamento_ente );
 						}
 					}
 				}
@@ -842,7 +847,7 @@ function wp_gateway_pagopa_init() {
 				array(
 					'limit'        => -1,
 					'type'         => 'shop_order',
-					'status'       => array( 'wc-on-hold' ),
+					'status'       => array( 'wc-pending' ),
 					'date_created' => $date_created,
 				),
 			);
