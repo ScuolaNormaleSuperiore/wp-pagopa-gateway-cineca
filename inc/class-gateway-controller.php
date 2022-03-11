@@ -143,7 +143,7 @@ class Gateway_Controller {
 
 		$bodyrichiesta = array(
 			'generaIuv'        => true,
-			'aggiornaSeEsiste' => false,
+			'aggiornaSeEsiste' => true,
 			'versamento'       => array(
 				'codApplicazione'    => $this->options['application_code'],
 				'codVersamentoEnte'  => $raw_order_number,
