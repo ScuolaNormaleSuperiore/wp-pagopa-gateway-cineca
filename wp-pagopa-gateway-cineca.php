@@ -586,6 +586,7 @@ function wp_gateway_pagopa_init() {
 				// Error checking the parameters passed by the gateway.
 				$error_msg = __( 'The status of the payment is not consistent', 'wp-pagopa-gateway-cineca' );
 				$error_msg = $error_msg . ' n. ' . $order_id;
+				// $log_manager->log( STATUS_PAYMENT_CANCELLED, null, $error_msg );
 				$this->log_action( 'error', $error_msg );
 				$this->error_redirect( $error_msg );
 				return;
@@ -603,7 +604,7 @@ function wp_gateway_pagopa_init() {
 				}
 				$debug_message = $error_msg;
 				if ( $outcome ) {
-					$$debug_message = $debug_message . ' - ' . __( 'Outcome', 'wp-pagopa-gateway-cineca' ) . ': ' . $outcome;
+					$debug_message = $debug_message . ' - ' . __( 'Outcome', 'wp-pagopa-gateway-cineca' ) . ': ' . $outcome;
 				}
 				if ( $id_session ) {
 					$debug_message = $debug_message . ' - ' . __( 'IdSession', 'wp-pagopa-gateway-cineca' ) . ': ' . $id_session;
