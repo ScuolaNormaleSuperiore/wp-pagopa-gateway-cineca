@@ -59,6 +59,7 @@ If these fields are not specified, the plugin works the same but the user will b
    - **Iban**: the Iban of the institution.
    - **Accounting type**: accounting code as defined in the PagoPA taxonomy (https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json).
    - **Payment model ID**: the ID of the payment model defined in the Cineca backoffice related to the payments coming from the e-commerce. This model will be accessible also from the Cineca frontoffice.
+   - **Validity of the payment**: Number of hours the payment is valid. you can pay also offline using the Iuv code.
    - **Certificate name**: the name of the *pem* certificate provided by Cineca. If the certificate has a *pk12* format it must be converted to the *pem* format.
    - **Certificate password**: the password of the certificate provided by Cineca.
    - **Order prefix**: a prefix that is added to the WP order number before being sent to the gateway. You can leave it empty. It is useful if you use multiple instances of the site in test or dev enviroments to keep separate the orders of the various instances.

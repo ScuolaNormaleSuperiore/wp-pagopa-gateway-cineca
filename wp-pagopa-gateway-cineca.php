@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.0.18
+ * Version: 1.1.2
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -559,6 +559,7 @@ function wp_gateway_pagopa_init() {
 				if ( ( ! $order_id ) || ( ! $iuv ) ) {
 					throw new Exception( 'Invalid token' );
 				}
+				$this->log_action( 'info', '@@@ webhook_payment_complete - order_id: ' . $order_id . ' - iuv: '. $iuv );
 			} catch ( Exception $e ) {
 				// Error retrieving the parameters from the token.
 				$error_msg = __( 'The gateway passed an invalid token for the order', 'wp-pagopa-gateway-cineca' );
@@ -730,12 +731,11 @@ function wp_gateway_pagopa_init() {
 					$cod_dominio         = $response['soapBody']['ns2paNotificaTransazione']['transazione']['codDominio'];
 					$stato               = $response['soapBody']['ns2paNotificaTransazione']['transazione']['stato'];
 
-					// $log_msg  = '@@@ Source data sent by PagoAtenei:' . $result ;
-					// $this->log_action( 'info', $log_msg );
-					$this->log_action( 'info', '@@@ codApplicazione: ' . $cod_applicazione );
-					$this->log_action( 'info', '@@@ iuv: ' . $iuv );
-					$this->log_action( 'info', '@@@ stato: ' . $stato );
-					$this->log_action( 'info', '@@@ cod_versamento_ente: ' . $cod_versamento_ente );
+					$log_msg = '@@@ codApplicazione: ' . $cod_applicazione .
+						' - iuv: ' . $iuv .
+						' - stato: ' . $stato .
+						' - cod_versamento_ente: ' . $cod_versamento_ente;
+					$this->log_action( 'info', $log_msg );
 
 					if ( 'RT_ACCETTATA_PA' === $stato ) {
 						// Check payment data.
@@ -803,7 +803,7 @@ function wp_gateway_pagopa_init() {
 		 */
 		public function webhook_scheduled_actions( $args ) {
 			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
-			$this->log_action( 'info', 'webhook_scheduled_actions Token:' . $token );
+			$this->log_action( 'info', '@@@ webhook_scheduled_actions Token:' . $token );
 			// Check if the token is present.
 			if ( ! $token ) {
 				echo 'Invalid token';

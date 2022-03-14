@@ -65,6 +65,7 @@ Se questi campi non sono specificati il plugin funziona lo stesso, ma un cliente
    - **Codice di dominio**: La Partita Iva dell'Ente.
    - **Iban**: L'Iban dell'Ente.
    - **Tipo contabilità**: Tipo di contabilità come definita dalla tassonomia di *PagoPA* consultabile [qui](https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json).
+   - **Validità del pagamento**: Numero di ore in cui il pagamento è valido. E' possibile infatti effettuare il pagamento anche in una ricevitoria usando lo Iuv.
    - **Nome del file del certificato**: Il nome del certificato ***pem*** fornito da Cineca. Se il certificato fornito fosse nel formato *pk12* allora dovrebbe essere convertito nel formato *pem*.
    - **Password del certificato**: La password del certificato fornita da *Cineca*.
    - **Prefisso dell'ordine**: Un prefisso aggiunto al numero d'ordine di WooCommerce rpima che sia inviato al gateway di pagamento. E' utile per distinguere gli ordini di più istanze dello stesso sito, specialmente in fase di test. Può essere vuoto.
