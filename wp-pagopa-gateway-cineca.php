@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -45,7 +45,8 @@ define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) 
 
 define( 'TOTAL_SOAP_TIMEOUT', 20 );
 
-define( 'NOTIFY_TRANSACTION_RESPONSE',
+define( 
+	'NOTIFY_TRANSACTION_RESPONSE',
 	'<?xml version=\'1.0\' encoding=\'UTF-8\'?>' .
 	'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' .
 	'<soapenv:Body>' .
@@ -780,9 +781,8 @@ function wp_gateway_pagopa_init() {
 		 * @return boolen - True if the account is right.
 		 */
 		private function verifyAPIAuthentication() {
-			// $this->log_action( 'info', json_encode( apache_request_headers() ) );
-			$api_username  = $this->api_user;
-			$api_password  = $this->api_pwd;
+			$api_username = $this->api_user;
+			$api_password = $this->api_pwd;
 			if ( $api_username && $api_username ) {
 				$auth          = apache_request_headers();
 				$authorization = isset( $auth['Authorization'] ) ? $auth['Authorization'] : '';
@@ -802,7 +802,7 @@ function wp_gateway_pagopa_init() {
 		 * @return void
 		 */
 		public function webhook_scheduled_actions( $args ) {
-			$token              = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
+			$token = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
 			$this->log_action( 'info', '@@@ webhook_scheduled_actions Token:' . $token );
 			// Check if the token is present.
 			if ( ! $token ) {
@@ -852,7 +852,8 @@ function wp_gateway_pagopa_init() {
 					'date_created' => $date_created,
 				),
 			);
-			$this->log_action( 'info', '[Cron] Orders to update: ' . count( $orders ) );
+			$this->log_action( 'info', '[Cron] Orders to check: ' . count( $orders ) );
+			$orders_updated = 0;
 
 			// Looop all pending orders.
 			foreach ( $orders as $order ) {
@@ -869,6 +870,8 @@ function wp_gateway_pagopa_init() {
 					// Change the status of the paid order to 'processing'.
 					$order->payment_complete();
 					$iuv = $order->get_meta( '_iuv' );
+					$orders_updated++;
+					$this->log_action( 'info', '[Cron] Updated order: ' . $order->get_id() );
 					$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_SCRIPT, $iuv );
 					// Send an email.
 					$this->send_processing_notification_mail( $order );
@@ -992,4 +995,3 @@ function add_plugin_menu() {
 		30
 	);
 }
-
