@@ -97,8 +97,8 @@ Se questi campi non sono specificati il plugin funziona lo stesso, ma un cliente
 La prima di quelle elencate è la configurazione consigliata e quella più sicura.
 ## Schemi del flusso
 Le immagini seguenti spiegano graficamente il flusso e il funzionamento del sistema:
-- [Schema degli stati](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDegliStati.png)
-- [Schema dei pagamenti](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/docs/schema/SchemaDeiPagamenti.png)
+- [Schema degli stati](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/docs/schema/SchemaDegliStati.png)
+- [Schema dei pagamenti](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/docs/schema/SchemaDeiPagamenti.png)
 
 ## Come provare l'API Soap di PagoAtenei
 Dopo aver richiesto ed aver ottenuto i parametri di connessione da *Cineca*, è possibile usare il programma *SoapUI* per provare i web services. Nella cartella *setup\TestSoap* si trova un progetto che può essere importato e usato in SoapUI. In alternativa è possibile creare un nuovo progetto utlizzando il seguente file [WSDL](https://gateway.pp.pagoatenei.cineca.it/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl).
