@@ -9,7 +9,7 @@ Il progetto è nato dalla necessità di permettere ai clienti del sito "**Edizio
 
 
 ## Stato del progetto
-Il plugin è in fase di test.
+Il plugin è in produzione sull'ec-commerce della Scuola.
 
 ## Funzionalità
 - Pagamento degli ordini con **PagoPA**.
