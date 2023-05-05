@@ -10,7 +10,7 @@
  * Plugin Name: PagoPA Gateway Cineca
  * Plugin URI:
  * Description: Plugin to integrate WooCommerce with Cineca PagoPA payment portal
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: ICT Scuola Normale Superiore
  * Author URI: https://ict.sns.it
  * Text Domain: wp-pagopa-gateway-cineca
@@ -719,10 +719,18 @@ function wp_gateway_pagopa_init() {
 			$this->verifyAPIAuthentication();
 			$result    = trim( file_get_contents( 'php://input' ) );
 			// SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out.
-			$xml      = preg_replace( '/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $result );
-			$xml      = simplexml_load_string( $xml );
-			$json     = wp_json_encode( $xml );
-			$response = json_decode( $json, true );
+
+			try {
+				$xml      = preg_replace( '/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $result );
+				$xml      = simplexml_load_string( $xml );
+				$json     = wp_json_encode( $xml );
+				$response = json_decode( $json, true );
+				if ( ! $response ) {
+					$this->log_action( 'error', 'Error in paNotificaTransazione: response empty, xml not valid.' );
+				}
+			} catch ( Exception $e ) {
+				$this->log_action( 'error', 'Error in paNotificaTransazione:' . $e->getMessage() );
+			}
 
 			try {
 				if ( $response ) {
