@@ -6,7 +6,7 @@
  * @author      ICT Scuola Normale Superiore
  * @category    Payment Module
  * @package     PagoPA Gateway Cineca
- * @version     1.1.4
+ * @version     1.1.5
  * @copyright   Copyright (c) 2021 SNS)
  * @license     GNU General Public License v3.0
  */
@@ -140,6 +140,26 @@ class Gateway_Controller {
 		}
 
 		$raw_order_number = self::build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
+		$codice_univoco = substr($codice_univoco, 0, 69);
+		$ragione_sociale = substr($ragione_sociale, 0, 69);
+		$indirizzo = $this->order->get_billing_address_2() ?
+			$this->order->get_billing_address_1() . ' - ' . $this->order->get_billing_address_2() :
+			$this->order->get_billing_address_1();
+		$indirizzo = substr($indirizzo, 0, 69);
+		$localita = $this->format_string( $this->order->get_billing_city() );
+		$localita = substr($localita, 0, 34);
+		$provincia = $this->format_string( $this->order->get_billing_state() );
+		$provincia = substr($provincia, 0, 34);
+		$cap = $this->format_string( $this->order->get_billing_postcode() );
+		$cap = substr($cap, 0, 15);
+		$email = $this->format_string( $this->order->get_billing_email() );
+		$email = substr($email, 0, 255);
+		$nazione = $this->format_string( $this->order->get_billing_country() );
+		$nazione = substr($nazione, 0, 1);
+		$telefono = $this->format_string( $this->order->get_billing_phone() );
+		$telefono = substr($telefono, 0, 34);
+		$cellulare = $this->format_string( $this->order->get_billing_phone() );
+		$cellulare = substr($cellulare, 0, 34);
 
 		$bodyrichiesta = array(
 			'generaIuv'        => true,
@@ -150,17 +170,15 @@ class Gateway_Controller {
 				'codDominio'         => $this->options['domain_code'],
 				'debitore'           => array(
 					'codUnivoco'     => $codice_univoco,
-					'indirizzo'      => $this->order->get_billing_address_2() ?
-								$this->order->get_billing_address_1() . ' - ' . $this->order->get_billing_address_2() :
-								$this->order->get_billing_address_1(),
+					'indirizzo'      => $indirizzo,
 					'ragioneSociale' => $ragione_sociale,
-					'localita'       => $this->format_string( $this->order->get_billing_city() ),
-					'provincia'      => $this->format_string( $this->order->get_billing_state() ),
-					'cap'            => $this->format_string( $this->order->get_billing_postcode() ),
-					'telefono'       => $this->format_string( $this->order->get_billing_phone() ),
-					'cellulare'      => $this->format_string( $this->order->get_billing_phone() ),
-					'email'          => $this->format_string( $this->order->get_billing_email() ),
-					'nazione'        => $this->format_string( $this->order->get_billing_country() ),
+					'localita'       => $localita,
+					'provincia'      => $provincia,
+					'cap'            => $cap,
+					'telefono'       => $telefono,
+					'cellulare'      => $cellulare,
+					'email'          => $email,
+					'nazione'        => $nazione,
 				),
 				'importoTotale'      => $this->order->get_total(),
 				'dataScadenza'       => $expiration_date,
