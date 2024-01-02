@@ -19,7 +19,3 @@ TODO LIST:
 5) Check the use of the certificates.
 
 6) Check Nonces in webhook_payment_complete.
-
-
-
-
