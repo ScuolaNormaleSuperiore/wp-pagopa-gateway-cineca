@@ -12,9 +12,10 @@ FROM php:7.4.3-apache
 
 
 ################# CONFIGURATIONS (define ARG after FROM) #####################
-ARG WP_ARCHIVE=wordpress-5.8.2.tar.gz
-ARG WC_ZIP_FILE=woocommerce.6.0.0.zip
-ARG SF_THEME_FILE=storefront.3.9.1.zip
+ARG WP_ARCHIVE=wordpress-6.4.2.tar.gz
+ARG WC_ZIP_FILE=woocommerce.8.4.0.zip
+ARG SF_THEME_FILE=storefront.4.5.3.zip
+ARG ADMINER_FILE=v4.8.1/adminer-4.8.1.php
 ##############################################################################
 
 
@@ -65,10 +66,9 @@ RUN curl -o /tmp/${WP_ARCHIVE} https://wordpress.org/${WP_ARCHIVE} && \
 	cd /var/www/html/wp-content/plugins && \
 	git clone https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca.git && \
 	cp -f /tmp/wp-config.php  /var/www/html/wp-config.php && \
-    wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php  -O /var/www/html/adminer.php && \
 	cp /tmp/.htaccess /var/www/html/.htaccess && \
 	unzip /tmp/uploads.zip -d /var/www/html/wp-content/uploads/ && \
-	wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php  -O /var/www/html/adminer.php && \
+	wget https://github.com/vrana/adminer/releases/download/${ADMINER_FILE}  -O /var/www/html/adminer.php && \
 	chown -R www-data:www-data /var/www/html/*
 
 # Remove the temp file.
