@@ -121,6 +121,9 @@ function wp_gateway_pagopa_init() {
 	 * Add the gateway(s) to WooCommerce.
 	 */
 	class WP_Gateway_PagoPa extends WC_Payment_Gateway {
+		public string $testmode;
+		public string $api_user;
+		public string $api_pwd;
 
 		/**
 		 * Load the translations.
