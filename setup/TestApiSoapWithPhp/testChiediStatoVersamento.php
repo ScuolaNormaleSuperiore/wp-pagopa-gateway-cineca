@@ -12,15 +12,15 @@ $cod_app    = '***';
 $num_ordine = '100';
 #################################################
 
-echo "******************* \n";
+echo "\n *******************";
 $today = date( 'd/m/Y Y h:i:s A' );
 echo "\n \n" . 'Data di oggi: ' . $today . "\n";
 // echo phpinfo();
 echo 'Openssl attivo? ', extension_loaded ('openssl' ) ? 'yes' : 'no', "\n";
 echo 'SOAP attivo? ', extension_loaded ('soap' ) ? 'yes' : 'no', "\n";
 echo 'Certificato presente?',  file_exists($local_cert) ? 'yes' : 'no', "\n";
-echo 'File del certificato:' . $local_cert . "\n \n";
-echo "******************* \n";
+echo 'File del certificato:' . $local_cert . "\n";
+echo "******************* \n \n";
 ###############  CREAZIONE CONNESSIONE SOAP #####################
 
 // set some SSL/TLS specific options .
@@ -60,6 +60,7 @@ try {
 	echo '<BR/><BR/>Metodi disponibili:<BR/><pre>' . var_export( $soap_client->__getFunctions(), true ) . '</pre>';
 } catch ( Exception $e ) {
 	echo '@@@ ERRORE CLIENT--->' . $e->getMessage();
+	exit;
 }
 
 

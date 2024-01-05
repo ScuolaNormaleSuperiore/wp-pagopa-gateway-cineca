@@ -27,14 +27,14 @@ $nazione    = 'IT';
 $email      = 'claudio.rossi@kk.it';
 #################################################
 
-echo "******************* \n";
+echo "\n *******************";
 $today = date( 'd/m/Y Y h:i:s A' );
 echo "\n \n" . 'Data di oggi: ' . $today . "\n";
 // echo phpinfo();
 echo 'Openssl attivo? ', extension_loaded ('openssl' ) ? 'yes' : 'no', "\n";
 echo 'SOAP attivo? ', extension_loaded ('soap' ) ? 'yes' : 'no', "\n";
 echo 'Certificato presente?',  file_exists($local_cert) ? 'yes' : 'no', "\n";
-echo 'File del certificato:' . $local_cert . "\n \n";
+echo 'File del certificato:' . $local_cert . "\n";
 echo "******************* \n";
 ###############  CREAZIONE CONNESSIONE SOAP #####################
 
