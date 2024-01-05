@@ -31,7 +31,9 @@ $today = date( 'd/m/Y Y h:i:s A' );
 echo 'Data di oggi: ' . $today . '<BR/><BR/>';
 // echo phpinfo();
 echo 'Openssl attivo? ', extension_loaded ('openssl' ) ? 'yes' : 'no', "\n";
-
+echo 'SOAP attivo? ', extension_loaded ('soap' ) ? 'yes' : 'no', "\n";
+echo 'Certificato presente?',  file_exists($local_cert) ? 'yes' : 'no', "\n";
+echo $local_cert . '\n\n';
 ###############  CREAZIONE CONNESSIONE SOAP #####################
 
 // set some SSL/TLS specific options .
@@ -71,6 +73,7 @@ try {
 	echo '<BR/><BR/>Metodi disponibili:<BR/><pre>' . var_export( $soap_client->__getFunctions(), true ) . '</pre>';
 } catch ( Exception $e ) {
 	echo '@@@ ERRORE CLIENT--->' . $e->getMessage();
+	exit;
 }
 
 
