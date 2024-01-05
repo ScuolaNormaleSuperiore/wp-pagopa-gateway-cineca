@@ -484,8 +484,9 @@ function wp_gateway_pagopa_init() {
 			// During the transaction the order is "on-hold".
 			$log_manager->log( STATUS_PAYMENT_SUBMITTED );
 
-			// Create the payment position on the Cineca gateway.
+			// BEGIN Create the payment position on the Cineca gateway.
 			$this->gateway_controller = new Gateway_Controller();
+
 			// Init the gateway.
 			$init_result = $this->gateway_controller->init( $order );
 
@@ -517,6 +518,7 @@ function wp_gateway_pagopa_init() {
 					'result'   => 'failed',
 					'redirect' => $redirect_url,
 				);
+				// END Create the payment position on the Cineca gateway.
 			}
 
 			// Payment position created successfully.
