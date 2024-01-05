@@ -33,7 +33,7 @@ echo 'Data di oggi: ' . $today . '<BR/><BR/>';
 echo 'Openssl attivo? ', extension_loaded ('openssl' ) ? 'yes' : 'no', "\n";
 echo 'SOAP attivo? ', extension_loaded ('soap' ) ? 'yes' : 'no', "\n";
 echo 'Certificato presente?',  file_exists($local_cert) ? 'yes' : 'no', "\n";
-echo $local_cert . '\n\n';
+echo $local_cert . "\n \n \n";
 ###############  CREAZIONE CONNESSIONE SOAP #####################
 
 // set some SSL/TLS specific options .

@@ -4,7 +4,7 @@
 $username   = '***';
 $password   = '***';
 $wsdl       = 'https://gateway.pp.pagoatenei.cineca.it/portalepagamenti.server.gateway/api/private/soap/GPAppPort?wsdl';
-$local_cert = __DIR__ . '\sns.it.pem';
+$local_cert = __DIR__ . '/sns.it.pem';
 $passphrase = '***';
 $user_agent = 'Wordpress/PagoPaGatewayCineca';
 $cod_app    = '***';
@@ -16,7 +16,9 @@ $today = date( 'd/m/Y Y h:i:s A' );
 echo 'Data di oggi: ' . $today . '<BR/><BR/>';
 // echo phpinfo();
 echo 'Openssl attivo? ', extension_loaded ('openssl' ) ? 'yes' : 'no', "\n";
-
+echo 'SOAP attivo? ', extension_loaded ('soap' ) ? 'yes' : 'no', "\n";
+echo 'Certificato presente?',  file_exists($local_cert) ? 'yes' : 'no', "\n";
+echo $local_cert . "\n \n \n";
 ###############  CREAZIONE CONNESSIONE SOAP #####################
 
 // set some SSL/TLS specific options .
