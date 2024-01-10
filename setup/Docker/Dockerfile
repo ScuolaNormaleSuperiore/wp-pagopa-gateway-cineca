@@ -8,7 +8,7 @@
 ##############################################################################
 
 ###### Start from an official Php release with Apache ######
-FROM php:8.1.2-apache
+FROM php:8.2.14-apache
 
 
 ################# CONFIGURATIONS (define ARG after FROM) #####################
