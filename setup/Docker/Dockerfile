@@ -8,7 +8,7 @@
 ##############################################################################
 
 ###### Start from an official Php release with Apache ######
-FROM php:7.4.3-apache
+FROM php:8.1.2-apache
 
 
 ################# CONFIGURATIONS (define ARG after FROM) #####################
@@ -17,7 +17,6 @@ ARG WC_ZIP_FILE=woocommerce.8.4.0.zip
 ARG SF_THEME_FILE=storefront.4.5.3.zip
 ARG ADMINER_FILE=v4.8.1/adminer-4.8.1.php
 ##############################################################################
-
 
 
 # Update packages 
@@ -47,8 +46,8 @@ COPY configure/wp-config.php /tmp/wp-config.php
 COPY configure/.htaccess /tmp/.htaccess
 
 # Install mariadb, create and init the database.
-RUN apt-get install -y mariadb-server  && \
-	/usr/sbin/service mysql start && \
+RUN apt install mariadb-server -y && \
+	/etc/init.d/mariadb start  && \
 	mysql < /tmp/createUserAndDatabase.sql && \
 	mysql myshop < /tmp/myshopdb.sql && \
 	mysql myshop < /tmp/configureWP.sql
@@ -79,3 +78,5 @@ EXPOSE 80 3306
 ######  Start Server Services with the bash shell ######
 ENTRYPOINT ["/bin/bash"]
 CMD ["/root/startServicesScript.sh"]
+
+###DEBUG: ENTRYPOINT ["tail", "-f", "/dev/null"]
