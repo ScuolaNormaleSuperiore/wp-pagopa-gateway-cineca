@@ -118,6 +118,7 @@ class Gateway_Controller {
 	 * @return array
 	 */
 	public function load_payment_position() {
+		$result          = null;
 		$hours_toexpire  = intval( $this->options['expire_hours'] );
 		$expiration_date = gmdate( 'Y-m-d\TH:i:s', strtotime( $hours_toexpire . ' hour' ) );
 
@@ -140,26 +141,26 @@ class Gateway_Controller {
 		}
 
 		$raw_order_number = self::build_raw_order_number( $this->options['order_prefix'], $this->order->get_order_number() );
-		$codice_univoco = substr($codice_univoco, 0, 69);
-		$ragione_sociale = substr($ragione_sociale, 0, 69);
+		$codice_univoco = substr($codice_univoco, 0, 70);
+		$ragione_sociale = substr($ragione_sociale, 0, 70);
 		$indirizzo = $this->order->get_billing_address_2() ?
 			$this->order->get_billing_address_1() . ' - ' . $this->order->get_billing_address_2() :
 			$this->order->get_billing_address_1();
-		$indirizzo = substr($indirizzo, 0, 69);
+		$indirizzo = substr($indirizzo, 0, 70);
 		$localita = $this->format_string( $this->order->get_billing_city() );
-		$localita = substr($localita, 0, 34);
+		$localita = substr($localita, 0, 35);
 		$provincia = $this->format_string( $this->order->get_billing_state() );
-		$provincia = substr($provincia, 0, 34);
+		$provincia = substr($provincia, 0, 35);
 		$cap = $this->format_string( $this->order->get_billing_postcode() );
-		$cap = substr($cap, 0, 15);
+		$cap = substr($cap, 0, 16);
 		$email = $this->format_string( $this->order->get_billing_email() );
-		$email = substr($email, 0, 255);
+		$email = substr($email, 0, 256);
 		$nazione = $this->format_string( $this->order->get_billing_country() );
-		$nazione = substr($nazione, 0, 1);
+		$nazione = substr($nazione, 0, 2);
 		$telefono = $this->format_string( $this->order->get_billing_phone() );
-		$telefono = substr($telefono, 0, 34);
+		$telefono = substr($telefono, 0, 35);
 		$cellulare = $this->format_string( $this->order->get_billing_phone() );
-		$cellulare = substr($cellulare, 0, 34);
+		$cellulare = substr($cellulare, 0, 35);
 
 		$bodyrichiesta = array(
 			'generaIuv'        => true,
