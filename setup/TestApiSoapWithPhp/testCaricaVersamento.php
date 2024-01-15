@@ -134,16 +134,16 @@ $bodyrichiesta = array(
 try {
 	$result = $soap_client->gpCaricaVersamento($bodyrichiesta);
 	# Mostra risultati.
-	echo '<BR/>========= RESULT ==========<BR/>';
+	echo "\n========= RESULT ==========\n";
 	var_export($result);
-	echo '<BR/><BR/><BR/>*** TEST ESEGUITO CORRETTAMENTE ***';
+	echo "\n*** TEST ESEGUITO CORRETTAMENTE ***\n\n";
 } catch (Exception $e) {
-	echo '@@@ ERRORE CHIAMATA --->' . $e->getMessage() . '<BR/>';
-	echo '<BR/>====== REQUEST HEADERS ===== <BR/>';
+	echo '@@@ ERRORE CHIAMATA --->' . $e->getMessage() . "\n";
+	echo "\n====== REQUEST HEADERS ===== \n";
 	// var_export($soap_client);
 	var_export($soap_client->__getLastRequestHeaders());
-	echo '<BR/>========= REQUEST ==========<BR/>';
+	echo "\n========= REQUEST ==========\n";
 	var_export($soap_client->__getLastRequest());
-	echo '<br/>Debug autenticazione: ' . base64_encode($username . ':' . $password) . '<BR/>';
-	echo '<BR/><BR/><BR/>*** TEST FALLITO ***';
+	echo "\nDebug autenticazione: " . base64_encode($username . ':' . $password) . "\n";
+	echo "\n*** TEST FALLITO ***\n\n";
 }
