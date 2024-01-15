@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -97,53 +98,55 @@ try {
 
 
 ###############  PREPARAZIONE E INVIO CHIAMATA SOAP #####################
+if ($soap_client) {
 
-$bodyrichiesta = array(
-	'generaIuv'        => true,
-	'aggiornaSeEsiste' => true,
-	'versamento'       => array(
-		'codApplicazione'    => $cod_app,
-		'codVersamentoEnte'  => $num_ordine,
-		'codDominio'         => $cod_dom,
-		'debitore'           => array(
-			'codUnivoco'     => $cod_univ,
-			'ragioneSociale' => $rag_soc,
-			'indirizzo'      => $indirizzo,
-			'localita'       => $localita,
-			'provincia'      => $provincia,
-			'nazione'        => $nazione,
-			'email'          => $email,
-		),
-		'importoTotale'      => $importo,
-		'dataScadenza'       => $data_ver,
-		'causale'            => $causale,
-		'singoloVersamento'  => array(
-			'codSingoloVersamentoEnte' => $num_ordine,
-			'importo'                  => $importo,
-			'tributo'                  => array(
-				'ibanAccredito'   => $iban,
-				'tipoContabilita' => $tipo_cont,
-				'codContabilita'  => $cod_cont,
+	$bodyrichiesta = array(
+		'generaIuv'        => true,
+		'aggiornaSeEsiste' => true,
+		'versamento'       => array(
+			'codApplicazione'    => $cod_app,
+			'codVersamentoEnte'  => $num_ordine,
+			'codDominio'         => $cod_dom,
+			'debitore'           => array(
+				'codUnivoco'     => $cod_univ,
+				'ragioneSociale' => $rag_soc,
+				'indirizzo'      => $indirizzo,
+				'localita'       => $localita,
+				'provincia'      => $provincia,
+				'nazione'        => $nazione,
+				'email'          => $email,
 			),
+			'importoTotale'      => $importo,
+			'dataScadenza'       => $data_ver,
+			'causale'            => $causale,
+			'singoloVersamento'  => array(
+				'codSingoloVersamentoEnte' => $num_ordine,
+				'importo'                  => $importo,
+				'tributo'                  => array(
+					'ibanAccredito'   => $iban,
+					'tipoContabilita' => $tipo_cont,
+					'codContabilita'  => $cod_cont,
+				),
+			),
+			'idModelloPagamento' => $id_mod,
 		),
-		'idModelloPagamento' => $id_mod,
-	),
-);
+	);
 
 
-try {
-	$result = $soap_client->gpCaricaVersamento($bodyrichiesta);
-	# Mostra risultati.
-	echo "\n========= RESULT ==========\n";
-	var_export($result);
-	echo "\n*** TEST ESEGUITO CORRETTAMENTE ***\n\n";
-} catch (Exception $e) {
-	echo '@@@ ERRORE CHIAMATA --->' . $e->getMessage() . "\n";
-	echo "\n====== REQUEST HEADERS ===== \n";
-	// var_export($soap_client);
-	var_export($soap_client->__getLastRequestHeaders());
-	echo "\n========= REQUEST ==========\n";
-	var_export($soap_client->__getLastRequest());
-	echo "\nDebug autenticazione: " . base64_encode($username . ':' . $password) . "\n";
-	echo "\n*** TEST FALLITO ***\n\n";
+	try {
+		$result = $soap_client->gpCaricaVersamento($bodyrichiesta);
+		# Mostra risultati.
+		echo "\n========= RESULT ==========\n";
+		var_export($result);
+		echo "\n*** TEST ESEGUITO CORRETTAMENTE ***\n\n";
+	} catch (Exception $e) {
+		echo '@@@ ERRORE CHIAMATA --->' . $e->getMessage() . "\n";
+		echo "\n====== REQUEST HEADERS ===== \n";
+		// var_export($soap_client);
+		var_export($soap_client->__getLastRequestHeaders());
+		echo "\n========= REQUEST ==========\n";
+		var_export($soap_client->__getLastRequest());
+		echo "\nDebug autenticazione: " . base64_encode($username . ':' . $password) . "\n";
+		echo "\n*** TEST FALLITO ***\n\n";
+	}
 }
