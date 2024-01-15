@@ -1,4 +1,13 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$OS_SEPARATOR = "";
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+	$OS_SEPARATOR = "\\";
+} else {
+	$OS_SEPARATOR = "/";
+}
 
 ###############  Variabili #####################
 $username   = '***';
@@ -10,6 +19,7 @@ $user_agent = 'Wordpress/PagoPaGatewayCineca';
 $cod_app    = '***';
 $cod_dom    = '***';
 $iban       = '***';
+$soap_tmout = 20;
 
 $num_ordine = '89';
 $id_mod     = 185;
@@ -28,14 +38,16 @@ $email      = 'claudio.rossi@kk.it';
 #################################################
 
 echo "\n *******************";
-$today = date( 'd/m/Y Y h:i:s A' );
+$today = date('d/m/Y Y h:i:s A');
 echo "\n \n" . 'Data di oggi: ' . $today . "\n";
 // echo phpinfo();
-echo 'Openssl attivo? ', extension_loaded ('openssl' ) ? 'yes' : 'no', "\n";
-echo 'SOAP attivo? ', extension_loaded ('soap' ) ? 'yes' : 'no', "\n";
-echo 'Certificato presente?',  file_exists($local_cert) ? 'yes' : 'no', "\n";
+echo 'Sistema operativo? ', PHP_OS, "\n";
+echo 'Openssl attivo? ', extension_loaded('openssl') ? 'yes' : 'no', "\n";
+echo 'Openssl versione: ', OPENSSL_VERSION_TEXT, " - ", OPENSSL_VERSION_NUMBER, "\n";
+echo 'SOAP attivo? ', extension_loaded('soap') ? 'yes' : 'no', "\n";
+echo 'Certificato presente? ',  file_exists($local_cert) ? 'yes' : 'no', "\n";
 echo 'File del certificato:' . $local_cert . "\n";
-echo "******************* \n";
+echo "******************* \n \n";
 ###############  CREAZIONE CONNESSIONE SOAP #####################
 
 // set some SSL/TLS specific options .
@@ -60,9 +72,10 @@ $soap_client_options = array(
 	'compression'        => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
 	'cache_wsdl'         => WSDL_CACHE_NONE,
 	'trace'              => true,
+	'connection_timeout' => intval($soap_tmout),
 	'local_cert'         => $local_cert,
 	'passphrase'         => $passphrase,
-	'stream_context'     => stream_context_create( $context_options ),
+	'stream_context'     => stream_context_create($context_options),
 	'soap_version'       => SOAP_1_1,
 );
 
@@ -72,9 +85,13 @@ try {
 		$wsdl,
 		$soap_client_options,
 	);
-	echo '<BR/><BR/>Metodi disponibili:<BR/><pre>' . var_export( $soap_client->__getFunctions(), true ) . '</pre>';
-} catch ( Exception $e ) {
+	echo 'Metodi disponibili:' . var_export($soap_client->__getFunctions(), true) . "\n";
+	echo "******************* \n";
+} catch (Exception $e) {
+	var_dump(libxml_get_last_error());
+	var_dump($soap_client);
 	echo '@@@ ERRORE CLIENT--->' . $e->getMessage();
+	echo "******************* \n";
 	exit;
 }
 
@@ -115,21 +132,18 @@ $bodyrichiesta = array(
 
 
 try {
-	$result = $soap_client->gpCaricaVersamento( $bodyrichiesta );
+	$result = $soap_client->gpCaricaVersamento($bodyrichiesta);
 	# Mostra risultati.
 	echo '<BR/>========= RESULT ==========<BR/>';
-	var_export( $result );
+	var_export($result);
 	echo '<BR/><BR/><BR/>*** TEST ESEGUITO CORRETTAMENTE ***';
-} catch ( Exception $e ) {
+} catch (Exception $e) {
 	echo '@@@ ERRORE CHIAMATA --->' . $e->getMessage() . '<BR/>';
 	echo '<BR/>====== REQUEST HEADERS ===== <BR/>';
 	// var_export($soap_client);
-	var_export( $soap_client->__getLastRequestHeaders() );
+	var_export($soap_client->__getLastRequestHeaders());
 	echo '<BR/>========= REQUEST ==========<BR/>';
-	var_export( $soap_client->__getLastRequest() );
-	echo '<br/>Debug autenticazione: ' . base64_encode( $username . ':' . $password ) . '<BR/>';
+	var_export($soap_client->__getLastRequest());
+	echo '<br/>Debug autenticazione: ' . base64_encode($username . ':' . $password) . '<BR/>';
 	echo '<BR/><BR/><BR/>*** TEST FALLITO ***';
 }
-
-
-?>
