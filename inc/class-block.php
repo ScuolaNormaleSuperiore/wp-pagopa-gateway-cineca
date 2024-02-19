@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright: © 2021-2022, SNS
  * License: GNU General Public License v3.0
@@ -18,19 +19,22 @@ final class WP_Gateway_PagoPa_Blocks extends AbstractPaymentMethodType
 	private $gateway;
 	protected $name = 'wp_gateway_pagopa';
 
-	public function initialize() {
+	public function initialize()
+	{
 		$this->settings = get_option('woocommerce_wp_gateway_pagopa_settings', []);
 		$this->gateway = new WP_Gateway_PagoPa();
 	}
 
-	public function is_active() {
+	public function is_active()
+	{
 		return $this->gateway->is_available();
 	}
 
-	public function get_payment_method_script_handles() {
+	public function get_payment_method_script_handles()
+	{
 		wp_register_script(
 			'wp_gateway_pagopa-blocks-integration',
-			plugin_dir_url( __FILE__ ) . '../assets/js/checkout.js',
+			plugin_dir_url(__FILE__) . '../assets/js/checkout.js',
 			[
 				'wc-blocks-registry',
 				'wc-settings',
