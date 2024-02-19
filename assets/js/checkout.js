@@ -1,5 +1,7 @@
 (function() {
 	"use strict";
+	const wpElement = window.wp.element;
+	const wcBlockRegistry = window.wc.wcBlocksRegistry;
 	const settings = window.wc.wcSettings.getSetting( 'wp_gateway_pagopa_data', {} );
 	const title = settings.title || '';
 	const icon = settings.icon;
@@ -8,12 +10,23 @@
 	const Content = () => {
 			return window.wp.htmlEntities.decodeEntities( settings.description || '' );
 	};
+
 	console.log(settings);
+
 	const Block_Gateway = {
 			name: settings.id,
-			label: label,
-			content: Object( window.wp.element.createElement )( Content, null ),
-			edit: Object( window.wp.element.createElement )( Content, null ),
+			// label: label,
+			label: wpElement.createElement(() =>
+			wpElement.createElement("span", null,
+					wpElement.createElement("img", {
+							src: icon,
+							alt: title
+					}),
+					"  " + title
+				)
+			),
+			content: Object( wpElement.createElement )( Content, null ),
+			edit: Object( wpElement.createElement )( Content, null ),
 			canMakePayment: () => true,
 			ariaLabel: label,
 			supports: {
@@ -24,5 +37,5 @@
 			},
 			icon: icon || '',
 	};
-	window.wc.wcBlocksRegistry.registerPaymentMethod( Block_Gateway );
+	wcBlockRegistry.registerPaymentMethod( Block_Gateway );
 })();

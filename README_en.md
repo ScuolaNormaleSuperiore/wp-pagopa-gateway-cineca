@@ -156,7 +156,12 @@ To configure it use these parameters:
 - Password: admin
 - Database: myshop
 
+## Block management on the checkout page
+Starting from ***WooCommerce 8.3***, the Cart and Checkout blocks are present by default for new installations. Therefore a block (defined in *class-block.php*) has been added for the checkout page.
+Please read [this page](https://woo.com/document/cart-checkout-blocks-status) for more information.
 
+## Reuse catalogue
+The project is published in the Developers Italia reuse catalogue. The home page of the project is [this](https://developers.italia.it/it/software/sns_pi-scuolanormalesuperiore-wp-pagopa-gateway-cineca).
 
 ## Repository
 This repository contains the source code of the project.

@@ -64,7 +64,8 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id           = WP_PAGOPA_PLUGIN_ID;
-		$this->icon         = plugins_url( 'assets/img/logo.svg', __FILE__ );
+		// $this->icon         = plugins_url( 'assets/img/logo.svg', __FILE__ );
+		$this->icon         = plugins_url( 'assets/img/LogoPagoPaSmall.png', __FILE__ );
 		$this->has_fields   = true;
 		$this->method_title = 'PagoPA Gateway';
 		// The gateway supports simple payments.
