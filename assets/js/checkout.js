@@ -10,8 +10,7 @@
 	const Content = () => {
 			return window.wp.htmlEntities.decodeEntities( settings.description || '' );
 	};
-
-	console.log(settings);
+	// console.log(settings);
 
 	const Block_Gateway = {
 			name: settings.id,

@@ -165,11 +165,13 @@ The project is published in the Developers Italia reuse catalogue. The home page
 
 ## Repository
 This repository contains the source code of the project.
+
 ## License
 The project is under the GPL-3.0-only license as found in the [LICENSE](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/LICENSE) file.
 
 ## How to contribute
 The main purpose of this repository is to continue evolving the plugin. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements.
+
 ## Copyright
 1. Detentore copyright: Scuola Normale Superiore
 2. Responsabili del progetto: Michele Fiaschi, Claudio Battaglino, Alida Isolani, Marcella Monreale
