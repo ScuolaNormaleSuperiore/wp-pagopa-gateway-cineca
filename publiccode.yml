@@ -4,7 +4,7 @@
 
 publiccodeYmlVersion: '0.2'
 applicationSuite: WooCommerce
-softwareVersion: 1.1.9
+softwareVersion: 1.2.0
 developmentStatus: stable
 categories:
   - payment-gateway
