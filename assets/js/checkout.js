@@ -14,7 +14,6 @@
 
 	const Block_Gateway = {
 			name: settings.id,
-			// label: label,
 			label: wpElement.createElement(() =>
 			wpElement.createElement("span", null,
 					wpElement.createElement("img", {
