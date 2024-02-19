@@ -51,7 +51,12 @@ final class WP_Gateway_PagoPa_Blocks extends AbstractPaymentMethodType
 	{
 		return [
 			'title'       => $this->gateway->title,
-			'description' => $this->gateway->description,
+			// 'description' => $this->gateway->description,
+			'description' => $this->gateway->desc_txt,
+			'supports'    => $this->gateway->supports,
+			'id'          => $this->gateway->id,
+			'icon'        => $this->gateway->icon,
+			'icon_list'   => $this->gateway->icon_list_txt,
 		];
 	}
 }

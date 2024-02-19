@@ -26,9 +26,8 @@ define( 'WAIT_NUM_SECONDS', 5 );
 define( 'WAIT_NUM_ATTEMPTS', 35 );
 define( 'NUM_DAYS_TO_CHECK', 7 );
 define( 'HTML_EMAIL_HEADERS', array( 'Content-Type: text/html; charset=UTF-8' ) );
-
+define( 'WP_PAGOPA_SUPPORTS', array( 'products', ) );
 define( 'TOTAL_SOAP_TIMEOUT', 20 );
-
 define(
 	'NOTIFY_TRANSACTION_RESPONSE',
 	'<?xml version=\'1.0\' encoding=\'UTF-8\'?>' .
@@ -48,6 +47,8 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	public string $testmode;
 	public string $api_user;
 	public string $api_pwd;
+	public string $desc_txt;
+	public string $icon_list_txt;
 
 	/**
 	 * Load the translations.
@@ -63,15 +64,13 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id           = WP_PAGOPA_PLUGIN_ID;
-		$this->icon         = plugins_url( 'assets/img/LogoPagoPaSmall.png', __FILE__ );
+		$this->icon         = plugins_url( 'assets/img/logo.svg', __FILE__ );
 		$this->has_fields   = true;
 		$this->method_title = 'PagoPA Gateway';
-
 		// The gateway supports simple payments.
-		$this->supports = array(
-			'products',
-		);
+		$this->supports = WP_PAGOPA_SUPPORTS;
 
+		// Load translations.
 		$this->load_plugin_textdomain();
 		$this->method_description = __( 'Pay with the Cineca PagoPA Gateway', 'wp-pagopa-gateway-cineca' );
 
@@ -82,20 +81,19 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$this->init_settings();
 
 		// Load the settings into variables.
-		$desc = '';
+		$this->desc_txt = '';
 		if ( 'it_IT' === get_locale() ) {
-			$desc = $this->get_option( 'description' );
+			$this->desc_txt = $this->get_option( 'description' );
 		} else {
-			$desc = $this->get_option( 'description_en' );
+			$this->desc_txt = $this->get_option( 'description_en' );
 		}
 
-		$icon_list         = $this->get_icon_list();
-		$this->title       = $this->get_option( 'title' );
-		// $this->description = $icon_list . $desc;
-		$this->description = $desc;
-		$this->enabled     = $this->get_option( 'enabled' );
-		$this->testmode    = $this->get_option( 'testmode' );
-		$this->api_user    = ( 'yes' === $this->testmode ) ?
+		$this->icon_list_txt = $this->get_icon_list();
+		$this->title         = $this->get_option( 'title' );
+		$this->description   = $this->icon_list_txt . $this->desc_txt;
+		$this->enabled       = $this->get_option( 'enabled' );
+		$this->testmode      = $this->get_option( 'testmode' );
+		$this->api_user      = ( 'yes' === $this->testmode ) ?
 			trim( $this->get_option( 'api_user_test' ) ) :
 			trim( $this->get_option( 'api_user_prod' ) );
 		$this->api_pwd     = ( 'yes' === $this->testmode ) ?
