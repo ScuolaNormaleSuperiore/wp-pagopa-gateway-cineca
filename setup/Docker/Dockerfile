@@ -62,7 +62,7 @@ RUN curl -o /tmp/${WP_ARCHIVE} https://wordpress.org/${WP_ARCHIVE} && \
 	curl -o /tmp/${SF_THEME_FILE} https://downloads.wordpress.org/theme/${SF_THEME_FILE} && \
 	unzip /tmp/${SF_THEME_FILE} -d /var/www/html/wp-content/themes/ && \
 	cd /var/www/html/wp-content/plugins && \
-	git clone https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca.git && \
+	git clone --branch main https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca.git && \
 	cp -f /tmp/wp-config.php  /var/www/html/wp-config.php && \
 	cp /tmp/.htaccess /var/www/html/.htaccess && \
 	unzip /tmp/uploads.zip -d /var/www/html/wp-content/uploads/ && \
