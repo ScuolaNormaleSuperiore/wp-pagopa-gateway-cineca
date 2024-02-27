@@ -1,0 +1,28 @@
+*** Cosa verificare in caso di mancato funzionamento del plugin ***
+
+Problema: Durante la fase di pagamento si verificano degli errori.
+Soluzione:
+	- Verificare di aver editato correttamente la pagina con le impostazioni del plugin: WC->Impostazioni->Pagament->PagoPA Gateway->Gestisci.
+	- Controllare che la cartella cert del plugin contenga il certificato fornito da Cineca. Il certificato deve essere convertito nel formato .pem se non lo fosse già.
+	- Controllare i messaggi del log del plugin: WC->Stato->Log->wp-pagopa-gateway-cineca.
+	- Controllare i messaggi di WC->Transazioni PagoPA.
+	- Controllare il file di log degli errori del web server.
+	- Utilizzare lo script setup->TestApiSoapWithPhp->testCaricaVersamento.TestApiSoapWithPhp se ci sono dei problemi di collegamento con il gateway.
+
+Problema: Parsing WSDL: Couldn't load from '.../soap/GPAppPort?wsdl' : failed to load external entity ".../soap/GPAppPort?wsdl"
+Soluzione: Verificare la correttezza della password associata al certificato fornito da Cineca.
+
+Problema: Unhauthorized
+Soluzione: Verificare correttezza dello username e della password dei web service assegnati da Cineca.
+
+Problema: gpCaricaVersamentoRequest: applicazione not found [codApplicazione=...]
+Soluzione: Verificare che il "Codice applicazione" sia corretto.
+
+Problema: gpCaricaVersamentoRequest: dominio not found [codDominio=...]
+Soluzione: Verificare che il codice dominio sia corretto.
+
+Problema: gpCaricaVersamentoRequest: ibanAccredito not found [codDominio=...] [ibanAccredito=...]
+Soluzione: Verificare che l'IBAN sia corretto.
+
+Problema: mgpCaricaVersamentoRequest: modelloPagamento not found [idModelloPagamento =...]
+Soluzione: Verificare che l'ID del modello sia corretto e sia stato definito sul portale dei pagamenti.
