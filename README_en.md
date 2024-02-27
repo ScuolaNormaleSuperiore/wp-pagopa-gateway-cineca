@@ -156,15 +156,22 @@ To configure it use these parameters:
 - Password: admin
 - Database: myshop
 
+## Block management on the checkout page
+Starting from ***WooCommerce 8.3***, the Cart and Checkout blocks are present by default for new installations. Therefore a block (defined in *class-block.php*) has been added for the checkout page.
+Please read [this page](https://woo.com/document/cart-checkout-blocks-status) for more information.
 
+## Reuse catalogue
+The project is published in the Developers Italia reuse catalogue. The home page of the project is [this](https://developers.italia.it/it/software/sns_pi-scuolanormalesuperiore-wp-pagopa-gateway-cineca).
 
 ## Repository
 This repository contains the source code of the project.
+
 ## License
 The project is under the GPL-3.0-only license as found in the [LICENSE](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/LICENSE) file.
 
 ## How to contribute
 The main purpose of this repository is to continue evolving the plugin. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements.
+
 ## Copyright
 1. Detentore copyright: Scuola Normale Superiore
 2. Responsabili del progetto: Michele Fiaschi, Claudio Battaglino, Alida Isolani, Marcella Monreale

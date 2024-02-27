@@ -166,18 +166,26 @@ Per configurarlo i parametri sono:
 - Database: myshop
 
 
+## Gestione dei blocchi nella pagina di checkout
+A partire da ***WooCommerce 8.3***, per le nuove installazioni i blocchi Carrello e Checkout sono presenti di default. Per questo è stato aggiunto un blocco (definito in *class-block.php*) per la pagina di checkout.
+Leggere [questa pagina](https://woo.com/document/cart-checkout-blocks-status) per maggiori informazioni.
+
 ## Catalogo del riuso
 Il progetto è pubblicato sul catalogo del riuso di Developers Italia. La home page del progetto è [questa](https://developers.italia.it/it/software/sns_pi-scuolanormalesuperiore-wp-pagopa-gateway-cineca).
+
 ## Repository
 [Questo](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca) è il repository che contiene il codice sorgente del progetto.
+
 ## Licenza
 Il progetto è pubblicato sotto la licenza GPL-3.0-only come descritto nel file [LICENSE](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/LICENSE).
+
 ## Lingue supportate
 Il plugin è disponibile in italiano e in inglese.
 [Questa](https://github.com/ScuolaNormaleSuperiore/wp-pagopa-gateway-cineca/blob/main/README_en.md) è la guida in inglese.
 
 ## Come contribuire
 Lo scopo principale di questo repository è quello di far evolvere il plugin. Vorremmo rendere il processo per contribuire al progetto il più semplice e trasparente possibile, per questo saremo grati alla comunità di coloro che vorranno contribuire alla soluzione di bug, al miglioramento del codice e all'aggiunta di nuove funzionalità.
+
 ## Copyright
 1. Detentore copyright: Scuola Normale Superiore
 2. Responsabili del progetto: Michele Fiaschi, Claudio Battaglino, Alida Isolani, Marcella Monreale
