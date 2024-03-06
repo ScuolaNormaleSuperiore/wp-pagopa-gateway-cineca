@@ -16,7 +16,12 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 - Extract init_form_fields from main class.
 - ncs
 
-## [1.2.1] - 2024-03-06
+## [1.2.2] - 2024-03-10
+
+### Corretto
+- Controllo della correttezza degli url letti dal file di configurazione.
+
+## [1.2.2] - 2024-03-06
 
 ### Aggiunto
 - Aggiunto file CHANGELOG.
