@@ -126,7 +126,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	private function get_icon_list() {
 
 		$img_list = '';
-		$folder   = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'cc';
+		$folder   = plugin_dir_path( __FILE__ ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'cc';
 		$folder   = wp_normalize_path( $folder );
 		$files    = glob( $folder . '/*' );
 

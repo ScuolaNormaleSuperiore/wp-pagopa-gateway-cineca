@@ -7,7 +7,7 @@
  * @author      ICT Scuola Normale Superiore
  * @category    Payment Module
  * @package     PagoPA Gateway Cineca
- * @version     1.2.0
+ * @version     1.2.1
  * @copyright   Copyright (c) 2021 SNS)
  * @license     GNU General Public License v3.0
  */
@@ -61,9 +61,18 @@ class Gateway_Controller
 	public function init($order)
 	{
 		$this->order      = $order;
-		$this->local_cert = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'wp-pagopa-gateway-cineca' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . $this->options['cert_abs_path'];
+		$plugins_dir      = dirname( plugin_dir_path( __FILE__ ) );
+		$this->local_cert = $plugins_dir . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . $this->options['cert_abs_path'];
 		$this->local_cert = wp_normalize_path($this->local_cert);
 		$this->passphrase = $this->options['cert_passphrase'];
+
+		// Verifico che il certificato sia stato recuperato correttamente.
+		if ( ! file_exists( $this->local_cert ) ) {
+			if (DEBUG_MODE_ENABLED) {
+				error_log( print_r( $this->local_cert, true ) );
+			}
+			throw new Exception('Certificato non trovato.');
+		}
 
 		// set some SSL/TLS specific options .
 		$context_options = array(
