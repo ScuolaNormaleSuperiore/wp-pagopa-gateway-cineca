@@ -8,7 +8,7 @@ softwareVersion: 1.2.2
 developmentStatus: stable
 categories:
   - payment-gateway
-logo: docs/logo_plugin_pagopa.png
+logo: docs/logo_plugin_pagopa_900.png
 description:
   it:
     localisedName: Gateway Cineca a PagoPA
