@@ -16,6 +16,12 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 - Extract init_form_fields from main class.
 - ncs
 
+
+## [1.2.3] - 2026-01-08
+### Bug fixing
+- Corretto bug in verifyAPIAuthentication.
+
+
 ## [1.2.2] - 2024-09-16
 ### Modificato
 - Aggiornato sito di demo su Dockerfile.

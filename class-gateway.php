@@ -713,26 +713,6 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Check authorization to use the API.
-	 *
-	 * @return boolen - True if the account is right.
-	 */
-	private function verifyAPIAuthentication() {
-		$api_username = $this->api_user;
-		$api_password = $this->api_pwd;
-		if ( $api_username && $api_username ) {
-			$auth          = apache_request_headers();
-			$authorization = isset( $auth['Authorization'] ) ? $auth['Authorization'] : '';
-			$valid_token   = 'Basic ' . base64_encode( $api_username . ':' . $api_password );
-			if ( $authorization !== $valid_token ) {
-				header( 'HTTP/1.1 401 Unauthorized' );
-				exit;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Hook called to start scheduled actions.
 	 *
 	 * @param array $args - Arguments of the function.
@@ -906,6 +886,84 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$plugin_data    = get_plugin_data( __FILE__ );
 		$plugin_version = $plugin_data['Version'];
 		wp_enqueue_style( $plugin_name . 'css-1', $file_path, null, $plugin_version );
+	}
+
+	/**
+	 * Check authorization to use the API (Basic Auth).
+	 *
+	 * @return bool True se autenticazione valida.
+	 */
+	private function verifyAPIAuthentication() {
+		// Verifica configurazione
+		if (empty($this->api_user) || empty($this->api_pwd)) {
+			$this->deny('Credenziali API non configurate: api_user o api_pwd vuoti.');
+		}
+		// Estrai credenziali dalla richiesta
+		$credentials = $this->extractBasicAuthCredentials();
+		$req_user = $credentials['user'];
+		$req_pass = $credentials['pass'];
+		// Verifica credenziali
+		if (!hash_equals($this->api_user, $req_user) || 
+			!hash_equals($this->api_pwd, $req_pass)) {
+			$this->deny('Credenziali non valide.');
+		}
+		return true;
+	}
+
+	/**
+	 * Estrae username e password da Basic Auth.
+	 *
+	 * @return array ['user' => username, 'pass' => password]
+	 */
+	private function extractBasicAuthCredentials() {
+		// Metodo standard PHP
+		$user = $_SERVER['PHP_AUTH_USER'] ?? null;
+		$pass = $_SERVER['PHP_AUTH_PW'] ?? null;
+		// Fallback: Authorization header
+		if ($user === null || $pass === null) {
+			$auth_header = $_SERVER['HTTP_AUTHORIZATION'] 
+				?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] 
+				?? '';
+			if (empty($auth_header)) {
+				$this->deny('Header Authorization mancante.');
+			}
+			if (stripos($auth_header, 'Basic ') !== 0) {
+				$this->deny('Header Authorization presente ma schema non Basic.');
+			}
+			$decoded = base64_decode(substr($auth_header, 6), true);
+			if ($decoded === false || strpos($decoded, ':') === false) {
+				$this->deny('Header Authorization Basic non valido.');
+			}
+			$parts = explode(':', $decoded, 2);
+			$user = $parts[0];
+			$pass = $parts[1];
+		}
+		// Validazione finale
+		if (empty($user)) {
+			$this->deny('Username mancante nella richiesta.');
+		}
+		if (!is_string($pass)) {
+			$this->deny('Password mancante nella richiesta.');
+		}
+		return [
+			'user' => $user,
+			'pass' => $pass
+		];
+	}
+
+	/**
+	 * Logga l'errore, invia 401 Unauthorized e termina l'esecuzione.
+	 *
+	 * @param string $message
+	 * @return void
+	 */
+	private function deny(string $message): void {
+		$this->log_action('error', $message);
+		if (!headers_sent()) {
+			http_response_code(401);
+			header('WWW-Authenticate: Basic realm="API"');
+		}
+		exit;
 	}
 
 } // end plugin class
