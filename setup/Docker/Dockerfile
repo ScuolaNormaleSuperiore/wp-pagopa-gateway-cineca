@@ -8,17 +8,17 @@
 ##############################################################################
 
 ###### Start from an official Php release with Apache ######
-FROM php:8.3.2-apache
+FROM php:8.3.3-apache
 
 ################# CONFIGURATIONS (define ARG after FROM) #####################
-ARG WP_ARCHIVE=wordpress-6.6.2.tar.gz
-ARG WC_ZIP_FILE=woocommerce.9.3.1.zip
-ARG SF_THEME_FILE=storefront.4.6.0.zip
-ARG ADMINER_FILE=v4.8.1/adminer-4.8.1.php
+ARG WP_ARCHIVE=wordpress-6.9.tar.gz
+ARG WC_ZIP_FILE=woocommerce.10.4.3.zip
+ARG SF_THEME_FILE=storefront.4.6.2.zip
+ARG ADMINER_FILE=v5.4.1/adminer-5.4.1.php
 ##############################################################################
 
 
-# Update packages 
+# Update packages
 RUN apt-get update && apt-get install
 # Install useful packages
 RUN apt-get install -y \
