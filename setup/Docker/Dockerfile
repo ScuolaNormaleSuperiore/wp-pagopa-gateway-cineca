@@ -11,8 +11,8 @@
 FROM php:8.3.3-apache
 
 ################# CONFIGURATIONS (define ARG after FROM) #####################
-ARG WP_ARCHIVE=wordpress-6.9.tar.gz
-ARG WC_ZIP_FILE=woocommerce.10.4.3.zip
+ARG WP_ARCHIVE=wordpress-6.9.4.tar.gz
+ARG WC_ZIP_FILE=woocommerce.10.6.1.zip
 ARG SF_THEME_FILE=storefront.4.6.2.zip
 ARG ADMINER_FILE=v5.4.1/adminer-5.4.1.php
 ##############################################################################
