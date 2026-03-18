@@ -689,8 +689,9 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 						$order_id    = Gateway_Controller::extract_order_number( $options['order_prefix'], $cod_versamento_ente );
 						$order       = new WC_Order( $order_id );
 						$log_manager = new Log_Manager( $order );
-						$p_found     = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_CREATED );
-						if ( $p_found ) {
+						$p_found           = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_CREATED );
+						$already_confirmed = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION );
+						if ( $p_found && ! $already_confirmed ) {
 							// Set the order as paid.
 							$order->payment_complete();
 							$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
