@@ -35,7 +35,7 @@ Il plugin è in produzione sull'ec-commerce della Scuola.
 
 ## Requisiti software
 1. Il CMS Wordpress (versione >= 5.6.6).
-2. Il plugin Woocommerce (versione >= 5.0.0) per Wordpress .
+2. Il plugin Woocommerce (versione >= 8.3) per Wordpress.
 3. Un web server Apache (o equivalente) con le estensioni *mod_ssl* e *soap* installate e abilitate.
 4. Leggere la sezione "***Campi personalizzati***".
 
@@ -77,16 +77,16 @@ Se questi campi non sono specificati il plugin funziona lo stesso, ma un cliente
    - **Url di PagoAtenei**: L'indirizzo base dei web services Soap di *PagoAtenei*. E' fornito da *Cineca*.
    - **PagoAtenei API username**: Lo username da usare per invocare i web services di *PagoAtenei*. E' fornito da *Cineca*.
    - **Password di Pagoatenei**: La password da usare per invocare i web services di *PagoAtenei*. E' fornita da *Cineca*.
-   - **Username dell'API del plugin**: Lo username dell'account che *PagoAtenei* deve utilizzare per invocare l'entry-point *paNotificaTransazioneé. Deve essere comunicato a *Cineca*.
+   - **Username dell'API del plugin**: Lo username dell'account che *PagoAtenei* deve utilizzare per invocare l'entry-point *paNotificaTransazione*. Deve essere comunicato a *Cineca*.
    - **Password dell'API del plugin**: La password dell'account che *PagoAtenei* deve utilizzare per invocare l'entry-point *paNotificaTransazione*. Deve essere comunicata a *Cineca*.
    - **ID del modello di pagamento**: L'ID del Modello di pagamento definito nel backoffice di *PagoAtenei* relativo agli ordini dell'e-commerce.
-  
+
   **Credenziali di test**
    - **Indirizzo base del front end Cineca**: L'url del front-end di *PagoAtenei*. E' fornito da *Cineca*.
    - **Url di PagoAtenei**: L'indirizzo base dei web services Soap di *PagoAtenei*. E' fornito da *Cineca*.
    - **PagoAtenei API username**: Lo username da usare per invocare i web services di *PagoAtenei*. E' fornito da *Cineca*.
    - **Password di Pagoatenei**: La password da usare per invocare i web services di *PagoAtenei*. E' fornita da *Cineca*.
-   - **Username dell'API del plugin**: Lo username dell'account che *PagoAtenei* deve utilizzare per invocare l'entry-point *paNotificaTransazioneé. Deve essere comunicato a *Cineca*.
+   - **Username dell'API del plugin**: Lo username dell'account che *PagoAtenei* deve utilizzare per invocare l'entry-point *paNotificaTransazione*. Deve essere comunicato a *Cineca*.
    - **Password dell'API del plugin**: La password dell'account che *PagoAtenei* deve utilizzare per invocare l'entry-point *paNotificaTransazione*. Deve essere comunicata a *Cineca*.
    - **ID del modello di pagamento**: L'ID del Modello di pagamento definito nel backoffice di *PagoAtenei* relativo agli ordini dell'e-commerce.
 ## Conferma del pagamento: configurazioni possibili
@@ -108,7 +108,7 @@ Nella cartella *setup\TestApiSoapWithPhp* ci sono due script PHP (*testCaricaVer
 ## Entry point e callback
 Il plugin espone i seguenti entry-point:
 
-1. HOOK_PAYMENT_COMPLETE --> pagopa_payment_complete: è la callback invocata da *PagoAtenei* quando un oordine è pagato o cancellato.
+1. HOOK_PAYMENT_COMPLETE --> pagopa_payment_complete: è la callback invocata da *PagoAtenei* quando un ordine è pagato o cancellato.
 
 2. HOOK_SCHEDULED_ACTIONS --> pagopa_execute_actions: è l'entry-point che può essere invocato da un cronjob per gestire gli ordini pagati offline.
 
@@ -132,7 +132,7 @@ Il plugin espone i seguenti entry-point:
 
 
 ## Documentazione
-- I documenti e gli schemi di funzionamento del plugin si trovano nella la cartella ***doc*** di questo plugin.
+- I documenti e gli schemi di funzionamento del plugin si trovano nella cartella ***docs*** di questo plugin.
 - Il progetto e gli esempi per provare l'Api Soap con *SoapUI*  si trovano nella cartella ***setup/TestSoap**.
 - Per la documentazione e le specifiche sull'API Soap visitare il sito di *Cineca*:
 	- [Modalità di Integrazione](https://wiki.u-gov.it/confluence/pages/releaseview.action?pageId=329846832)
