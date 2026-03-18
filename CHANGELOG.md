@@ -17,6 +17,17 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 - ncs
 
 
+
+## [1.2.4] - 2026-03-18
+### Bug fixing
+- Correzione di alcuni bug.
+- Fix vari suggeriti da AI.
+### Modificato
+- Aggiunta documentazione.
+- Aggiornato sito di demo su Dockerfile.
+
+
+
 ## [1.2.3] - 2026-01-08
 ### Bug fixing
 - Corretto bug in verifyAPIAuthentication.
@@ -30,10 +41,8 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 - Aggiornato sito di demo su Dockerfile.
 
 ## [1.2.1] - 2024-03-06
-
 ### Aggiunto
 - Aggiunto file CHANGELOG.
 - Aggiunta messaggio di errore in caso di errore nel recupero del certificato.
-
 ### Modificato
 - Aggiornato di WooCommerce alla versione 8.6.1 nel sito di demo su Dockerfile.
