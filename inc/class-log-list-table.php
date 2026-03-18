@@ -86,8 +86,13 @@ class Log_List_Table extends WP_List_Table
 	{
 		global $wpdb;
 
+		// Validate orderby and order against a whitelist to prevent SQL injection.
+		$allowed_orderby = array( 'id', 'order_id', 'status', 'customer_id', 'date_created', 'iuv', 'description' );
+		$allowed_order   = array( 'asc', 'desc' );
 		$orderby         = (!empty($_GET['orderby']) ? sanitize_text_field(wp_unslash($_GET['orderby'])) : 'id');
 		$order           = (!empty($_GET['order']) ? sanitize_text_field(wp_unslash($_GET['order'])) : 'desc');
+		$orderby         = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'id';
+		$order           = in_array( strtolower( $order ), $allowed_order, true ) ? strtolower( $order ) : 'desc';
 		$paged           = (!empty($_GET['paged']) ? sanitize_text_field(wp_unslash($_GET['paged'])) : '');
 		$search_string   = (!empty($_POST['s']) ? sanitize_text_field(wp_unslash($_POST['s'])) : '');
 		$start_date      = (!empty($_POST['search_start_date']) ? sanitize_text_field(wp_unslash($_POST['search_start_date'])) : '');
@@ -110,13 +115,14 @@ class Log_List_Table extends WP_List_Table
 
 		// Find the query condition in all the fields, if required.
 		if ($search_string) {
+			$like             = '%' . $wpdb->esc_like( $search_string ) . '%';
 			$query_condition .= ' ( ';
-			$query_condition .= " order_id LIKE '%{$search_string}%'";
-			$query_condition .= " OR status LIKE '%{$search_string}%'";
-			$query_condition .= " OR customer_id LIKE '%{$search_string}%'";
-			$query_condition .= " OR date_created LIKE '%{$search_string}%'";
-			$query_condition .= " OR iuv LIKE '%{$search_string}%'";
-			$query_condition .= " OR description LIKE '%{$search_string}%'";
+			$query_condition .= $wpdb->prepare( "order_id LIKE %s", $like );
+			$query_condition .= $wpdb->prepare( " OR status LIKE %s", $like );
+			$query_condition .= $wpdb->prepare( " OR customer_id LIKE %s", $like );
+			$query_condition .= $wpdb->prepare( " OR date_created LIKE %s", $like );
+			$query_condition .= $wpdb->prepare( " OR iuv LIKE %s", $like );
+			$query_condition .= $wpdb->prepare( " OR description LIKE %s", $like );
 			$query_condition .= ' ) ';
 			$query           .= $query_condition;
 		}
@@ -128,10 +134,10 @@ class Log_List_Table extends WP_List_Table
 
 		// Add date condition, if required.
 		if ($start_date || $end_date) {
-			$query .= " date_created BETWEEN DATE('{$start_date}') AND DATE('{$end_date}')";
+			$query .= $wpdb->prepare( "date_created BETWEEN DATE(%s) AND DATE(%s)", $start_date, $end_date );
 		}
 
-		// Add order condition.
+		// Add order condition (orderby and order are already validated against a whitelist).
 		$order_contition  = ' ORDER BY ' . $orderby . ' ' . $order;
 		$query            = $query . ' ' . $order_contition;
 
