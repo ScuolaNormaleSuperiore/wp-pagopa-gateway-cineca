@@ -1,6 +1,10 @@
 # ignore log files and databases
 *.log
 
+# local junction to internal documents folder (Windows-only, not portable)
+# contains AnalisiDelFlusso.md and Issues.md — kept local, not committed
+docs/DocumentiInternPlugin
+
 .vscode
 .idea
 
