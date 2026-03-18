@@ -780,6 +780,13 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 			$init_result = $gateway_controller->init( $order );
 			$log_manager = new Log_Manager( $order );
 
+			// Check if the gateway is connected.
+			if ( 'KO' === $init_result['code'] ) {
+				$error_desc = '[Cron] Gateway connection error for order ' . $order->get_id() . ' - ' . $init_result['msg'];
+				$this->log_action( 'error', $error_desc );
+				continue;
+			}
+
 			// Check the status of the order.
 			$payment_status = $gateway_controller->get_payment_status();
 
@@ -839,6 +846,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$this->log_action( 'error', $error_msg );
 		$redirect_url = wc_get_checkout_url();
 		wp_safe_redirect( $redirect_url );
+		exit;
 	}
 
 	/**
