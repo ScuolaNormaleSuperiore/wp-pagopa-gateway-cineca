@@ -23,6 +23,8 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 ### Aggiunto
 - Aggiunto flag per attivazione debug del plugin.
 
+
+
 ## [1.2.4] - 2026-03-18
 ### Bug fixing
 - Correzione di alcuni bug.
