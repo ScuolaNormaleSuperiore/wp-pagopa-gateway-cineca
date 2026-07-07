@@ -39,7 +39,7 @@ msgid "Application code"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:288
-msgid "Ask for payment confirmation"
+msgid "Wait synchronously for the payment confirmation"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:450
@@ -63,7 +63,14 @@ msgid "Certificate passphrase"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:290
-msgid "Checks the status of the payment in the callback procedure"
+msgid ""
+"Applies only to the \"Polling on PagoAtenei\" confirmation method. If enabled, "
+"at the end of the payment the plugin polls PagoAtenei until the result is "
+"available: the customer waits and the order is confirmed immediately. If "
+"disabled, it performs a single quick check and, if the result is not yet "
+"available, the order stays pending and is reconciled later by the scheduled "
+"task. This option does NOT disable the server-side verification: an order is "
+"never marked as paid without confirmation from the gateway."
 msgstr ""
 
 #: inc/class-log-list-table.php:51
@@ -222,7 +229,7 @@ msgid "Pay with the Cineca PagoPA Gateway"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:287
-msgid "Payment confirmation"
+msgid "Wait for payment confirmation"
 msgstr ""
 
 #: wp-pagopa-gateway-cineca.php:280

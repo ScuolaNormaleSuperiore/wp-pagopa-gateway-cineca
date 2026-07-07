@@ -9,12 +9,15 @@ e questo progetto segue [Semantic Versioning](http://semver.org/).
 TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (Removed), Corretto (Fixed), Sicurezza (Security).
 
 
-## [Non rilasciato]
-
-### Aggiunto
+### Desiderata v.2
 - Aggiungere validazione dei parametri di configurazione del plugin.
 - Extract init_form_fields from main class.
-- ncs
+
+
+
+## [1.2.5] - 2026-07-07
+### Bug fixing
+- Corretto bug in conferma di pagamento tramite metodo "Polling su PagoAtenei".
 
 
 
@@ -25,8 +28,6 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 ### Modificato
 - Aggiunta documentazione.
 - Aggiornato sito di demo su Dockerfile.
-
-
 
 ## [1.2.3] - 2026-01-08
 ### Bug fixing

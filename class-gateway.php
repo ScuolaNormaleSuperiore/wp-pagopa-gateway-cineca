@@ -212,10 +212,10 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 				'desc_tip'    => __( 'The confirmation of a payment can be synchronous (polling on PagoAtenei waiting for its status to be updated by the PSP) or asynchronous (the order is confirmed by PagoAtenei\'s paNotificaTransazione notification).', 'wp-pagopa-gateway-cineca' ),
 			),
 			'confirm_payment'        => array(
-				'title'       => __( 'Payment confirmation', 'wp-pagopa-gateway-cineca' ),
-				'label'       => __( 'Ask for payment confirmation', 'wp-pagopa-gateway-cineca' ),
+				'title'       => __( 'Wait for payment confirmation', 'wp-pagopa-gateway-cineca' ),
+				'label'       => __( 'Wait synchronously for the payment confirmation', 'wp-pagopa-gateway-cineca' ),
 				'type'        => 'checkbox',
-				'description' => __( 'Checks the status of the payment in the callback procedure', 'wp-pagopa-gateway-cineca' ),
+				'description' => __( 'Applies only to the "Polling on PagoAtenei" confirmation method. If enabled, at the end of the payment the plugin polls PagoAtenei until the result is available: the customer waits and the order is confirmed immediately. If disabled, it performs a single quick check and, if the result is not yet available, the order stays pending and is reconciled later by the scheduled task. This option does NOT disable the server-side verification: an order is never marked as paid without confirmation from the gateway.', 'wp-pagopa-gateway-cineca' ),
 				'default'     => 'no',
 				'desc_tip'    => true,
 			),
@@ -464,10 +464,20 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Hook called by the Gateway after the customer has paid.
+	 * Hook called by the Gateway (retUrl) after the customer returns from the payment.
+	 *
+	 * The order is marked as paid only after a server-to-server verification with
+	 * the gateway. Depending on the configuration and the gateway response the
+	 * customer is redirected to one of three outcomes:
+	 *  - ASYNC-EXT: the order stays pending and is confirmed later by the
+	 *    authenticated paNotificaTransazione notification;
+	 *  - SYNC-INT, payment ESEGUITO: the order is completed immediately;
+	 *  - SYNC-INT, payment not yet visible (quick-check): the order stays pending
+	 *    and is reconciled by the scheduled job; a real gateway error redirects
+	 *    back to the checkout with an error notice.
 	 *
 	 * @param array $args - Arguments of the function.
-	 * @return void - Redirect to the thankyou page.
+	 * @return void - Redirects the customer to the order page or back to checkout.
 	 *
 	 * @throws Exception( 'Invalid token' ) token if the passed token is not valid.
 	 */
@@ -548,92 +558,110 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		// Payment executed.
 		$log_manager->log( STATUS_PAYMENT_EXECUTED, $iuv );
 
-		// Check if confirmation should be requested.
+		// Check how the payment must be confirmed.
 		$options                  = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
 		$synchronous_confirmation = ( 'SYNC-INT' === $options['payment_conf_method'] ) ? true : false;
 		$confirm_payment          = ( 'yes' === $options['confirm_payment'] ) ? true : false;
 
-		$confirmed    = false;
-		$num_attempts = 1;
-
-		if ( $confirm_payment ) {
-			// Confirmation required.
-			sleep( 2 );
-			for ( $num_attempts; ( false === $confirmed ) && ( $num_attempts <= WAIT_NUM_ATTEMPTS ); $num_attempts++ ) {
-				// Ask the status of the payment to the gateway.
-				$this->gateway_controller = new Gateway_Controller();
-				// Init the gateway.
-				$init_result = $this->gateway_controller->init( $order );
-				// Check if the gateway is connected.
-				if ( 'KO' === $init_result['code'] ) {
-					// Error initializing the gateway.
-					$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
-					$error_desc = $error_msg . ' - ' . $init_result['msg'];
-					$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
-					$this->error_redirect( $error_msg );
-					return;
-				}
-
-				// Check the status of the payment.
-				$payment_status = $this->gateway_controller->get_payment_status();
-
-				if ( DEBUG_MODE_ENABLED ) {
-					error_log( '@@@ Attempts: ' . $num_attempts );
-					$this->log_action( 'info', print_r( $payment_status, true ) );
-				}
-				if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
-					// Payment executed, exit from the loop.
-					$confirmed = true;
-					break;
-				} elseif ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'NON_ESEGUITO' === $payment_status['msg'] ) ) {
-					// Payment not yet executed wait and retry.
-					sleep( WAIT_NUM_SECONDS );
-					$confirmed = false;
-				} else {
-					// Error reported by the gateway, exit from the loop.
-					$confirmed = false;
-					break;
-				}
-			}
-
-			$num_attempts = $num_attempts <= WAIT_NUM_ATTEMPTS ? $num_attempts : $num_attempts - 1;
-
-		} else {
-			// // Confirmation NOT required
-			$confirmed = true;
+		if ( ! $synchronous_confirmation ) {
+			// In ASYNC-EXT the browser callback cannot confirm the payment:
+			// the order will be marked as paid only by the authenticated notification.
+			$log_desc = __( 'Processing the payment', 'wp-pagopa-gateway-cineca' );
+			$log_manager->log( STATUS_PAYMENT_WAITING_CONFIRM, $iuv, $log_desc );
+			$redirect_url = $this->get_return_url( $order );
+			wp_safe_redirect( $redirect_url );
+			return;
 		}
 
-		if ( ! ( $confirmed ) ) {
-			// Payment not confirmed.
+		// In SYNC-INT the server-to-server verification is always mandatory.
+		// The confirm_payment flag only decides how long to wait.
+		$max_attempts = $confirm_payment ? WAIT_NUM_ATTEMPTS : 1;
+		$confirmed    = false;
+		$waiting_for_reconciliation = false;
+		$num_attempts = 1;
+
+		// Small initial wait to increase the chance that the gateway has already
+		// registered the payment by the time of the first check.
+		sleep( 2 );
+		for ( $num_attempts; ( false === $confirmed ) && ( $num_attempts <= $max_attempts ); $num_attempts++ ) {
+			// Ask the status of the payment to the gateway.
+			$this->gateway_controller = new Gateway_Controller();
+			// Init the gateway.
+			$init_result = $this->gateway_controller->init( $order );
+			// Check if the gateway is connected.
+			if ( 'KO' === $init_result['code'] ) {
+				// Error initializing the gateway.
+				$error_msg  = __( 'Gateway connection error.', 'wp-pagopa-gateway-cineca' );
+				$error_desc = $error_msg . ' - ' . $init_result['msg'];
+				$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
+				$this->error_redirect( $error_msg );
+				return;
+			}
+
+			// Check the status of the payment.
+			$payment_status = $this->gateway_controller->get_payment_status();
+
+			if ( DEBUG_MODE_ENABLED ) {
+				error_log( '@@@ Attempts: ' . $num_attempts );
+				$this->log_action( 'info', print_r( $payment_status, true ) );
+			}
+			if ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'ESEGUITO' === $payment_status['msg'] ) ) {
+				// Payment executed, exit from the loop.
+				$confirmed = true;
+				break;
+			} elseif ( $payment_status && ( 'OK' === $payment_status['code'] ) && ( 'NON_ESEGUITO' === $payment_status['msg'] ) ) {
+				// The gateway does not see the payment as executed yet.
+				if ( $num_attempts < $max_attempts ) {
+					sleep( WAIT_NUM_SECONDS );
+				} elseif ( ! $confirm_payment ) {
+					// In quick-check mode we do not show a definitive error:
+					// leave the order pending and defer the reconciliation
+					// to the external scheduled job.
+					$waiting_for_reconciliation = true;
+					break;
+				}
+				$confirmed = false;
+			} else {
+				// Error reported by the gateway, exit from the loop.
+				$confirmed = false;
+				break;
+			}
+		}
+
+		$num_attempts = $num_attempts <= $max_attempts ? $num_attempts : $num_attempts - 1;
+
+		if ( $waiting_for_reconciliation ) {
+			// The payment may have been executed but is not yet visible on the
+			// gateway side: avoid both confirming and failing the order.
+			$log_desc = __( 'Payment executed but not yet confirmed by the gateway. The order will remain pending until the scheduled reconciliation checks it again.', 'wp-pagopa-gateway-cineca' );
+			$log_desc = $log_desc . ' Attempts: ' . $num_attempts;
+			$log_manager->log( STATUS_PAYMENT_WAITING_CONFIRM, $iuv, $log_desc );
+			$redirect_url = $this->get_return_url( $order );
+			wp_safe_redirect( $redirect_url );
+			return;
+		}
+
+		if ( ! $confirmed ) {
+			// Payment not confirmed by the gateway: the order is NOT marked as paid.
 			$error_msg  = __( 'Payment not confirmed by the gateway. Please contact the staff, the order number is:', 'wp-pagopa-gateway-cineca' );
 			$error_msg  = $error_msg . ' ' . $order_id . ' - Iuv: ' . $iuv;
-			$error_desc = $error_msg . ' - Code:' . $payment_status['code'];
-			$error_desc = $error_desc . ' - Status: ' . $payment_status['msg'];
+			$error_desc = $error_msg . ' - Code:' . ( isset( $payment_status['code'] ) ? $payment_status['code'] : '' );
+			$error_desc = $error_desc . ' - Status: ' . ( isset( $payment_status['msg'] ) ? $payment_status['msg'] : '' );
 			$error_desc = $error_desc . ' - Attempts: ' . $num_attempts;
 			$log_manager->log( STATUS_PAYMENT_NOT_CONFIRMED, $iuv, $error_desc );
 			$this->error_redirect( $error_msg );
 			return;
-		} else {
-			// Payment confirmed.
-			if ( $synchronous_confirmation ) {
-				// Payment synchronously confirmed.
-				$order->payment_complete();
-				$log_desc = 'Attempts: ' . $num_attempts;
-				if ( DEBUG_MODE_ENABLED ) {
-					$this->log_action( 'info', $log_desc );
-				}
-				$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv, $log_desc );
-				$redirect_url = $this->get_return_url( $order );
-				wp_safe_redirect( $redirect_url );
-			} else {
-				// Payment asynchronously confirmed: will be confirmed by Pagoatenei calling pagopa_notifica_transazione.
-				$redirect_url = wc_get_checkout_url();
-				$log_desc     = __( 'Processing the payment', 'wp-pagopa-gateway-cineca' );
-				$log_manager->log( STATUS_PAYMENT_WAITING_CONFIRM, $iuv, $log_desc );
-				$redirect_url = $this->get_return_url( $order );
-				wp_safe_redirect( $redirect_url );
-			}
 		}
+
+		// Payment verified with the gateway: mark the order as paid.
+		$order->payment_complete();
+		$log_desc = 'Attempts: ' . $num_attempts;
+		if ( DEBUG_MODE_ENABLED ) {
+			$this->log_action( 'info', $log_desc );
+		}
+		$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv, $log_desc );
+		$redirect_url = $this->get_return_url( $order );
+		wp_safe_redirect( $redirect_url );
 
 	}
 

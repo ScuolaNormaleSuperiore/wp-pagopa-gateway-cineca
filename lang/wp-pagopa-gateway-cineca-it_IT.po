@@ -40,8 +40,8 @@ msgid "Application code"
 msgstr "Codice applicazione"
 
 #: wp-pagopa-gateway-cineca.php:288
-msgid "Ask for payment confirmation"
-msgstr "Chiedi la conferma di pagamento"
+msgid "Wait synchronously for the payment confirmation"
+msgstr "Attendi in modo sincrono la conferma del pagamento"
 
 #: wp-pagopa-gateway-cineca.php:450
 msgid "Asycnhronous notification by PagoAtenei"
@@ -65,8 +65,22 @@ msgid "Certificate passphrase"
 msgstr "Password del certificato"
 
 #: wp-pagopa-gateway-cineca.php:290
-msgid "Checks the status of the payment in the callback procedure"
-msgstr "Controlla lo stato del pagamento durante la callback di fine pagamento"
+msgid ""
+"Applies only to the \"Polling on PagoAtenei\" confirmation method. If enabled, "
+"at the end of the payment the plugin polls PagoAtenei until the result is "
+"available: the customer waits and the order is confirmed immediately. If "
+"disabled, it performs a single quick check and, if the result is not yet "
+"available, the order stays pending and is reconciled later by the scheduled "
+"task. This option does NOT disable the server-side verification: an order is "
+"never marked as paid without confirmation from the gateway."
+msgstr ""
+"Vale solo per il metodo di conferma \"Polling su PagoAtenei\". Se attivo, al "
+"termine del pagamento il plugin interroga PagoAtenei finché l'esito è "
+"disponibile: il cliente attende e l'ordine è confermato subito. Se "
+"disattivo, esegue una singola verifica rapida e, se l'esito non è ancora "
+"disponibile, l'ordine resta in attesa e viene riconciliato in seguito dal "
+"task schedulato. Questa opzione NON disabilita la verifica lato server: un "
+"ordine non è mai marcato come pagato senza conferma dal gateway."
 
 #: inc/class-log-list-table.php:51
 msgid "Customer ID"
@@ -227,8 +241,8 @@ msgid "Pay with the Cineca PagoPA Gateway"
 msgstr "Paga con il gateway Cineca di PagoPA"
 
 #: wp-pagopa-gateway-cineca.php:287
-msgid "Payment confirmation"
-msgstr "Conferma di pagamento"
+msgid "Wait for payment confirmation"
+msgstr "Attendi la conferma del pagamento"
 
 #: wp-pagopa-gateway-cineca.php:280
 msgid "Payment confirmation method"
