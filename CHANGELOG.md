@@ -20,6 +20,7 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 - Corretto bug in conferma di pagamento tramite metodo "Polling su PagoAtenei".
 - Corretti warning su sintassi PHP obsoleta.
 - Corretta gestione dei messaggi di log.
+- Corretto bug nel filtro per data della tabella transazioni, incluso il caso con sola data finale.
 ### Aggiunto
 - Aggiunto flag per attivazione debug del plugin.
 
