@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PagoPA Gateway Cineca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 08:19+0000\n"
-"PO-Revision-Date: 2026-07-07 10:14+0000\n"
+"PO-Revision-Date: 2026-07-07 13:29+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -15,11 +15,11 @@ msgstr ""
 "X-Loco-Version: 2.5.2; wp-5.6.7\n"
 "X-Domain: wp-pagopa-gateway-cineca"
 
-#: class-gateway.php:244
+#: class-gateway.php:281
 msgid "Accounting code"
 msgstr "Codice contabilità"
 
-#: class-gateway.php:246
+#: class-gateway.php:283
 msgid ""
 "Accounting code as defined in the PagoPA taxonomy (https://github."
 "com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json)"
@@ -27,19 +27,19 @@ msgstr ""
 "Codice contabilità come definito nella tassonomia PagoPA (https://github."
 "com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json)"
 
-#: class-gateway.php:238 class-gateway.php:240
+#: class-gateway.php:275 class-gateway.php:277
 msgid "Accounting type"
 msgstr "Tipo contabilità"
 
-#: class-gateway.php:278
+#: class-gateway.php:315
 msgid "API token"
 msgstr "Token dell'API del plugin"
 
-#: class-gateway.php:223
+#: class-gateway.php:260
 msgid "Application code"
 msgstr "Codice applicazione"
 
-#: class-gateway.php:218
+#: class-gateway.php:255
 msgid ""
 "Applies only to the \"Polling on PagoAtenei\" confirmation method. If "
 "enabled, at the end of the payment the plugin polls PagoAtenei until the "
@@ -58,24 +58,24 @@ msgstr ""
 " Questa opzione NON disabilita la verifica lato server: un ordine non è mai "
 "marcato come pagato senza conferma dal gateway."
 
-#: class-gateway.php:378
+#: class-gateway.php:415
 msgid "Asycnhronous notification by PagoAtenei"
 msgstr "Notifica asincrona di PagoAtenei"
 
-#: class-gateway.php:296 class-gateway.php:338
+#: class-gateway.php:333 class-gateway.php:375
 msgid "Base url of the API for the Cineca Payment Portal"
 msgstr ""
 "Indirizzo base della API pubblicata dal Portale dei Pagamenti di Cineca (url)"
 
-#: class-gateway.php:290 class-gateway.php:332
+#: class-gateway.php:327 class-gateway.php:369
 msgid "Base url of the Cineca front end"
 msgstr "Indirizzo base del front end di Cineca"
 
-#: class-gateway.php:256
+#: class-gateway.php:293
 msgid "Certificate file name"
 msgstr "Nome del file del certificato"
 
-#: class-gateway.php:262
+#: class-gateway.php:299
 msgid "Certificate passphrase"
 msgstr "Password del certificato"
 
@@ -87,57 +87,65 @@ msgstr "ID cliente"
 msgid "Date"
 msgstr "Data"
 
-#: class-gateway.php:187
+#: class-gateway.php:224
 msgid "Default description"
 msgstr "Descrizione in inglese"
 
-#: class-gateway.php:193 inc/class-log-list-table.php:58
+#: class-gateway.php:230 inc/class-log-list-table.php:58
 msgid "Description"
 msgstr "Descrizione"
 
-#: class-gateway.php:228
+#: class-gateway.php:265
 msgid "Domain code"
 msgstr "Codice di dominio"
 
-#: class-gateway.php:200 class-gateway.php:201
+#: class-gateway.php:207
+msgid "Enable debug logging"
+msgstr "Abilita la registrazione di debug"
+
+#: class-gateway.php:208
+msgid "Enable plugin debug logging"
+msgstr "Abilita la registrazione di debug del plugin"
+
+#: class-gateway.php:237 class-gateway.php:238
 msgid "Enable test mode"
 msgstr "Abilita la modalità di test"
 
-#: class-gateway.php:172
+#: class-gateway.php:201
 msgid "Enable the gateway"
 msgstr "Abilita il gateway"
 
-#: class-gateway.php:171
+#: class-gateway.php:200
 msgid "Enable/Disable"
 msgstr "Abilita/Disabilita"
 
-#: class-gateway.php:273
+#: class-gateway.php:310
 msgid "Encryption key"
 msgstr "Chiave di crittografia"
 
-#: inc/class-transactions-manager.php:35
+#: inc/class-transactions-manager.php:34
 msgid "End date"
 msgstr "Data fine"
 
-#: inc/class-gateway-controller.php:360
+#: inc/class-gateway-controller.php:367
 msgid "Error in the Cineca response"
 msgstr "Errore nella risposta di Cineca"
 
-#: class-gateway.php:516
+#: class-gateway.php:553
 msgid "Error retrieving the order"
 msgstr "Si è verificato un errore recuperando l'ordine"
 
-#: class-gateway.php:258
+#: class-gateway.php:295
 msgid "File name of the .pem certificate"
 msgstr "Nome del file con il certificato .pem"
 
-#: class-gateway.php:288 class-gateway.php:330
+#: class-gateway.php:325 class-gateway.php:367
 #, fuzzy
 #| msgid "front end base url"
 msgid "Front end base url"
 msgstr "Indirizzo base del front end Cineca"
 
-#: class-gateway.php:420 class-gateway.php:594
+#: class-gateway.php:457 class-gateway.php:631
 msgid "Gateway connection error."
 msgstr "Errore di connessione al gateway."
 
@@ -145,11 +153,11 @@ msgstr "Errore di connessione al gateway."
 msgid "https://ict.sns.it"
 msgstr "https://ict.sns.it"
 
-#: class-gateway.php:233
+#: class-gateway.php:270
 msgid "Iban"
 msgstr "Iban"
 
-#: class-gateway.php:235
+#: class-gateway.php:272
 msgid "Iban related to the e-commerce"
 msgstr "Iban relativo all'e-commerce"
 
@@ -161,7 +169,7 @@ msgstr "ICT Scuola Normale Superiore"
 msgid "ID"
 msgstr "ID"
 
-#: class-gateway.php:322 class-gateway.php:364
+#: class-gateway.php:359 class-gateway.php:401
 msgid ""
 "ID of payment model related to the e-commerce defined on the Cineca back "
 "office"
@@ -169,19 +177,28 @@ msgstr ""
 "ID del modello di pagamento relativo all'e-commerce definito nel back office "
 "di Cineca"
 
-#: class-gateway.php:551
+#: class-gateway.php:588
 msgid "IdSession"
 msgstr "IdSessione"
 
-#: class-gateway.php:544 inc/class-log-list-table.php:57
+#: class-gateway.php:210
+msgid ""
+"If enabled, the plugin writes diagnostic information to the WooCommerce "
+"logger and PHP error log independently from the global site debug settings."
+msgstr ""
+"Se abilitato, il plugin scrive informazioni diagnostiche nel logger di "
+"WooCommerce e nel registro degli errori PHP indipendentemente dalle "
+"impostazioni di debug globali del sito."
+
+#: class-gateway.php:581 inc/class-log-list-table.php:57
 msgid "Iuv"
 msgstr "Iuv"
 
-#: class-gateway.php:315 class-gateway.php:357
+#: class-gateway.php:352 class-gateway.php:394
 msgid "Local API password"
 msgstr "Password dell'API del plugin"
 
-#: class-gateway.php:310 class-gateway.php:352
+#: class-gateway.php:347 class-gateway.php:389
 msgid "Local API username"
 msgstr "Username dell'API del plugin"
 
@@ -189,27 +206,27 @@ msgstr "Username dell'API del plugin"
 msgid "Order ID"
 msgstr "Numero ordine"
 
-#: class-gateway.php:541
+#: class-gateway.php:578
 msgid "Order id"
 msgstr "Numero d'ordine"
 
-#: class-gateway.php:267
+#: class-gateway.php:304
 msgid "Order prefix"
 msgstr "Prefisso dell'ordine"
 
-#: class-gateway.php:548
+#: class-gateway.php:585
 msgid "Outcome"
 msgstr "Risultato"
 
-#: class-gateway.php:294 class-gateway.php:336
+#: class-gateway.php:331 class-gateway.php:373
 msgid "PagoAtenei API base url"
 msgstr "Url di PagoAtenei"
 
-#: class-gateway.php:305 class-gateway.php:347
+#: class-gateway.php:342 class-gateway.php:384
 msgid "PagoAtenei API password"
 msgstr "Password di Pagoatenei"
 
-#: class-gateway.php:300 class-gateway.php:342
+#: class-gateway.php:337 class-gateway.php:379
 msgid "PagoAtenei API username"
 msgstr "Username di PagoAtenei"
 
@@ -225,35 +242,35 @@ msgstr "Gateway Cineca per PagoPA"
 msgid "PagoPA Transactions"
 msgstr "Transazioni PagoPA"
 
-#: class-gateway.php:264
+#: class-gateway.php:301
 msgid "Passphrase of the certificate"
 msgstr "Password del certificato"
 
-#: class-gateway.php:307 class-gateway.php:349
+#: class-gateway.php:344 class-gateway.php:386
 msgid "Password of the account enabled to the use of the API"
 msgstr "Password dell'account abilitato all'uso delle API"
 
-#: class-gateway.php:317 class-gateway.php:359
+#: class-gateway.php:354 class-gateway.php:396
 msgid "Password of the account enabled to the use of the plugin's api"
 msgstr "Password dell'account abilitato all'uso dell'API del plugin"
 
-#: class-gateway.php:190 class-gateway.php:196
+#: class-gateway.php:227 class-gateway.php:233
 msgid "Pay using the Cineca Gateway for PagoPA"
 msgstr "Paga usando il gateway Cineca per PagoPA"
 
-#: class-gateway.php:76
+#: class-gateway.php:105
 msgid "Pay with the Cineca PagoPA Gateway"
 msgstr "Paga con il gateway Cineca di PagoPA"
 
-#: class-gateway.php:208
+#: class-gateway.php:245
 msgid "Payment confirmation method"
 msgstr "Metodo di conferma del pagamento"
 
-#: class-gateway.php:436
+#: class-gateway.php:473
 msgid "Payment error reported by the gateway"
 msgstr "Errore nel pagamento riportato dal gateway"
 
-#: class-gateway.php:636
+#: class-gateway.php:673
 msgid ""
 "Payment executed but not yet confirmed by the gateway. The order will remain "
 "pending until the scheduled reconciliation checks it again."
@@ -262,15 +279,15 @@ msgstr ""
 "in sospeso fino a quando la riconciliazione programmata non lo verificherà "
 "nuovamente."
 
-#: class-gateway.php:320 class-gateway.php:362
+#: class-gateway.php:357 class-gateway.php:399
 msgid "Payment model ID"
 msgstr "ID del modello di pagamento"
 
-#: class-gateway.php:167
+#: class-gateway.php:196
 msgid "Payment module configuration"
 msgstr "Configurazione del modulo del pagamento"
 
-#: class-gateway.php:646
+#: class-gateway.php:683
 msgid ""
 "Payment not confirmed by the gateway. Please contact the staff, the order "
 "number is:"
@@ -278,13 +295,13 @@ msgstr ""
 "ll pagamento non è stato confermato dal gateway. Per favore, contatta lo "
 "staff, il numero d'ordine è:"
 
-#: class-gateway.php:845 inc/class-gateway-controller.php:200
+#: class-gateway.php:882 inc/class-gateway-controller.php:207
 #, fuzzy
 #| msgid "Payment of the order n. "
 msgid "Payment of the order n."
 msgstr "Pagamento dell'ordine numero:"
 
-#: class-gateway.php:203
+#: class-gateway.php:240
 msgid "Place the payment gateway in test mode using test API credentials"
 msgstr "Pone il modulo di pagamento in modalità di test"
 
@@ -294,23 +311,23 @@ msgstr ""
 "Plugin che integra in WooCommerce il metodo di pagamento basato sul gateway "
 "Cineca per PagoPA"
 
-#: class-gateway.php:377
+#: class-gateway.php:414
 msgid "Polling on PagoAtenei"
 msgstr "Polling su PagoAtenei"
 
-#: class-gateway.php:569
+#: class-gateway.php:606
 msgid "Processing the payment"
 msgstr "Il pagamento è in fase di verifica."
 
-#: class-gateway.php:284
+#: class-gateway.php:321
 msgid "Production credentials"
 msgstr "Credenziali di produzione"
 
-#: inc/class-transactions-manager.php:36
+#: inc/class-transactions-manager.php:35
 msgid "Search"
 msgstr "Cerca"
 
-#: inc/class-transactions-manager.php:34
+#: inc/class-transactions-manager.php:33
 msgid "Start date"
 msgstr "Data inizio"
 
@@ -318,15 +335,15 @@ msgstr "Data inizio"
 msgid "Status"
 msgstr "Stato"
 
-#: class-gateway.php:326
+#: class-gateway.php:363
 msgid "Test credentials"
 msgstr "Credenziali di test"
 
-#: class-gateway.php:225
+#: class-gateway.php:262
 msgid "The code of the application as defined in the Cineca back office"
 msgstr "Il codice dell'applicazione definito sul back office di Cineca"
 
-#: class-gateway.php:212
+#: class-gateway.php:249
 msgid ""
 "The confirmation of a payment can be synchronous (polling on PagoAtenei "
 "waiting for its status to be updated by the PSP) or asynchronous (the order "
@@ -336,34 +353,34 @@ msgstr ""
 "a quando lo stato del pagamento non è aggiornato dal PSP) oppure asincrona "
 "(l'ordine è confermato da PagoAtenei con la notifica paNotificaTRansazione)."
 
-#: class-gateway.php:189
+#: class-gateway.php:226
 msgid ""
 "The description of the plugin shown in the checkout page for non italian "
 "users."
 msgstr "La descrizione del metodo di pagamento in inglese."
 
-#: class-gateway.php:505
+#: class-gateway.php:542
 msgid "The gateway passed an invalid token for the order"
 msgstr "Il gateway ha passato un token invalido per questo ordine"
 
-#: class-gateway.php:195
+#: class-gateway.php:232
 msgid "The italian description of the plugin shown in the checkout page."
 msgstr "La descrizione del metodo di pagamento in italiano."
 
-#: class-gateway.php:452
+#: class-gateway.php:489
 msgid "The Iuv of the order is:"
 msgstr "Lo Iuv assegnato all'ordine è:"
 
-#: class-gateway.php:275
+#: class-gateway.php:312
 msgid "The key used to encrypt the token."
 msgstr "La chiave usata per crittografare il token."
 
-#: class-gateway.php:844
+#: class-gateway.php:881
 #, php-format
 msgid "The order n. %s has been paid. Please, manage the order."
 msgstr "L'ordine n. %s è stato pagato. Per favore, gestisci l'ordine."
 
-#: class-gateway.php:269
+#: class-gateway.php:306
 msgid ""
 "The prefix that the plugin will prepend to the order number.It can be an "
 "empty string."
@@ -371,55 +388,55 @@ msgstr ""
 "Il prefisso che il plugin aggiungerà al numero d'ordine. Può essere una "
 "stringa vuota."
 
-#: class-gateway.php:528
+#: class-gateway.php:565
 msgid "The status of the payment is not consistent"
 msgstr "Lo stato del pagamento non è consistente"
 
-#: class-gateway.php:181
+#: class-gateway.php:218
 msgid "The title of the plugin"
 msgstr "Titolo del plugin"
 
-#: class-gateway.php:179
+#: class-gateway.php:216
 msgid "Title"
 msgstr "Titolo"
 
-#: class-gateway.php:280
+#: class-gateway.php:317
 msgid "Token used by the REST API and the scheduled actions."
 msgstr "Il token usato dalla Api REST e dalle azioni schedulate."
 
-#: inc/class-transactions-manager.php:30
+#: inc/class-transactions-manager.php:29
 msgid "Transactions"
 msgstr "Transazioni"
 
-#: class-gateway.php:302 class-gateway.php:344
+#: class-gateway.php:339 class-gateway.php:381
 msgid "Username of the account enabled to the use of the API"
 msgstr "Nome utente fornito da Cineca abilitato all'uso delle API"
 
-#: class-gateway.php:312 class-gateway.php:354
+#: class-gateway.php:349 class-gateway.php:391
 msgid "Username of the account enabled to the use of the plugin's api"
 msgstr "Username dell'account abilitato all'uso dell'API del plugin"
 
-#: class-gateway.php:250
+#: class-gateway.php:287
 msgid "Validity of payment"
 msgstr "Validità del pagamento"
 
-#: class-gateway.php:252
+#: class-gateway.php:289
 msgid "Validity of payment in hours"
 msgstr "Validità del pagamento in ore"
 
-#: class-gateway.php:230
+#: class-gateway.php:267
 msgid "VAT code of the customer"
 msgstr "Partita Iva dell'Ente"
 
-#: class-gateway.php:215
+#: class-gateway.php:252
 msgid "Wait for payment confirmation"
 msgstr "Attendi la conferma del pagamento"
 
-#: class-gateway.php:216
+#: class-gateway.php:253
 msgid "Wait synchronously for the payment confirmation"
 msgstr "Attendi in modo sincrono la conferma del pagamento"
 
-#: class-gateway.php:539
+#: class-gateway.php:576
 msgid ""
 "You have canceled the payment. To confirm the order, make the payment and "
 "contact the staff."
