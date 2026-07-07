@@ -751,12 +751,17 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 						( 'PAGAMENTO_ESEGUITO' === $esito ) &&
 						$iuv ) {
 						// Try to retrieve the order.
-						$order_id    = Gateway_Controller::extract_order_number( $options['order_prefix'], $cod_versamento_ente );
-						$order       = new WC_Order( $order_id );
-						$log_manager = new Log_Manager( $order );
-						$p_found           = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_CREATED );
-						$already_confirmed = $log_manager->check_payment_status( $order->get_id(), $iuv, STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION );
-						if ( $p_found && ! $already_confirmed ) {
+						$order_id            = Gateway_Controller::extract_order_number( $options['order_prefix'], $cod_versamento_ente );
+						$order               = new WC_Order( $order_id );
+						$order_number        = $order->get_order_number();
+						$current_order_iuv   = $order->get_meta( '_iuv' );
+						$log_manager         = new Log_Manager( $order );
+						$p_found             = $log_manager->check_payment_status( $order_number, $iuv, STATUS_PAYMENT_CREATED );
+						$already_confirmed   = $log_manager->check_payment_status( $order_number, $iuv, STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION );
+						$is_current_order_iuv = ( $current_order_iuv === $iuv );
+						if ( ! $is_current_order_iuv ) {
+							$this->log_action( 'warning', 'Notification ignored because IUV is not the current order IUV. Order: ' . $cod_versamento_ente . ' - Notification IUV: ' . $iuv . ' - Current IUV: ' . $current_order_iuv );
+						} elseif ( $p_found && ! $already_confirmed ) {
 							// Set the order as paid.
 							$order->payment_complete();
 							$log_manager->log( STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION, $iuv );
