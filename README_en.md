@@ -66,8 +66,8 @@ If these fields are not specified the plugin still works, but a customer will be
    - **Iban**: The Institution's IBAN.
    - **Accounting type**: Accounting type as defined by the *PagoPA* taxonomy, available [here](https://github.com/pagopa/pagopa-api/blob/develop/taxonomy/tassonomia.json).
    - **Payment validity**: Number of hours for which the payment is valid. It is possible to make the payment at an authorized payment point using the IUV.
-   - **Certificate file name**: The name of the ***pem*** certificate provided by Cineca. If the certificate provided is in *pk12* format it should be converted to *pem* format.
-   - **Certificate password**: The certificate password provided by *Cineca*.
+   - **Certificate file name**: The name of the ***pem*** certificate provided by Cineca. If the certificate provided is in *pk12* format it should be converted to *pem* format (with `OpenSSL 3` you may need the `-legacy` option, see `cert/README.txt`).
+   - **Certificate password**: The passphrase of the ***pem*** file used by the plugin. If the certificate remains protected during the conversion from *p12/pk12*, this field must contain the password of the ***pem*** file.
    - **Order prefix**: A prefix added to the WooCommerce order number before it is sent to the payment gateway. It is useful to distinguish orders from multiple instances of the same site, especially during testing. Can be empty.
    - **Encryption key**: The key used to encrypt the token sent to the gateway.
    - **Plugin API token**: The token used to authenticate the invocation of scheduled actions and the plugin REST API. If empty, the feature is disabled.
