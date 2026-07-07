@@ -522,6 +522,11 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$token      = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
 		$id_session = ( ! empty( $_GET['idSession'] ) ? sanitize_text_field( wp_unslash( $_GET['idSession'] ) ) : '' );
 		$outcome    = ( ! empty( $_GET['esito'] ) ? sanitize_text_field( wp_unslash( $_GET['esito'] ) ) : '' );
+		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
+		$remote_addr    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$request_uri    = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$user_agent     = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+		$user_agent     = substr( $user_agent, 0, 180 );
 		if ( '' === $token ) {
 			echo 'Invalid request';
 			exit;
@@ -536,7 +541,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 			if ( ( ! $order_id ) || ( ! $iuv ) ) {
 				throw new Exception( 'Invalid token' );
 			}
-			$this->log_action( 'info', '@@@ webhook_payment_complete - order_id: ' . $order_id . ' - iuv: '. $iuv );
+			$this->log_action( 'info', '@@@ webhook_payment_complete - order_id: ' . $order_id . ' - iuv: ' . $iuv . ' - method: ' . $request_method . ' - remote_addr: ' . $remote_addr . ' - idSession: ' . $id_session . ' - esito: ' . $outcome . ' - request_uri: ' . $request_uri . ' - user_agent: ' . $user_agent );
 		} catch ( Exception $e ) {
 			// Error retrieving the parameters from the token.
 			$error_msg = __( 'The gateway passed an invalid token for the order', 'wp-pagopa-gateway-cineca' );
