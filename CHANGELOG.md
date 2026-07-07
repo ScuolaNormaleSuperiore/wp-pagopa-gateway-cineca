@@ -19,7 +19,9 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 ### Bug fixing
 - Corretto bug in conferma di pagamento tramite metodo "Polling su PagoAtenei".
 - Corretti warning su sintassi PHP obsoleta.
-
+- Corretta gestione dei messaggi di log.
+### Aggiunto
+- Aggiunto flag per attivazione debug del plugin.
 
 ## [1.2.4] - 2026-03-18
 ### Bug fixing

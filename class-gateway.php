@@ -40,6 +40,34 @@ define(
 	'</soapenv:Envelope>'
 );
 
+/**
+ * Indica se il debug del plugin e' attivo.
+ *
+ * Usa la configurazione del gateway quando disponibile e mantiene la costante
+ * storica come fallback di compatibilita'.
+ *
+ * @return bool
+ */
+function wp_pagopa_is_debug_enabled() {
+	static $enabled = null;
+
+	if ( null !== $enabled ) {
+		return $enabled;
+	}
+
+	$enabled = defined( 'DEBUG_MODE_ENABLED' ) ? (bool) DEBUG_MODE_ENABLED : false;
+	if ( ! function_exists( 'get_option' ) ) {
+		return $enabled;
+	}
+
+	$options = get_option( 'woocommerce_' . WP_PAGOPA_PLUGIN_ID . '_settings' );
+	if ( is_array( $options ) && array_key_exists( 'enable_debug', $options ) ) {
+		$enabled = ( 'yes' === $options['enable_debug'] );
+	}
+
+	return $enabled;
+}
+
 	/**
 	 * Add the gateway(s) to WooCommerce.
 	 */
@@ -174,6 +202,14 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 				'type'        => 'checkbox',
 				'description' => '',
 				'default'     => 'no',
+			),
+			'enable_debug'           => array(
+				'title'       => __( 'Enable debug logging', 'wp-pagopa-gateway-cineca' ),
+				'label'       => __( 'Enable plugin debug logging', 'wp-pagopa-gateway-cineca' ),
+				'type'        => 'checkbox',
+				'description' => __( 'If enabled, the plugin writes diagnostic information to the WooCommerce logger and PHP error log independently from the global site debug settings.', 'wp-pagopa-gateway-cineca' ),
+				'default'     => 'yes',
+				'desc_tip'    => true,
 			),
 			// This controls the title which the user sees during checkout.
 			'title'                  => array(
@@ -402,7 +438,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		// Retrieve the order details.
 		$order       = new WC_Order( $order_id );
 		$log_manager = new Log_Manager( $order );
-		if ( DEBUG_MODE_ENABLED ) {
+		if ( wp_pagopa_is_debug_enabled() ) {
 			error_log( '@@@ Process the order ewith the id: ' . $order_id );
 		}
 
@@ -602,7 +638,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 			// Check the status of the payment.
 			$payment_status = $this->gateway_controller->get_payment_status();
 
-			if ( DEBUG_MODE_ENABLED ) {
+			if ( wp_pagopa_is_debug_enabled() ) {
 				error_log( '@@@ Attempts: ' . $num_attempts );
 				$this->log_action( 'info', print_r( $payment_status, true ) );
 			}
@@ -657,7 +693,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		// Payment verified with the gateway: mark the order as paid.
 		$order->payment_complete();
 		$log_desc = 'Attempts: ' . $num_attempts;
-		if ( DEBUG_MODE_ENABLED ) {
+		if ( wp_pagopa_is_debug_enabled() ) {
 			$this->log_action( 'info', $log_desc );
 		}
 		$log_manager->log( STATUS_PAYMENT_CONFIRMED, $iuv, $log_desc );
@@ -887,9 +923,15 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function log_action( $log_type, $message ) {
-		if ( DEBUG_MODE_ENABLED ) {
+		if ( wp_pagopa_is_debug_enabled() ) {
 			error_log( $message );
 		}
+
+		// I messaggi informativi vengono registrati solo se il debug del plugin e' attivo.
+		if ( ! wp_pagopa_is_debug_enabled() && in_array( $log_type, array( 'debug', 'info' ), true ) ) {
+			return;
+		}
+
 		$logger  = wc_get_logger();
 		$context = array( 'source' => self::get_plugin_name() );
 		$logger->log( $log_type, $message, $context );

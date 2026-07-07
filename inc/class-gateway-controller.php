@@ -75,7 +75,7 @@ class Gateway_Controller
 
 		// Verifico che il certificato sia stato recuperato correttamente.
 		if ( ! file_exists( $this->local_cert ) ) {
-			if (DEBUG_MODE_ENABLED) {
+			if ( wp_pagopa_is_debug_enabled() ) {
 				error_log( print_r( $this->local_cert, true ) );
 			}
 			throw new Exception('Certificato non trovato.');
@@ -218,7 +218,7 @@ class Gateway_Controller
 			),
 		);
 
-		if (DEBUG_MODE_ENABLED) {
+		if ( wp_pagopa_is_debug_enabled() ) {
 			error_log(print_r($bodyrichiesta, true));
 		}
 
@@ -249,7 +249,7 @@ class Gateway_Controller
 			$result_code = 'KO';
 		}
 
-		if (DEBUG_MODE_ENABLED) {
+		if ( wp_pagopa_is_debug_enabled() ) {
 			error_log(print_r($result, true));
 		}
 
@@ -317,7 +317,7 @@ class Gateway_Controller
 			'codVersamentoEnte' => $raw_order_number,
 		);
 
-		if (DEBUG_MODE_ENABLED) {
+		if ( wp_pagopa_is_debug_enabled() ) {
 			error_log(print_r($bodyrichiesta, true));
 		}
 
@@ -346,7 +346,7 @@ class Gateway_Controller
 			$result_code = 'KO';
 		}
 
-		if (DEBUG_MODE_ENABLED) {
+		if ( wp_pagopa_is_debug_enabled() ) {
 			error_log(print_r($result, true));
 		}
 
