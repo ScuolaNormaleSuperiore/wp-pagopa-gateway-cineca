@@ -44,6 +44,7 @@ define(
 	 * Add the gateway(s) to WooCommerce.
 	 */
 class WP_Gateway_PagoPa extends WC_Payment_Gateway {
+	public $gateway_controller;
 	public string $testmode;
 	public string $api_user;
 	public string $api_pwd;

@@ -34,6 +34,7 @@ define('STATUS_PAYMENT_NOT_CONFIRMED', 'not_confirmed');
  */
 class Log_Manager
 {
+	public $order;
 
 	/**
 	 * Create the Log Manager.

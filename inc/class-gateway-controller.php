@@ -22,6 +22,13 @@ define('USER_AGENT', 'Wordpress/PagoPaGatewayCineca');
  */
 class Gateway_Controller
 {
+	public $options;
+	public $ws_data;
+	public $order;
+	public $local_cert;
+	public $passphrase;
+	public $wsdl_url;
+	public $soap_client;
 
 	/**
 	 * Create the Gateway controller.

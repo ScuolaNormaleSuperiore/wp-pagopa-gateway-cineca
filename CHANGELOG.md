@@ -18,7 +18,7 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 ## [1.2.5] - 2026-07-07
 ### Bug fixing
 - Corretto bug in conferma di pagamento tramite metodo "Polling su PagoAtenei".
-
+- Corretti warning su sintassi PHP obsoleta.
 
 
 ## [1.2.4] - 2026-03-18
