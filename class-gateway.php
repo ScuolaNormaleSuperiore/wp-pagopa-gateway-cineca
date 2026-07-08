@@ -796,21 +796,23 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	 */
 	public function webhook_scheduled_actions( $args ) {
 		$token = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
-		$this->log_action( 'info', '@@@ webhook_scheduled_actions Token:' . $token );
+		$this->log_action( 'info', '@@@ webhook_scheduled_actions @@@' );
 		// Check if the token is present.
 		if ( ! $token ) {
+			$this->log_action( 'warning', 'Scheduled actions request rejected: missing token.' );
 			echo 'Invalid token';
 			exit;
 		}
 		// Check the API is enabled.
 		$options = get_option( 'woocommerce_pagopa_gateway_cineca_settings' );
 		if ( empty( $options['api_token'] ) || ( '' === $options['api_token'] ) ) {
+			$this->log_action( 'warning', 'Scheduled actions request rejected: API token not configured.' );
 			echo 'API  disabled';
 			exit;
 		}
 		// Check the token validity.
-		$this->log_action( 'info', 'API Token:' . $options['api_token'] );
-		if ( $options['api_token'] !== $token ) {
+		if ( ! hash_equals( (string) $options['api_token'], (string) $token ) ) {
+			$this->log_action( 'warning', 'Scheduled actions request rejected: invalid token.' );
 			echo 'Invalid token';
 			exit;
 		}
