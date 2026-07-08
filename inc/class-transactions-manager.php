@@ -88,16 +88,17 @@ class Transaction_Manager
 	 */
 	public function admin_show_transactions_page()
 	{
-		$title         = __('Transactions', 'wp-pagopa-gateway-cineca');
-		$start_date    = (!empty($_REQUEST['search_start_date']) ? sanitize_text_field(wp_unslash($_REQUEST['search_start_date'])) : '');
-		$end_date      = (!empty($_REQUEST['search_end_date']) ? sanitize_text_field(wp_unslash($_REQUEST['search_end_date'])) : '');
-		$search_string = (!empty($_REQUEST['s']) ? sanitize_text_field(wp_unslash($_REQUEST['s'])) : '');
-		$sd_label      = __('Start date', 'wp-pagopa-gateway-cineca');
-		$ed_label      = __('End date', 'wp-pagopa-gateway-cineca');
-		$srch_label    = __('Search', 'wp-pagopa-gateway-cineca');
-		$reset_label   = __('Reset filters', 'wp-pagopa-gateway-cineca');
-		$today_label   = __('Today', 'wp-pagopa-gateway-cineca');
-		$reset_url     = admin_url( 'admin.php?page=wc-edizioni-sns-activations-page' );
+		$filters_allowed = pagopa_transactions_filter_request_is_authorized();
+		$title           = __('Transactions', 'wp-pagopa-gateway-cineca');
+		$start_date      = ( $filters_allowed && ! empty( $_REQUEST['search_start_date'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['search_start_date'] ) ) : '';
+		$end_date        = ( $filters_allowed && ! empty( $_REQUEST['search_end_date'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['search_end_date'] ) ) : '';
+		$search_string   = ( $filters_allowed && ! empty( $_REQUEST['s'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '';
+		$sd_label        = __('Start date', 'wp-pagopa-gateway-cineca');
+		$ed_label        = __('End date', 'wp-pagopa-gateway-cineca');
+		$srch_label      = __('Search', 'wp-pagopa-gateway-cineca');
+		$reset_label     = __('Reset filters', 'wp-pagopa-gateway-cineca');
+		$today_label     = __('Today', 'wp-pagopa-gateway-cineca');
+		$reset_url       = admin_url( 'admin.php?page=wc-edizioni-sns-activations-page' );
 
 		$list_table = new Log_List_Table();
 		$list_table->prepare_items();
@@ -108,6 +109,7 @@ class Transaction_Manager
 		echo '<h2>' . esc_attr($title) . '</h2>';
 		echo '<form id="pagopa-transactions-filters" method="get">';
 		echo '<input type="hidden" name="page" value="wc-edizioni-sns-activations-page" />';
+		echo wp_nonce_field( PAGOPA_TRANSACTIONS_FILTER_NONCE_ACTION, PAGOPA_TRANSACTIONS_FILTER_NONCE_NAME, false, false );
 		echo '<div class="pagopa-transactions-toolbar">';
 		echo '<p class="search-box">
 			<label class="screen-reader-text" for="search_id-search-input">' . esc_attr($srch_label) . ':</label>

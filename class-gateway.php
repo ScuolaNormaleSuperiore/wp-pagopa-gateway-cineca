@@ -891,7 +891,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$body     = sprintf( __( 'The order n. %s has been paid. Please, manage the order.', 'wp-pagopa-gateway-cineca' ), $order->get_order_number() );
 		$subject  = __( 'Payment of the order n.', 'wp-pagopa-gateway-cineca' );
 		$subject  = $subject . ' ' . $order->get_order_number();
-		$receiver = 'ilclaudio@gmail.com';
+		$receiver = 'placeholder@example.invalid';
 
 		// Get woocommerce mailer.
 		$mailer   = WC()->mailer();

@@ -13,11 +13,36 @@
  */
 
 define('PER_PAGE_ITEMS', 20);
+define( 'PAGOPA_TRANSACTIONS_FILTER_NONCE_ACTION', 'pagopa_transactions_filter' );
+define( 'PAGOPA_TRANSACTIONS_FILTER_NONCE_NAME', 'pagopa_transactions_filter_nonce' );
 require_once 'class-log-manager.php';
 
 if (!class_exists('WP_List_Table')) {
 	require_once ABSPATH . 'wp-admin/includes/screen.php';
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
+
+if ( ! function_exists( 'pagopa_transactions_filter_request_is_authorized' ) ) {
+	/**
+	 * Check whether the transactions filter request can be trusted.
+	 *
+	 * The nonce is required only when the request actively applies filters.
+	 *
+	 * @return bool
+	 */
+	function pagopa_transactions_filter_request_is_authorized()
+	{
+		$has_filters = ! empty( $_REQUEST['s'] ) || ! empty( $_REQUEST['search_start_date'] ) || ! empty( $_REQUEST['search_end_date'] );
+		if ( ! $has_filters ) {
+			return true;
+		}
+
+		$nonce = ! empty( $_REQUEST[ PAGOPA_TRANSACTIONS_FILTER_NONCE_NAME ] )
+			? sanitize_text_field( wp_unslash( $_REQUEST[ PAGOPA_TRANSACTIONS_FILTER_NONCE_NAME ] ) )
+			: '';
+
+		return $nonce && wp_verify_nonce( $nonce, PAGOPA_TRANSACTIONS_FILTER_NONCE_ACTION );
+	}
 }
 
 /**
@@ -89,14 +114,15 @@ class Log_List_Table extends WP_List_Table
 		// Validate orderby and order against a whitelist to prevent SQL injection.
 		$allowed_orderby = array( 'id', 'order_id', 'status', 'customer_id', 'date_created', 'iuv', 'description' );
 		$allowed_order   = array( 'asc', 'desc' );
+		$filters_allowed = pagopa_transactions_filter_request_is_authorized();
 		$orderby         = (!empty($_REQUEST['orderby']) ? sanitize_text_field(wp_unslash($_REQUEST['orderby'])) : 'id');
 		$order           = (!empty($_REQUEST['order']) ? sanitize_text_field(wp_unslash($_REQUEST['order'])) : 'desc');
 		$orderby         = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'id';
 		$order           = in_array( strtolower( $order ), $allowed_order, true ) ? strtolower( $order ) : 'desc';
 		$paged           = (!empty($_REQUEST['paged']) ? sanitize_text_field(wp_unslash($_REQUEST['paged'])) : '');
-		$search_string   = (!empty($_REQUEST['s']) ? sanitize_text_field(wp_unslash($_REQUEST['s'])) : '');
-		$start_date      = (!empty($_REQUEST['search_start_date']) ? sanitize_text_field(wp_unslash($_REQUEST['search_start_date'])) : '');
-		$end_date        = (!empty($_REQUEST['search_end_date']) ? sanitize_text_field(wp_unslash($_REQUEST['search_end_date'])) : '');
+		$search_string   = ( $filters_allowed && ! empty( $_REQUEST['s'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '';
+		$start_date      = ( $filters_allowed && ! empty( $_REQUEST['search_start_date'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['search_start_date'] ) ) : '';
+		$end_date        = ( $filters_allowed && ! empty( $_REQUEST['search_end_date'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['search_end_date'] ) ) : '';
 		// Get page number.
 		if (empty($paged) || !is_numeric($paged) || ($paged <= 0)) {
 			$paged = 1;
@@ -176,23 +202,20 @@ class Log_List_Table extends WP_List_Table
 			case 'date_created':
 			case 'iuv':
 			case 'description':
-				return $item[$column_name];
+				return esc_html( (string) $item[$column_name] );
 			case 'status':
-				$value     = $item[$column_name];
+				$value     = esc_html( (string) $item[$column_name] );
 				$str_value = '';
 				switch ($value) {
 					case STATUS_PAYMENT_NOT_EXECUTED:
 					case STATUS_PAYMENT_NOT_CONFIRMED:
 					case STATUS_PAYMENT_NOT_CREATED:
-						// $str_value = '<b style="color:red">' . __( $value, 'wp-pagopa-gateway-cineca' ) . '</b>';
-						$str_value = '<b style="color:red">' . $value . '</b>';
+						$str_value = '<strong style="color:red">' . $value . '</strong>';
 						break;
 					case STATUS_PAYMENT_CONFIRMED:
-						// $str_value = '<b style="color:green">' . __( $value, 'wp-pagopa-gateway-cineca' ) . '</b>';
-						$str_value = '<b style="color:green">' . $value . '</b>';
+						$str_value = '<strong style="color:green">' . $value . '</strong>';
 						break;
 					default:
-						// $str_value = __( $value, 'wp-pagopa-gateway-cineca' );
 						$str_value = $value;
 						break;
 				}
