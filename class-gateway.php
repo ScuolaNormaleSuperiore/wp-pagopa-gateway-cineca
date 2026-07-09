@@ -527,6 +527,14 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$request_uri    = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		$user_agent     = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 		$user_agent     = substr( $user_agent, 0, 180 );
+		$this->log_incoming_request(
+			'webhook_payment_complete',
+			array(
+				'idSession' => $id_session,
+				'esito'     => $outcome,
+				'has_token' => '' !== $token ? 'yes' : 'no',
+			)
+		);
 		if ( '' === $token ) {
 			echo 'Invalid request';
 			exit;
@@ -714,7 +722,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function webhook_transaction_notification( $args ) {
-		$this->log_action( 'info', '@@@ webhook_transaction_notification @@@' );
+		$this->log_incoming_request( 'webhook_transaction_notification' );
 		$this->verifyAPIAuthentication();
 		$result    = trim( file_get_contents( 'php://input' ) );
 		// SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out.
@@ -796,7 +804,12 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	 */
 	public function webhook_scheduled_actions( $args ) {
 		$token = ( ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '' );
-		$this->log_action( 'info', '@@@ webhook_scheduled_actions @@@' );
+		$this->log_incoming_request(
+			'webhook_scheduled_actions',
+			array(
+				'has_token' => '' !== $token ? 'yes' : 'no',
+			)
+		);
 		// Check if the token is present.
 		if ( ! $token ) {
 			$this->log_action( 'warning', 'Scheduled actions request rejected: missing token.' );
@@ -950,6 +963,41 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Log a webhook/API request as soon as it reaches WordPress.
+	 *
+	 * Uses a severity level that is always persisted, independently from the
+	 * plugin debug flag, so failed requests still leave an audit trail.
+	 *
+	 * @param string $endpoint_name Logical endpoint name.
+	 * @param array  $extra_context Optional request details.
+	 * @return void
+	 */
+	private function log_incoming_request( $endpoint_name, $extra_context = array() ) {
+		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
+		$request_uri    = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$remote_addr    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$user_agent     = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+		$user_agent     = substr( $user_agent, 0, 180 );
+		$context_parts  = array(
+			'endpoint: ' . $endpoint_name,
+			'method: ' . $request_method,
+			'remote_addr: ' . $remote_addr,
+			'request_uri: ' . $request_uri,
+			'user_agent: ' . $user_agent,
+		);
+
+		foreach ( $extra_context as $key => $value ) {
+			if ( null === $value || '' === $value ) {
+				continue;
+			}
+
+			$context_parts[] = sanitize_key( (string) $key ) . ': ' . sanitize_text_field( (string) $value );
+		}
+
+		$this->log_action( 'notice', 'Incoming request - ' . implode( ' - ', $context_parts ) );
+	}
+
+	/**
 	 * Return the name of the plkugin.
 	 *
 	 * @return string - The name of the plugin.
@@ -1050,7 +1098,9 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	private function deny(string $message): void {
-		$this->log_action('error', $message);
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$this->log_action( 'error', $message . ' - remote_addr: ' . $remote_addr . ' - request_uri: ' . $request_uri );
 		if (!headers_sent()) {
 			http_response_code(401);
 			header('WWW-Authenticate: Basic realm="API"');
