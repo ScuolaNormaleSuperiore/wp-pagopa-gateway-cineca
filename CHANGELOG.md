@@ -13,6 +13,9 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 - Aggiungere validazione dei parametri di configurazione del plugin.
 - Extract init_form_fields from main class.
 
+## [1.2.6] - 2026-07-09
+### Bug fixing
+- Fixed bug in payment confirmation.
 
 
 ## [1.2.5] - 2026-07-07
@@ -23,7 +26,6 @@ TAGS: Aggiunto (Added), Modificato (Changed), Deprecato (Deprecated), Rimosso (R
 - Corretto bug nel filtro per data della tabella transazioni, incluso il caso con sola data finale.
 ### Aggiunto
 - Aggiunto flag per attivazione debug del plugin.
-
 
 
 ## [1.2.4] - 2026-03-18

@@ -489,6 +489,16 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$note = __( 'The Iuv of the order is:', 'wp-pagopa-gateway-cineca' );
 		$note = $note . ' ' . $payment_position['iuv'];
 		$order->add_order_note( $note );
+		$order->save();
+		$saved_iuv = $order->get_meta( '_iuv' );
+		if ( $saved_iuv !== $payment_position['iuv'] ) {
+			$this->log_action(
+				'error',
+				'Unable to persist order IUV meta after payment creation. Order: ' . $order->get_order_number() .
+				' - Expected IUV: ' . $payment_position['iuv'] .
+				' - Saved order meta _iuv: ' . ( '' !== (string) $saved_iuv ? $saved_iuv : '[empty]' )
+			);
+		}
 		// Payment saved.
 		$log_manager->log( STATUS_PAYMENT_CREATED, $payment_position['iuv'] );
 		// Redirect the customer to the gateway to pay the payment position just created.
@@ -725,18 +735,33 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 		$this->log_incoming_request( 'webhook_transaction_notification' );
 		$this->verifyAPIAuthentication();
 		$result    = trim( file_get_contents( 'php://input' ) );
+		$response  = null;
 		// SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out.
 
 		try {
+			libxml_use_internal_errors( true );
 			$xml      = preg_replace( '/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $result );
 			$xml      = simplexml_load_string( $xml );
 			$json     = wp_json_encode( $xml );
 			$response = json_decode( $json, true );
 			if ( ! $response ) {
-				$this->log_action( 'error', 'Error in paNotificaTransazione: response empty, xml not valid.' );
+				$libxml_errors = libxml_get_errors();
+				if ( ! empty( $libxml_errors ) ) {
+					foreach ( $libxml_errors as $libxml_error ) {
+						$this->log_action(
+							'error',
+							'Error in paNotificaTransazione: libxml error [' . $libxml_error->code . '] line ' . $libxml_error->line . ' - ' . trim( $libxml_error->message )
+						);
+					}
+				} else {
+					$this->log_action( 'error', 'Error in paNotificaTransazione: response empty, xml not valid.' );
+				}
 			}
-		} catch ( Exception $e ) {
+		} catch ( Throwable $e ) {
 			$this->log_action( 'error', 'Error in paNotificaTransazione:' . $e->getMessage() );
+		} finally {
+			libxml_clear_errors();
+			libxml_use_internal_errors( false );
 		}
 
 		try {
@@ -773,7 +798,14 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 						$already_confirmed   = $log_manager->check_payment_status( $order_number, $iuv, STATUS_PAYMENT_CONFIRMED_BY_NOTIFICATION );
 						$is_current_order_iuv = ( $current_order_iuv === $iuv );
 						if ( ! $is_current_order_iuv ) {
-							$this->log_action( 'warning', 'Notification ignored because IUV is not the current order IUV. Order: ' . $cod_versamento_ente . ' - Notification IUV: ' . $iuv . ' - Current IUV: ' . $current_order_iuv );
+							$this->log_action(
+								'warning',
+								'Notification ignored because the order meta _iuv does not match the notification IUV. Order: ' . $cod_versamento_ente .
+								' - Notification IUV: ' . $iuv .
+								' - Current order meta _iuv: ' . ( '' !== (string) $current_order_iuv ? $current_order_iuv : '[empty]' ) .
+								' - STATUS_PAYMENT_CREATED found in plugin log: ' . ( $p_found ? 'yes' : 'no' ) .
+								' - Already confirmed by notification: ' . ( $already_confirmed ? 'yes' : 'no' )
+							);
 						} elseif ( $p_found && ! $already_confirmed ) {
 							// Set the order as paid.
 							$order->payment_complete();
@@ -787,7 +819,7 @@ class WP_Gateway_PagoPa extends WC_Payment_Gateway {
 					}
 				}
 			}
-		} catch ( Exception $e ) {
+		} catch ( Throwable $e ) {
 			$this->log_action( 'error', 'Error in paNotificaTransazione:' . $e->getMessage() );
 		}
 		// In any case return OK.
