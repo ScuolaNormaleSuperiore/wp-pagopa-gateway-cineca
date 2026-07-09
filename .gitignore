@@ -19,7 +19,6 @@ cert/*
 !cert/README.txt 
 
 # Custom AI directives
-ISSUES_TODO.md
+TODO
 .claude
 .codex
-TODO_NewLogManagement.md
